@@ -163,7 +163,7 @@ Most template portfolios:
 
 ## 10. 🧪 Dummy Data Stubs
 
-```ts
+\`\`\`ts
 export const testimonials = [
   {
     avatar: '/avatars/sid.png',
@@ -188,7 +188,7 @@ export const processSteps = [
   { title: 'Learn', icon: '🧠', desc: 'Rapid user feedback loops' },
   { title: 'Launch', icon: '🚀', desc: 'Scale, iterate, market' },
 ];
-```
+\`\`\`
 
 ---
 

@@ -15,17 +15,17 @@
 ### 2. ♿ Accessibility (A11y)
 > Ensure inclusivity using Axe CLI.
 
-```bash
+\`\`\`bash
 pnpm exec @axe-core/cli http://localhost:3000
-```
+\`\`\`
 - **Expectation**: **Zero critical violations**.
 
 ### 3. 🚀 Performance Budget & Analysis
 > Maintain speed across devices.
 
-```bash
+\`\`\`bash
 pnpm run analyze  # next-bundle-analyzer
-```
+\`\`\`
 - **JS bundle**: ≤ **150 kB gzipped** (after tree-shaking).
 - **LCP** (Largest Contentful Paint): ≤ **1.5 seconds** on Chrome (network throttled to 4G).
 

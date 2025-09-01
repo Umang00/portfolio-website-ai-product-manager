@@ -38,4 +38,3 @@
 - OG tags good
 - Plausible events fire
 - 404 egg works
-

@@ -19,4 +19,3 @@
 | GPT‑powered Cursor IDE | https://cursor.sh |
 
 *(extend as stack grows)*
-
