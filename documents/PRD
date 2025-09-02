@@ -1,0 +1,220 @@
+# 📄 PRODUCT REQUIREMENTS DOCUMENT (PRD) · AI‑PM Portfolio
+
+> **Owner**: Umang Thakkar
+> **Scope**: One-page portfolio site demonstrating proof of product craft, metrics, and direct contact within 60 seconds.
+
+---
+
+## 1. 🎯 Purpose & Vision
+Build a **fast, personable, skimmable** portfolio for an **AI‑native PM & builder**. It should load in **≤ 1.5 s**, show **metrics and proof** immediately, and provide **Email / Calendly / WhatsApp** in **≤ 2 clicks**.
+
+---
+
+## 2. ❗ Problem Statement
+Template sites are slow, generic, and hide outcomes. Busy reviewers skim for seconds and bounce if value isn’t obvious.
+
+---
+
+## 3. 📈 Success Metrics
+- **Speed** — LCP (4G desktop) ≤ 1.5 s; JS bundle ≤ 150 kB gz.
+- **Engagement** — ≥ 85 % reach **Shipped Highlights**.
+- **Conversion** — ≥ 10 % click **Email / Calendly / WhatsApp**.
+- **Quality** — Lighthouse Performance ≥ 95; 0 critical a11y issues.
+
+---
+
+## 4. 👤 Personas & JTBD
+- **Hiring Manager** — “Can this PM ship measurable results?”  
+- **Seed VC** — “Is this builder compelling and fast?”  
+- **Engineer Collaborator** — “Do we share stack & craft values?”
+
+---
+
+## 5. 🔑 Guiding Principles
+- **Skim‑first**: metrics, tools, logos visible within first scroll.  
+- **Delight, not distract**: subtle motion; no heavy WebGL.  
+- **Swap‑friendly**: all copy/data in small TS arrays.  
+- **Mobile‑first**: perfect on small viewports.
+- **Data-Driven**: each project card displays KPIs.
+
+---
+
+## 6. 🔧 Functional Requirements (per section)
+
+### 6.1 Hero (Sticky + AI Companion)
+- **Greeting pill** (cycles every 4s).
+- **Sticky header nav** with smooth anchor links: *Process, Highlights, Projects, Social Proof, Journey, Contact*.
+- **Social Proof** points to Trusted By section on click and covers Trusted By and Wall of Love sections
+- **Typewriter H1**: “I’m Umang — building products that *ship → scale → monetize*.”
+- **12‑word blurb** (fade-in)
+- **social icons** (LinkedIn, GitHub).
+- **AI Companion Lite** input (Edge, `@vercel/ai`, GPT‑4o) with streaming, debounce, abort on route change.
+- **Static multi‑armed PM illustration** (right‑aligned ~38% width). No animation; accessible alt text.
+- **Background**: subtle gradient + noise texture (light/dark aware).
+
+### 6.2 KPI Chips (Count‑up Section)
+- Dedicated section immediately under Hero with 4–6 **count‑up** chips (e.g., *100k+ polls*, *3.2× match‑rate*).
+- Large, tappable; stagger 80 ms; respect `prefers-reduced-motion` by disabling the count‑up.
+
+### 6.3 Process Wheel (5‑step)
+- **Order**: **Research → Build → Launch → Measure → Learn**.  
+- Central **whiteboard/doodle** image; circular layout with dashed guide.  
+- Each step has **title + 1‑sentence** description on hover/focus; keyboard focusable.  
+- SVG stroke draw over 1.5 s; skipped under reduced‑motion.
+
+### 6.4 Shipped Highlights
+- Six+ **impact chips/cards**, each with 1‑2 bullet outcomes.  
+- Auto‑scroll carousel (keen‑slider), pause on hover, arrow keys; maintains **3‑up** on desktop, **1‑up** mobile.  
+- Cards larger than v0 A‑1; high‑contrast; emoji or mini‑icons allowed.
+
+### 6.5 Featured Projects
+- Larger **image‑first** cards (no inline video).  
+- Badges: **GitHub**, **Live**, **YouTube** (optional link out).  
+- Click opens a **sheet modal** with a short 2‑paragraph description and KPIs.  
+- Tilt ≤ 6° on hover; reduced‑motion disables tilt.
+
+### 6.6 Trusted By (Client Logos)
+- Wider **marquee lane**: 18 s loop, pause on hover; greyscale → color on hover.  
+- Logos sized for legibility; supports 12–16 items.
+
+### 6.7 Wall of Love (Testimonials)
+- **Desktop**: 2‑column pager that **auto‑swaps** every 6 s (exit left, enter from right).  
+- **Mobile**: horizontal scroll with snap.  
+- Card: 48px avatar (with ring), name, role, LinkedIn glyph (blue “in”), quote with “Read more ▾”.
+
+### 6.8 My Toolkit (Dual Scrollers)
+- **Left**: two **belt scrollers** of tool logos; top belt L→R, bottom belt R→L (infinite, 20 s).  
+- **Right**: categorized lists (Frontend, Backend, Data, Analytics, AI, DX).  
+- Falls back to static list if `prefers-reduced-motion`.
+
+### 6.9 Journey (Timeline / About)
+- `react-vertical-timeline`; first card functions as **About**.
+- Items fade in on scroll
+- **Multiple roles at one company** collapse into an expandable card (e.g., Hunch: Writer → Strategist → APM).  
+- Supports images/GIFs; responsive variable height.
+
+### 6.10 Contact Me (Section, not FAB)
+- Inputs: **Name**, **Email**, **Website/Social (optional)**, **Message**.  
+- Buttons: **Send Email** (Resend → `umangthakkar005@gmail.com`), **Book 30 min** (Calendly embed), **WhatsApp** (`https://wa.me/919426154668`).  
+- Server POST also inserts Supabase `leads` row.  
+- Success and error toasts; spam honeypot.
+
+### 6.11 Footer
+- Back‑to‑top **arrow** (bottom‑left fixed).  
+- Social links: LinkedIn and GitHub.
+- Résumé (PDF link), copyright, light/dark aware.
+
+### 6.12 404 Easter‑Egg
+- `/404` with playful LoRA‑jar tumble; CTA back home.
+
+---
+
+## 7. 🛠️ Back‑End APIs
+
+| Route                 | Method | Purpose                              | Tech                     |
+|----------------------|--------|--------------------------------------|--------------------------|
+| `/api/companion?q=`  | GET    | Stream markdown from AI Companion    | @vercel/ai, GPT‑4o, Edge |
+| `/api/contact`       | POST   | Resend email + Supabase insert       | Resend, Supabase Edge    |
+
+---
+
+## 8. 🚧 Non‑Functional Requirements
+
+- JS Bundle: **≤ 150 kB gzipped**
+- Render blocking time: **≤ 100 ms**
+- Accessibility: **WCAG 2.1 AA**
+- SEO: meta tags + OG tags, `sitemap.xml`
+- CI/CD:
+  - GitHub PR → Vercel Preview with Lighthouse‑CI gate (≥ 95).
+  - `pnpm` as package manager.
+- Analytics: Plausible (deferred script, privacy-first)
+
+---
+
+## 9. 🧱 Tech Stack
+
+- **Framework**: Next.js 14 (App Router, Edge runtime)
+- **Styling**: Tailwind CSS (dark-mode toggle)
+- **UI Kit**: shadcn/ui (Radix-based)
+- **Motion**: Framer Motion 6
+- **Carousel**: keen-slider
+- **Tilt**: react-parallax-tilt
+- **AI API**: @vercel/ai + GPT‑4o
+- **Email**: Resend
+- **DB**: Supabase
+- **Analytics**: Plausible
+
+---
+
+## 10. 🧪 Dummy Data Stubs
+
+```ts
+export const kpiChips = [
+  '3.2× Match‑rate',
+  '100k+ Polls',
+  '6 yrs PM',
+  '40 Features',
+  '20+ Companies',
+  '2× Session Time',
+];
+
+export const processSteps = [
+  { title: 'Research', icon: '🔎', desc: 'Identify user/jobs and constraints' },
+  { title: 'Build',    icon: '🛠️', desc: 'Vertical slice; smallest lovable' },
+  { title: 'Launch',   icon: '🚀', desc: 'Ship behind a flag; iterate' },
+  { title: 'Measure',  icon: '📊', desc: 'Mixpanel + SQL + surveys' },
+  { title: 'Learn',    icon: '🧠', desc: 'Close the loop; new bets' },
+];
+
+export const shippedHighlights = [
+  'Created 1L+ interactive polls to drive Gen‑Z engagement',
+  'Personalized poll feeds → +3.2× initial engagement',
+  'Ice‑breakers & prompts → higher daily matches & retention',
+  'Voice feedback agent (OpenAI + ElevenLabs) → scalable qual',
+  'Automated comment analysis (SQL+AI) → ‑90% manual effort',
+  'Fine‑tuned chat models → 2× time‑spent per session',
+];
+
+export const featuredProjects = [
+  { title: 'Hire AI', image: '/proj/hireai.png', github: '#', live: '#', youtube: '#' },
+  { title: 'AI Tutor', image: '/proj/aitutor.png', github: '#', live: '#', youtube: '' },
+  { title: 'Poll Engine', image: '/proj/polls.png', github: '#', live: '#', youtube: '#' },
+  { title: 'Matchmaker', image: '/proj/match.png', github: '#', live: '#', youtube: '' },
+  { title: 'Feedback Agent', image: '/proj/agent.png', github: '#', live: '#', youtube: '' },
+  { title: 'Analytics Hub', image: '/proj/analytics.png', github: '#', live: '#', youtube: '#' },
+];
+
+export const testimonials = [
+  { avatar: '/avatars/1.png', name: 'A. Mehta', title: 'VP Product, FintechCo', quote: 'Umang turns fuzzy bets into shipped value, fast.', linkedin: '#' },
+  { avatar: '/avatars/2.png', name: 'S. Iyer', title: 'Eng Manager, HealthTech', quote: 'Crisp PRDs, decisive loops, measurable outcomes.', linkedin: '#' },
+  { avatar: '/avatars/3.png', name: 'R. Shah', title: 'Founder, Social App', quote: 'Brought clarity and momentum to a chaotic roadmap.', linkedin: '#' },
+  { avatar: '/avatars/4.png', name: 'N. Rao', title: 'Design Lead, AI Lab', quote: 'Collaborates deeply—great with data *and* narrative.', linkedin: '#' },
+  { avatar: '/avatars/5.png', name: 'P. Kapoor', title: 'Ops Director', quote: 'Reduced operational drag with smart automation.', linkedin: '#' },
+  { avatar: '/avatars/6.png', name: 'V. Kumar', title: 'PM, Commerce', quote: 'Great instincts for sequencing and risk burn‑down.', linkedin: '#' },
+];
+
+export const toolBelts = {
+  logosTop: ['OpenAI','ElevenLabs','Cursor','Supabase','Mixpanel','LangChain','Redshift','ComfyUI'],
+  logosBottom: ['Next.js','Tailwind','shadcn/ui','Vercel','Plausible','Notion','Figma','GitHub']
+};
+
+export const toolCategories = {
+  frontend: ['Next.js','Tailwind','shadcn/ui','Framer Motion'],
+  backend: ['Node','Supabase','Vercel Functions'],
+  data: ['Redshift SQL','Postgres','Python (pandas)'],
+  analytics: ['Mixpanel','Plausible','GA (optional)'],
+  ai: ['OpenAI GPT‑4o','LangChain','ElevenLabs'],
+  dx: ['Cursor','pnpm','TypeScript'],
+};
+
+export const clientLogos = [
+  'Economic Times','Max Bupa','Zayn & Myza','Blockchain Council','Prolitus','CoinFantasy','Guardian Link','Hunch', 'PlotX'
+];
+```
+
+---
+
+## 11. 🔓 Open Items
+- Final copy for KPI chips and project blurbs.  
+- Final logo SVGs.  
+- 3–6 real testimonial quotes + avatars.
