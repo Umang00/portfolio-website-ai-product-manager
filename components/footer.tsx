@@ -2,9 +2,8 @@ import { Button } from "@/components/ui/button"
 import { Github, Linkedin, Twitter, FileText } from "lucide-react"
 
 const socialLinks = [
-  { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/in/umang" },
-  { name: "GitHub", icon: Github, href: "https://github.com/umang" },
-  { name: "Twitter", icon: Twitter, href: "https://twitter.com/umang" },
+  { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/umang-thakkar-90a4a5164/" },
+  { name: "GitHub", icon: Github, href: "https://github.com/Umang00" },
 ]
 
 export function Footer() {

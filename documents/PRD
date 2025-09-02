@@ -148,7 +148,7 @@ Template sites are slow, generic, and hide outcomes. Busy reviewers skim for sec
 
 ## 10. 🧪 Dummy Data Stubs
 
-```ts
+\`\`\`ts
 export const kpiChips = [
   '3.2× Match‑rate',
   '100k+ Polls',
@@ -210,7 +210,7 @@ export const toolCategories = {
 export const clientLogos = [
   'Economic Times','Max Bupa','Zayn & Myza','Blockchain Council','Prolitus','CoinFantasy','Guardian Link','Hunch', 'PlotX'
 ];
-```
+\`\`\`
 
 ---
 

@@ -1,4 +1,6 @@
+import { StickyHeader } from "@/components/sticky-header"
 import { Hero } from "@/components/hero"
+import { KpiSection } from "@/components/kpi-section"
 import { ProcessWheel } from "@/components/process-wheel"
 import { ShippedHighlights } from "@/components/shipped-highlights"
 import { ProjectsSlider } from "@/components/projects-slider"
@@ -6,28 +8,35 @@ import { ClientLogos } from "@/components/client-logos"
 import { WallOfLove } from "@/components/wall-of-love"
 import { ToolsRing } from "@/components/tools-ring"
 import { Timeline } from "@/components/timeline"
+import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
-import { ChatFAB } from "@/components/chat-fab"
+import { BackToTop } from "@/components/back-to-top"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
+      <StickyHeader />
 
       <Hero />
+      <KpiSection />
       <ProcessWheel />
       <ShippedHighlights />
       <ProjectsSlider />
-      <ClientLogos />
-      <WallOfLove />
-      <ToolsRing />
-      <Timeline />
+      <section id="social-proof">
+        <ClientLogos />
+        <WallOfLove />
+      </section>
+      <section id="journey">
+        <Timeline />
+      </section>
+      <section id="tools">
+        <ToolsRing />
+      </section>
+      <ContactSection />
       <Footer />
+      <BackToTop />
 
-      <ChatFAB />
     </main>
   )
 }

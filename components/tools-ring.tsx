@@ -1,4 +1,8 @@
-const tools = [
+"use client"
+
+import { useState } from "react"
+
+const beltTools = [
   { name: "React", icon: "⚛️" },
   { name: "Next.js", icon: "▲" },
   { name: "TypeScript", icon: "📘" },
@@ -7,9 +11,28 @@ const tools = [
   { name: "Mixpanel", icon: "📊" },
   { name: "Supabase", icon: "🗄️" },
   { name: "Vercel", icon: "▲" },
+  { name: "PostgreSQL", icon: "🐘" },
+  { name: "Docker", icon: "🐳" },
+  { name: "AWS", icon: "☁️" },
+  { name: "Stripe", icon: "💳" },
+  { name: "Linear", icon: "📋" },
+  { name: "Notion", icon: "📝" },
+  { name: "Slack", icon: "💬" },
+  { name: "GitHub", icon: "🐙" },
 ]
 
+const categorizedTools = {
+  Frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+  Backend: ["Node.js", "Python", "PostgreSQL", "Supabase", "Prisma"],
+  Design: ["Figma", "Adobe Creative Suite", "Sketch", "Principle"],
+  Analytics: ["Mixpanel", "Google Analytics", "Amplitude", "PostHog"],
+  DevOps: ["Vercel", "AWS", "Docker", "GitHub Actions"],
+  Product: ["Linear", "Notion", "Miro", "Slack", "Zoom"],
+}
+
 export function ToolsRing() {
+  const [isPaused, setIsPaused] = useState(false)
+
   return (
     <section id="tools" className="py-20 px-4 bg-muted/50">
       <div className="max-w-6xl mx-auto">
@@ -18,22 +41,52 @@ export function ToolsRing() {
           <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
         </div>
 
-        {/* Tools ring container */}
-        <div className="relative w-80 h-80 mx-auto">
-          <div className="absolute inset-0 border-2 border-dashed border-muted-foreground/30 rounded-full flex items-center justify-center">
-            <span className="text-muted-foreground text-center">
-              Tools Ring
-              <br />
-              <span className="text-sm">(8 icons orbiting)</span>
-            </span>
+        <div className="grid lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-8">
+            {/* Top belt - Left to Right */}
+            <div
+              className="overflow-hidden"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              <div className={`flex gap-6 ${isPaused ? "" : "animate-scroll-left"}`}>
+                {[...beltTools, ...beltTools].map((tool, index) => (
+                  <div key={index} className="flex-none bg-card rounded-lg p-4 border min-w-[120px] text-center">
+                    <div className="text-2xl mb-2">{tool.icon}</div>
+                    <span className="text-sm font-medium">{tool.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom belt - Right to Left */}
+            <div
+              className="overflow-hidden"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              <div className={`flex gap-6 ${isPaused ? "" : "animate-scroll-right"}`}>
+                {[...beltTools.slice().reverse(), ...beltTools.slice().reverse()].map((tool, index) => (
+                  <div key={index} className="flex-none bg-card rounded-lg p-4 border min-w-[120px] text-center">
+                    <div className="text-2xl mb-2">{tool.icon}</div>
+                    <span className="text-sm font-medium">{tool.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Static tool icons for now */}
-          <div className="grid grid-cols-4 gap-4 mt-8">
-            {tools.map((tool, index) => (
-              <div key={index} className="text-center p-4 rounded-lg border bg-card">
-                <div className="text-2xl mb-2">{tool.icon}</div>
-                <span className="text-sm font-medium">{tool.name}</span>
+          <div className="space-y-6">
+            {Object.entries(categorizedTools).map(([category, tools]) => (
+              <div key={category} className="bg-card rounded-lg p-4 border">
+                <h3 className="font-semibold mb-3 text-primary">{category}</h3>
+                <div className="space-y-2">
+                  {tools.map((tool, index) => (
+                    <div key={index} className="text-sm text-muted-foreground">
+                      • {tool}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
