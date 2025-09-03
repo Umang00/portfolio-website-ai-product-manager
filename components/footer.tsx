@@ -1,5 +1,8 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
-import { Github, Linkedin, Twitter, FileText } from "lucide-react"
+import { Github, Linkedin, FileText } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 const socialLinks = [
   { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/umang-thakkar-90a4a5164/" },
@@ -7,15 +10,63 @@ const socialLinks = [
 ]
 
 export function Footer() {
+  const footerRef = useRef<HTMLElement>(null)
+  const [hasTriggered, setHasTriggered] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting && !hasTriggered) {
+          setHasTriggered(true)
+
+          const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+          if (!prefersReducedMotion) {
+            const confetti = (await import("canvas-confetti")).default
+
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.8 },
+              zIndex: 9999,
+            })
+          }
+
+          // Play chime if available
+          const audio = document.getElementById("footer-chime") as HTMLAudioElement | null
+          if (audio) {
+            try {
+              audio.volume = 0.3
+              await audio.play()
+            } catch {
+              console.log("[footer] Autoplay blocked for chime")
+            }
+          }
+        }
+      },
+      { threshold: 0.3 },
+    )
+
+    if (footerRef.current) {
+      observer.observe(footerRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasTriggered])
+
   return (
-    <footer id="footer" className="py-20 px-4 bg-muted/50">
+    <footer ref={footerRef} id="footer" className="py-20 px-4 bg-muted/50">
+      <audio id="footer-chime" src="/sfx/chime.mp3" preload="auto" />
+
       <div className="max-w-6xl mx-auto">
         <div className="text-center space-y-8">
           <div>
-            <h2 className="text-2xl font-bold mb-4">Let's Build Something Amazing</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              🎉 Congratulations — your search for the right PM ends here.
+            </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Always open to discussing new opportunities, product ideas, or just chatting about the latest in AI and
-              product management.
+              ⏳ The time is ticking — let’s stop searching and start building.
             </p>
           </div>
 
@@ -30,7 +81,15 @@ export function Footer() {
               </Button>
             ))}
             <Button variant="outline" asChild>
-              <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault()
+                  window.open("/resume.pdf", "_blank", "noopener,noreferrer")
+                }}
+              >
                 <FileText className="h-4 w-4 mr-2" />
                 Resume
               </a>
