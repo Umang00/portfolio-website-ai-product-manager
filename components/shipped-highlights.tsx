@@ -1,15 +1,33 @@
 "use client"
 
+import { useEffect, useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useKeenSlider } from "keen-slider/react"
 import "keen-slider/keen-slider.min.css"
 
-const highlights = [
+type Highlight =
+  | {
+      title: string
+      metric: string
+      image: string
+      description: string
+      bullets?: never
+    }
+  | {
+      title: string
+      metric: string
+      image: string
+      description?: never
+      bullets: string[]
+    }
+
+// ------- DUMMY DATA (unchanged) -------
+const highlights: Highlight[] = [
   {
     title: "AI Matching Algorithm",
-    description: "Increased match rates by 3.2x using ML-powered compatibility scoring",
+    bullets: ["Redesigned checkout for clarity and trust", "A/B tests lifted CVR by 45%"],
     metric: "3.2× Match Rate",
     image: "/placeholder.svg?height=300&width=400",
   },
@@ -45,56 +63,94 @@ const highlights = [
   },
 ]
 
-export function ShippedHighlights() {
-  const [sliderRef, instanceRef] = useKeenSlider(
-    {
-      loop: true,
-      mode: "free",
-      slides: {
-        perView: "auto",
-        spacing: 24,
-      },
-      created(s) {
-        s.moveToIdx(0, true, {
-          duration: 0,
-        })
-      },
-    },
-    [
-      (slider) => {
-        let timeout: ReturnType<typeof setTimeout>
-        let mouseOver = false
+// ------- SMALL PRESENTATIONAL PIECES -------
+function Card({ h }: { h: Highlight }) {
+  return (
+    <article className="bg-card rounded-xl border overflow-hidden h-full w-full">
+      <img src={h.image || "/placeholder.svg"} alt={h.title} className="w-full h-64 object-cover" />
+      <div className="p-6 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold">{h.title}</h3>
+          <Badge variant="secondary" className="shrink-0">{h.metric}</Badge>
+        </div>
 
-        function clearNextTimeout() {
-          clearTimeout(timeout)
-        }
-
-        function nextTimeout() {
-          clearTimeout(timeout)
-          if (mouseOver) return
-          timeout = setTimeout(() => {
-            slider.next()
-          }, 3000)
-        }
-
-        slider.on("created", () => {
-          slider.container.addEventListener("mouseover", () => {
-            mouseOver = true
-            clearNextTimeout()
-          })
-          slider.container.addEventListener("mouseout", () => {
-            mouseOver = false
-            nextTimeout()
-          })
-          nextTimeout()
-        })
-
-        slider.on("dragStarted", clearNextTimeout)
-        slider.on("animationEnded", nextTimeout)
-        slider.on("updated", nextTimeout)
-      },
-    ],
+        {"bullets" in h && h.bullets ? (
+          <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+            {h.bullets.map((b, i) => (
+              <li key={i} className="leading-relaxed">{b}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted-foreground leading-relaxed">
+            {("description" in h && h.description) || ""}
+          </p>
+        )}
+      </div>
+    </article>
   )
+}
+
+export function ShippedHighlights() {
+  // Build pairs: [0,1], [2,3], [4,5], …
+  const pairs = useMemo(() => {
+    const out: Highlight[][] = []
+    for (let i = 0; i < highlights.length; i += 2) {
+      out.push(highlights.slice(i, i + 2))
+    }
+    return out
+  }, [])
+
+  const [current, setCurrent] = useState(0)
+  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
+    initial: 0,
+    loop: false,
+    rubberband: false,
+    renderMode: "precision",
+    slides: { perView: 1, spacing: 24 }, // one "pair" per step
+    slideChanged(s) {
+      setCurrent(s.track.details.rel)
+    },
+  })
+
+  // Autoplay until last pair; pause on hover/drag
+  useEffect(() => {
+    const slider = instanceRef.current
+    if (!slider) return
+
+    const AUTOPLAY_MS = 2400
+    let timer: ReturnType<typeof setInterval> | null = null
+    let paused = false
+
+    const play = () => {
+      stop()
+      timer = setInterval(() => {
+        const det = slider.track.details
+        if (det.rel < det.maxIdx) slider.next()
+        else stop()
+      }, AUTOPLAY_MS)
+    }
+    const stop = () => { if (timer) clearInterval(timer as any); timer = null }
+
+    const el = slider.container
+    const onOver = () => { paused = true; stop() }
+    const onOut = () => { paused = false; play() }
+
+    el.addEventListener("mouseover", onOver)
+    el.addEventListener("mouseout", onOut)
+    slider.on("dragStarted", stop)
+    slider.on("animationEnded", () => { if (!paused) play() })
+    slider.on("updated", () => { if (!paused) play() })
+
+    play()
+    return () => {
+      stop()
+      el.removeEventListener("mouseover", onOver)
+      el.removeEventListener("mouseout", onOut)
+    }
+  }, [instanceRef])
+
+  const atStart = current === 0
+  const atEnd = !!instanceRef.current && current >= instanceRef.current.track.details.maxIdx
 
   return (
     <section id="highlights" className="py-20 px-4 bg-muted/50">
@@ -106,44 +162,53 @@ export function ShippedHighlights() {
           </p>
         </div>
 
-        <div className="relative">
+        {/* Give room for outside arrows so they are equidistant from cards */}
+        <div className="relative px-12">
           <div ref={sliderRef} className="keen-slider">
-            {highlights.map((highlight, index) => (
-              <div key={index} className="keen-slider__slide min-w-80 max-w-80">
-                <div className="bg-card rounded-lg p-6 border h-full">
-                  <img
-                    src={highlight.image || "/placeholder.svg"}
-                    alt={highlight.title}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-semibold">{highlight.title}</h3>
-                      <Badge variant="secondary">{highlight.metric}</Badge>
-                    </div>
-                    <p className="text-muted-foreground">{highlight.description}</p>
-                  </div>
+            {pairs.map((pair, idx) => (
+              <div key={idx} className="keen-slider__slide">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* On mobile we only show the first card of the pair */}
+                  <Card h={pair[0]} />
+                  {pair[1] && <Card h={pair[1]} />}
                 </div>
               </div>
             ))}
           </div>
 
+          {/* Arrows outside the rail, same offset each side */}
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
+            className="absolute -left-6 md:-left-8 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
             onClick={() => instanceRef.current?.prev()}
+            disabled={atStart}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
+            className="absolute -right-6 md:-right-8 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
             onClick={() => instanceRef.current?.next()}
+            disabled={atEnd}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
+
+          {/* Dots */}
+          <div className="mt-6 flex items-center justify-center gap-2">
+            {pairs.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => instanceRef.current?.moveToIdx(i)}
+                className={`h-2 w-2 rounded-full transition ${
+                  i === current ? "bg-foreground" : "bg-foreground/30"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
