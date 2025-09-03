@@ -63,7 +63,7 @@ export function Hero() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance mt-4 mb-8 animate-in fade-in duration-1000 delay-500">
-  AI Product Manager focused on data-driven growth and user delight
+  AI Product Manager focused on data-driven growth and user delight.
 </p>
 
         </div>
