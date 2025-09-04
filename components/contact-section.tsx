@@ -5,13 +5,14 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Mail, MessageCircle, Calendar } from "lucide-react"
+import { Mail, MessageCircle, Calendar, CheckCircle2, XCircle } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { CalendlyModal } from "./calendly-modal"
 import { toast } from "sonner"
 
+// ---------- Helpers ----------
 interface FormData {
-  name: string            
+  name: string
   email: string
   websiteSocial: string
   subject: string
@@ -19,6 +20,62 @@ interface FormData {
   honeypot: string
 }
 
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+// Larger, above-the-fold custom banners
+function showSuccessToast() {
+  toast.custom(
+    (t) => (
+      <div className="pointer-events-auto w-[min(560px,92vw)] rounded-xl border bg-background p-4 shadow-xl">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5">
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold">Message sent!</p>
+            <p className="text-sm text-muted-foreground">
+              Thanks for reaching out. I’ll reply to you at the email you provided.
+            </p>
+          </div>
+          <button
+            className="text-sm opacity-60 transition hover:opacity-100"
+            onClick={() => toast.dismiss(t)}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    ),
+    { position: "top-center", duration: 5000 }
+  )
+}
+
+function showErrorToast(description: string) {
+  toast.custom(
+    (t) => (
+      <div className="pointer-events-auto w-[min(560px,92vw)] rounded-xl border bg-background p-4 shadow-xl">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5">
+            <XCircle className="h-5 w-5 text-red-500" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold">Failed to send</p>
+            <p className="text-sm text-muted-foreground">{description}</p>
+          </div>
+          <button
+            className="text-sm opacity-60 transition hover:opacity-100"
+            onClick={() => toast.dismiss(t)}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    ),
+    { position: "top-center", duration: 6000 }
+  )
+}
+
+// ---------- Component ----------
 export function ContactSection() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -36,25 +93,23 @@ export function ContactSection() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.honeypot) return
 
     if (!formData.name || !formData.email || !formData.message) {
-      toast.error("Please fill in all required fields.", { id: "contact-missing" })
+      showErrorToast("Please fill in all required fields.")
       return
     }
-    if (!validateEmail(formData.email)) {
-      toast.error("Please enter a valid email address.", { id: "contact-email" })
+    if (!isValidEmail(formData.email)) {
+      showErrorToast("Please enter a valid email address.")
       return
     }
 
     setIsSubmitting(true)
-    const toastId = "contact-submit" // prevents duplicate toasts in Strict Mode
 
     try {
+      // Insert into Supabase
       const supabase = createClient()
       const { error: dbError } = await supabase.from("leads").insert({
         name: formData.name,
@@ -65,22 +120,23 @@ export function ContactSection() {
       })
       if (dbError) throw dbError
 
+      // Send email via API
       const emailRes = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: formData.name, // your API expects firstName
-          lastName: "",             // keep empty
+          name: formData.name,
           email: formData.email,
           websiteSocial: formData.websiteSocial,
           subject: formData.subject,
           message: formData.message,
         }),
       })
-      if (!emailRes.ok) throw new Error("Failed to send email")
+      if (!emailRes.ok) throw new Error("Email API returned a non-200 response")
 
-      toast.success("Message sent! I’ll get back to you soon.", { id: toastId })
+      showSuccessToast()
 
+      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -91,15 +147,10 @@ export function ContactSection() {
       })
     } catch (err) {
       console.error("Contact form error:", err)
-      toast.error("Failed to send message. Please try again or email me directly.", { id: "contact-fail" })
+      showErrorToast("Please try again or email me directly at umangthakkar005@gmail.com.")
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const openMailClient = (e: React.MouseEvent) => {
-    e.preventDefault()
-    window.location.href = "mailto:umangthakkar005@gmail.com"
   }
 
   return (
@@ -121,9 +172,9 @@ export function ContactSection() {
                 variant="outline"
                 className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
                 onClick={() => {
-                  const subject = encodeURIComponent("Hello from your portfolio");
-                  const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...");
-                  window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`;
+                  const subject = encodeURIComponent("Hello from your portfolio")
+                  const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...")
+                  window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`
                 }}
               >
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -135,11 +186,8 @@ export function ContactSection() {
                 </div>
               </Button>
 
-              <Button
-                variant="outline"
-                className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
-                asChild
-              >
+              {/* WhatsApp */}
+              <Button variant="outline" className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent" asChild>
                 <a href="https://wa.me/919426154668" target="_blank" rel="noopener noreferrer">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <MessageCircle className="h-6 w-6 text-primary" />
@@ -151,6 +199,7 @@ export function ContactSection() {
                 </a>
               </Button>
 
+              {/* Calendly */}
               <Button
                 variant="outline"
                 className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"

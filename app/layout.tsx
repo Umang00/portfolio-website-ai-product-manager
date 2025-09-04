@@ -27,13 +27,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>{children}</ThemeProvider>
           <Analytics />
         </Suspense>
-
-        {/* Sonner toaster mounted once at app root */}
         <Toaster
-          position="bottom-center"
+          position="top-center"
           richColors
           closeButton
-          toastOptions={{ duration: 3000 }}
+          toastOptions={{
+           duration: 3500,
+           classNames: {
+           toast:
+                "rounded-xl border bg-card/95 shadow-2xl backdrop-blur-md px-5 py-4 text-base",
+              title: "font-semibold",
+              description: "text-sm opacity-90",
+              actionButton: "rounded-md",
+              cancelButton: "rounded-md",
+            },
+          }}
         />
       </body>
     </html>
