@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Suspense } from "react"
 import "./globals.css"
+import { Toaster } from "sonner"
 
 export const metadata: Metadata = {
   title: "Umang Thakkar - AI Product Manager",
@@ -14,18 +15,26 @@ export const metadata: Metadata = {
   generator: "v0.app",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://assets.calendly.com" crossOrigin="" />
+        <link rel="preconnect" href="https://calendly.com" crossOrigin="" />
+      </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Suspense fallback={<div>Loading...</div>}>
           <ThemeProvider>{children}</ThemeProvider>
           <Analytics />
         </Suspense>
+
+        {/* Sonner toaster mounted once at app root */}
+        <Toaster
+          position="bottom-center"
+          richColors
+          closeButton
+          toastOptions={{ duration: 3000 }}
+        />
       </body>
     </html>
   )
