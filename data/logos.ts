@@ -5,7 +5,7 @@ export type ClientLogo = {
 }
 
 export const CLIENT_LOGOS: ClientLogo[] = [
-  { name: "The Economic Times", src: "/logos/the-economic-times.png", href: "https://economictimes.indiatimes.com" },
+  { name: "The Economic Times", src: "/logos/economic-times3.png", href: "https://economictimes.indiatimes.com" },
     { name: "Zayn & Myza", src: "/logos/zayn-myza.png" },
   { name: "Hunch", src: "/logos/hunch.png" },
   {
