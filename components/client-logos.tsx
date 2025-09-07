@@ -1,81 +1,110 @@
-import { CLIENT_LOGOS } from "@/data/logos"
+"use client"
 
-export function ClientLogos() {
+import Image from "next/image"
+import { useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
+import { CLIENT_LOGOS } from "@/lib/logos"
+import { cn } from "@/lib/utils"
+
+export function ClientLogos({
+  speedSeconds = 18,
+  rowHeight = 80,
+  rowHeightMd = 96,
+  rowHeightLg = 110,
+}: {
+  speedSeconds?: number
+  rowHeight?: number
+  rowHeightMd?: number
+  rowHeightLg?: number
+}) {
+  // duplicate for seamless loop
+  const items = useMemo(() => [...CLIENT_LOGOS, ...CLIENT_LOGOS], [])
+  const [play, setPlay] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      (entries) => setPlay(entries.some((e) => e.isIntersecting)),
+      { rootMargin: "0px 0px -25% 0px", threshold: 0.1 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <section id="clients" className="py-20 px-4 bg-muted/50">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted By</h2>
-          <p className="text-lg text-muted-foreground">Companies I've helped build and scale products</p>
-        </div>
+    // ✨ No forced background; inherits from theme
+    <section aria-labelledby="trusted-by-heading" className="py-14 md:py-18 lg:py-22">
+      <div className="text-center mb-14 md:mb-16">
+        <h2 id="trusted-by-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight">
+          Trusted By
+        </h2>
+        <p className="mt-4 text-lg md:text-xl text-muted-foreground">
+          Companies I&apos;ve helped build and scale products
+        </p>
+      </div>
 
-        <div className="relative overflow-hidden group">
-          {/* Marquee track with duplicated logos for seamless loop */}
-          <div className="flex items-center gap-10 will-change-transform animate-[marquee_18s_linear_infinite] group-hover:[animation-play-state:paused] motion-reduce:animate-none motion-reduce:flex-wrap motion-reduce:justify-center">
-            {/* First set of logos */}
-            {CLIENT_LOGOS.map((client, index) => (
-              <div key={`first-${index}`} className="shrink-0 flex items-center justify-center h-16 min-w-[180px] px-6">
-                {client.href ? (
-                  <a
-                    href={client.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Visit ${client.name}`}
-                    className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md"
-                  >
-                    <img
-                      src={client.src || "/placeholder.svg"}
-                      alt={client.name}
-                      aria-label={client.name}
-                      className="h-10 w-auto object-contain filter grayscale opacity-70 saturate-75 transition-all duration-200 group-hover:opacity-80 hover:grayscale-0 hover:opacity-100 hover:saturate-100"
-                    />
-                  </a>
-                ) : (
-                  <img
-                    src={client.src || "/placeholder.svg"}
-                    alt={client.name}
-                    aria-label={client.name}
-                    className="h-10 w-auto object-contain filter grayscale opacity-70 saturate-75 transition-all duration-200 group-hover:opacity-80 hover:grayscale-0 hover:opacity-100 hover:saturate-100"
-                  />
+      <div
+        ref={containerRef}
+        className={cn(
+          "relative select-none logo-track",
+          "[&:is(:hover,:focus-within)_.logos-track]:[animation-play-state:paused]"
+        )}
+        style={
+          {
+            ["--logo-h" as any]: `${rowHeight}px`,
+            ["--logo-h-md" as any]: `${rowHeightMd}px`,
+            ["--logo-h-lg" as any]: `${rowHeightLg}px`,
+            ["--marquee-duration" as any]: `${speedSeconds}s`,
+          } as React.CSSProperties
+        }
+      >
+        <ul className={cn("logos-track flex items-center gap-14 md:gap-16 lg:gap-20 w-max", play ? "animate-marquee" : "")}>
+          {items.map((logo, i) => {
+            const card = (
+              <div
+                key={`${logo.name}-${i}`}
+                className={cn(
+                  "logo-card relative",
+                  "h-[var(--logo-h)] md:h-[var(--logo-h-md)] lg:h-[var(--logo-h-lg)]",
+                  "opacity-90 hover:opacity-100 transition-opacity"
                 )}
-              </div>
-            ))}
-
-            {/* Duplicate set for seamless loop - hidden on reduced motion */}
-            <div className="contents motion-reduce:hidden">
-              {CLIENT_LOGOS.map((client, index) => (
-                <div
-                  key={`second-${index}`}
-                  className="shrink-0 flex items-center justify-center h-16 min-w-[180px] px-6"
-                >
-                  {client.href ? (
-                    <a
-                      href={client.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Visit ${client.name}`}
-                      className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md"
-                    >
-                      <img
-                        src={client.src || "/placeholder.svg"}
-                        alt={client.name}
-                        aria-label={client.name}
-                        className="h-10 w-auto object-contain filter grayscale opacity-70 saturate-75 transition-all duration-200 group-hover:opacity-80 hover:grayscale-0 hover:opacity-100 hover:saturate-100"
-                      />
-                    </a>
-                  ) : (
-                    <img
-                      src={client.src || "/placeholder.svg"}
-                      alt={client.name}
-                      aria-label={client.name}
-                      className="h-10 w-auto object-contain filter grayscale opacity-70 saturate-75 transition-all duration-200 group-hover:opacity-80 hover:grayscale-0 hover:opacity-100 hover:saturate-100"
-                    />
+                style={{ ["--logo-scale" as any]: String(logo.scale ?? 1) } as React.CSSProperties}
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.name}
+                  fill
+                  sizes="(min-width:1024px) 12rem, (min-width:768px) 10rem, 8rem"
+                  className={cn(
+                    "object-contain logo-img",
+                    logo.keepColor ? "logo-color" : "logo-mono"
                   )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                  priority={i < 8}
+                />
+              </div>
+            )
+
+            return logo.href ? (
+              <li key={`li-${logo.name}-${i}`} className="list-none">
+                <Link
+                  href={logo.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="outline-none"
+                  aria-label={logo.name}
+                >
+                  {card}
+                </Link>
+              </li>
+            ) : (
+              <li key={`li-${logo.name}-${i}`} className="list-none">
+                {card}
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )
