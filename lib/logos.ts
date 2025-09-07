@@ -10,13 +10,13 @@ export type ClientLogo = {
 
 export const CLIENT_LOGOS: ClientLogo[] = [
   { name: "The Economic Times", src: "/logos/economic-times.png", href: "https://economictimes.indiatimes.com" },
-  { name: "Decentraland", src: "/logos/decentraland.png", href: "https://decentraland.org" },
+  { name: "Decentraland", src: "/logos/decentraland.png", href: "https://decentraland.org", scale: 2.2 },
 
   // keep brand color
   { name: "1inch", src: "/logos/1inch.png", href: "https://1inch.io", keepColor: true, scale: 1.06 },
 
   { name: "Zayn & Myza", src: "/logos/zayn-myza.png", scale: 0.96 },
-  { name: "Hunch", src: "/logos/hunch.png" },
+  { name: "Hunch", src: "/logos/hunch.png", scale: 2.0 },
 
   // keep brand color
   {
