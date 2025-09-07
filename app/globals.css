@@ -75,7 +75,6 @@
 }
 
 @theme inline {
-  /* map CSS vars → tailwind tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -115,43 +114,97 @@
 }
 
 @layer base {
-  * { @apply border-border outline-ring/50; }
+  * {
+    @apply border-border outline-ring/50;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   }
-  html { scroll-padding-top: 88px; }
+  html {
+    scroll-padding-top: 88px;
+  }
 }
 
 @layer utilities {
-  /* marquee */
-  .animate-marquee { animation: marquee var(--marquee-duration, 18s) linear infinite; }
-  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .animate-marquee {
+    animation: marquee var(--marquee-duration, 18s) linear infinite;
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
 
-  /* (legacy helpers kept) */
-  .animate-scroll-left { animation: scroll-left 30s linear infinite; }
-  .animate-scroll-right { animation: scroll-right 30s linear infinite; }
-  @keyframes scroll-left { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-  @keyframes scroll-right{ 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
+  .animate-scroll-left {
+    animation: scroll-left 30s linear infinite;
+  }
+  .animate-scroll-right {
+    animation: scroll-right 30s linear infinite;
+  }
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes scroll-right {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .animate-marquee, .animate-scroll-left, .animate-scroll-right { animation: none; }
-    html { scroll-behavior: auto; }
+    .animate-marquee,
+    .animate-scroll-left,
+    .animate-scroll-right {
+      animation: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   /* === client logos sizing & scaling === */
-  .logo-track { overflow-x: hidden; overflow-y: visible; }
-  .logo-card  {
+  .logo-track {
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+  .logo-card {
     width: max(8.5rem, 12vw);
-    transform: scale(var(--logo-scale, 1)) !important;     /* base per-logo scale */
+    transform: scale(var(--logo-scale, 1)) !important;
     transform-origin: center;
     transition: transform 300ms ease-out;
-  }
-  @media (min-width: 768px)  { .logo-card { width: max(9.5rem, 11vw); } }
-  @media (min-width: 1024px) { .logo-card { width: max(10.5rem, 10vw); } }
 
-  /* hover zoom multiplies base scale */
+    /* Enhanced scale-aware margin for better breathing room on oversized logos */
+    margin-inline: calc(0.5rem + (var(--logo-scale, 1) - 1) * 1.2rem);
+  }
+  @media (min-width: 768px) {
+    .logo-card {
+      width: max(9.5rem, 11vw);
+      /* Increased scale-aware margin for medium screens */
+      margin-inline: calc(0.75rem + (var(--logo-scale, 1) - 1) * 1.5rem);
+    }
+  }
+  @media (min-width: 1024px) {
+    .logo-card {
+      width: max(10.5rem, 10vw);
+      /* Further increased scale-aware margin for large screens */
+      margin-inline: calc(1rem + (var(--logo-scale, 1) - 1) * 1.8rem);
+    }
+  }
+
   .logo-card:hover,
   .logo-card:focus-visible {
     transform: scale(calc(var(--logo-scale, 1) * 1.015)) !important;
@@ -164,14 +217,20 @@
     object-fit: contain;
   }
 
-  /* theme-aware filters */
-  .logo-mono  { filter: grayscale(1) brightness(0.25) contrast(1.35) opacity(.92); }
-  .dark .logo-mono { filter: grayscale(1) brightness(1.25) contrast(1.15) opacity(.95); }
+  .logo-mono {
+    filter: grayscale(1) brightness(0.25) contrast(1.35) opacity(0.92);
+  }
+  .dark .logo-mono {
+    filter: grayscale(1) brightness(1.25) contrast(1.15) opacity(0.95);
+  }
 
-  .logo-color { filter: grayscale(1) brightness(0.35) contrast(1.25) opacity(.95); }
-  .dark .logo-color { filter: grayscale(1) brightness(1.15) contrast(1.1) opacity(.95); }
+  .logo-color {
+    filter: grayscale(1) brightness(0.35) contrast(1.25) opacity(0.95);
+  }
+  .dark .logo-color {
+    filter: grayscale(1) brightness(1.15) contrast(1.1) opacity(0.95);
+  }
 
-  /* only the hovered color-logo reveals brand colors */
   .logo-card:hover .logo-color,
   .logo-card:focus-visible .logo-color {
     filter: grayscale(0) brightness(1) contrast(1) opacity(1);

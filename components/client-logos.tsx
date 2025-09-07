@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import Image from "next/image"
 import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
@@ -17,7 +19,6 @@ export function ClientLogos({
   rowHeightMd?: number
   rowHeightLg?: number
 }) {
-  // duplicate for seamless loop
   const items = useMemo(() => [...CLIENT_LOGOS, ...CLIENT_LOGOS], [])
   const [play, setPlay] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -25,16 +26,15 @@ export function ClientLogos({
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const io = new IntersectionObserver(
-      (entries) => setPlay(entries.some((e) => e.isIntersecting)),
-      { rootMargin: "0px 0px -25% 0px", threshold: 0.1 }
-    )
+    const io = new IntersectionObserver((entries) => setPlay(entries.some((e) => e.isIntersecting)), {
+      rootMargin: "0px 0px -25% 0px",
+      threshold: 0.1,
+    })
     io.observe(el)
     return () => io.disconnect()
   }, [])
 
   return (
-    // ✨ No forced background; inherits from theme
     <section aria-labelledby="trusted-by-heading" className="py-14 md:py-18 lg:py-22">
       <div className="text-center mb-14 md:mb-16">
         <h2 id="trusted-by-heading" className="text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -49,7 +49,7 @@ export function ClientLogos({
         ref={containerRef}
         className={cn(
           "relative select-none logo-track",
-          "[&:is(:hover,:focus-within)_.logos-track]:[animation-play-state:paused]"
+          "[&:is(:hover,:focus-within)_.logos-track]:[animation-play-state:paused]",
         )}
         style={
           {
@@ -60,7 +60,13 @@ export function ClientLogos({
           } as React.CSSProperties
         }
       >
-        <ul className={cn("logos-track flex items-center gap-14 md:gap-16 lg:gap-20 w-max", play ? "animate-marquee" : "")}>
+        <ul
+          className={cn(
+            // slightly reduced base gaps
+            "logos-track flex items-center gap-8 md:gap-10 lg:gap-12 w-max",
+            play ? "animate-marquee" : "",
+          )}
+        >
           {items.map((logo, i) => {
             const card = (
               <div
@@ -68,19 +74,16 @@ export function ClientLogos({
                 className={cn(
                   "logo-card relative",
                   "h-[var(--logo-h)] md:h-[var(--logo-h-md)] lg:h-[var(--logo-h-lg)]",
-                  "opacity-90 hover:opacity-100 transition-opacity"
+                  "opacity-90 hover:opacity-100 transition-opacity",
                 )}
                 style={{ ["--logo-scale" as any]: String(logo.scale ?? 1) } as React.CSSProperties}
               >
                 <Image
-                  src={logo.src}
+                  src={logo.src || "/placeholder.svg"}
                   alt={logo.name}
                   fill
                   sizes="(min-width:1024px) 12rem, (min-width:768px) 10rem, 8rem"
-                  className={cn(
-                    "object-contain logo-img",
-                    logo.keepColor ? "logo-color" : "logo-mono"
-                  )}
+                  className={cn("object-contain logo-img", logo.keepColor ? "logo-color" : "logo-mono")}
                   priority={i < 8}
                 />
               </div>

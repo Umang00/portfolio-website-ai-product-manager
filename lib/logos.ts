@@ -13,9 +13,9 @@ export const CLIENT_LOGOS: ClientLogo[] = [
   { name: "Decentraland", src: "/logos/decentraland.png", href: "https://decentraland.org", scale: 2.2 },
 
   // keep brand color
-  { name: "1inch", src: "/logos/1inch.png", href: "https://1inch.io", keepColor: true, scale: 1.06 },
+  { name: "1inch", src: "/logos/1inch.png", href: "https://1inch.io", keepColor: true, scale: 1.5 },
 
-  { name: "Zayn & Myza", src: "/logos/zayn-myza.png", scale: 0.96 },
+  { name: "Zayn & Myza", src: "/logos/zayn-myza.png", scale: 1 },
   { name: "Hunch", src: "/logos/hunch.png", scale: 2.0 },
 
   // keep brand color
@@ -24,7 +24,7 @@ export const CLIENT_LOGOS: ClientLogo[] = [
     src: "/logos/niva-bupa-life-insurance.png",
     href: "https://www.nivabupa.com/",
     keepColor: true,
-    scale: 1.02,
+    scale: 1.2
   },
 
   { name: "PlotX", src: "/logos/plotx.png", href: "https://plotx.io", scale: 1.04 },
@@ -35,7 +35,8 @@ export const CLIENT_LOGOS: ClientLogo[] = [
     src: "/logos/blockchain-council.png",
     href: "https://www.blockchain-council.org",
     keepColor: true,
+    scale: 1.2
   },
 
-  { name: "Prolitus", src: "/logos/prolitus.svg", href: "https://www.prolitus.com", scale: 0.98 },
+  { name: "Prolitus", src: "/logos/prolitus.svg", href: "https://www.prolitus.com", scale: 1 },
 ]
