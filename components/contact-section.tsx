@@ -22,6 +22,10 @@ interface FormData {
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
+const isSupabaseConfigured = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+)
+
 // Larger, above-the-fold custom banners
 function showSuccessToast() {
   toast.custom(
@@ -110,15 +114,19 @@ export function ContactSection() {
 
     try {
       // Insert into Supabase
-      const supabase = createClient()
-      const { error: dbError } = await supabase.from("leads").insert({
-        name: formData.name,
-        email: formData.email,
-        website_social: formData.websiteSocial || null,
-        subject: formData.subject || null,
-        message: formData.message,
-      })
-      if (dbError) throw dbError
+      if (isSupabaseConfigured) {
+        const supabase = createClient()
+        const { error: dbError } = await supabase.from("leads").insert({
+          name: formData.name,
+          email: formData.email,
+          website_social: formData.websiteSocial || null,
+          subject: formData.subject || null,
+          message: formData.message,
+        })
+        if (dbError) throw dbError
+      } else {
+        console.warn("[contact] Supabase environment variables are missing. Skipping lead capture.")
+      }
 
       // Send email via API
       const emailRes = await fetch("/api/contact", {
@@ -132,7 +140,13 @@ export function ContactSection() {
           message: formData.message,
         }),
       })
-      if (!emailRes.ok) throw new Error("Email API returned a non-200 response")
+      const emailPayload = await emailRes.json().catch(() => null)
+      if (!emailRes.ok) {
+        const errorMessage =
+          (emailPayload && (emailPayload.details || emailPayload.error)) ||
+          "Email API returned a non-200 response"
+        throw new Error(errorMessage)
+      }
 
       showSuccessToast()
 

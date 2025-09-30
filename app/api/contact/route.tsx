@@ -1,11 +1,20 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 // Optional overrides so you can change without code edits
 const FROM = process.env.RESEND_FROM || "Umang Thakkar <onboarding@resend.dev>"
 const TO = process.env.RESEND_TO || "umangthakkar005@gmail.com"
+
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+
+  if (!apiKey) {
+    console.warn("[contact] RESEND_API_KEY is not configured. Skipping email delivery.")
+    return null
+  }
+
+  return new Resend(apiKey)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +32,18 @@ export async function POST(request: NextRequest) {
       <p><strong>Message:</strong></p>
       <p>${(message || "").replace(/\n/g, "<br>")}</p>
     `
+
+    const resend = getResendClient()
+
+    if (!resend) {
+      return NextResponse.json(
+        {
+          error: "Email delivery is not configured",
+          details: "Set the RESEND_API_KEY environment variable to enable contact form emails.",
+        },
+        { status: 503 },
+      )
+    }
 
     const { error } = await resend.emails.send({
       from: FROM,
