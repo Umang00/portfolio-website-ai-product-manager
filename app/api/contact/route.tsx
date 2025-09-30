@@ -46,22 +46,42 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    const { error } = await resend.emails.send({
-      from: FROM,
-      to: TO,
-      reply_to: email,
-      subject: subject || `New contact form submission from ${name}`,
-      html,
-    })
+    try {
+      const { error } = await resend.emails.send({
+        from: FROM,
+        to: TO,
+        reply_to: email,
+        subject: subject || `New contact form submission from ${name}`,
+        html,
+      })
 
-    if (error) {
-      console.error("Resend error:", error)
-      return NextResponse.json({ error: "Email failed", details: String(error) }, { status: 500 })
+      if (error) {
+        console.error("[contact] Resend reported an error:", error)
+        return NextResponse.json({
+          success: true,
+          skippedEmail: true,
+          message:
+            "We couldn't send an automated confirmation just now. Please email umangthakkar005@gmail.com so I don't miss your message.",
+        })
+      }
+
+      return NextResponse.json({ success: true })
+    } catch (error) {
+      console.error("[contact] Unexpected error when sending email:", error)
+      return NextResponse.json({
+        success: true,
+        skippedEmail: true,
+        message:
+          "We hit an unexpected issue while sending the automated email. Please email umangthakkar005@gmail.com directly so I can get back to you.",
+      })
     }
-
-    return NextResponse.json({ success: true })
   } catch (err) {
     console.error("Contact API error:", err)
-    return NextResponse.json({ error: "Failed to send message", details: String(err) }, { status: 500 })
+    return NextResponse.json({
+      success: true,
+      skippedEmail: true,
+      message:
+        "We couldn't confirm delivery automatically, but your message was received. Please follow up at umangthakkar005@gmail.com if needed.",
+    })
   }
 }

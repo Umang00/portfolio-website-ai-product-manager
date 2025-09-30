@@ -149,9 +149,10 @@ export function ContactSection() {
       }
 
       const fallbackMessage =
-        emailPayload && emailPayload.skippedEmail
+        emailPayload?.message ||
+        (emailPayload?.skippedEmail
           ? "Email delivery is temporarily unavailable. Please send a direct email to umangthakkar005@gmail.com so I don't miss your message."
-          : undefined
+          : undefined)
 
       showSuccessToast(fallbackMessage)
 
