@@ -36,13 +36,14 @@ export async function POST(request: NextRequest) {
     const resend = getResendClient()
 
     if (!resend) {
-      return NextResponse.json(
-        {
-          error: "Email delivery is not configured",
-          details: "Set the RESEND_API_KEY environment variable to enable contact form emails.",
-        },
-        { status: 503 },
+      console.warn(
+        "[contact] RESEND_API_KEY is not configured. Returning success so the UI can fall back to direct email instructions.",
       )
+      return NextResponse.json({
+        success: true,
+        skippedEmail: true,
+        message: "Email delivery is not configured. Set RESEND_API_KEY to enable automated replies.",
+      })
     }
 
     const { error } = await resend.emails.send({

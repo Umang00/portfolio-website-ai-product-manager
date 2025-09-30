@@ -27,7 +27,7 @@ const isSupabaseConfigured = Boolean(
 )
 
 // Larger, above-the-fold custom banners
-function showSuccessToast() {
+function showSuccessToast(description?: string) {
   toast.custom(
     (t) => (
       <div className="pointer-events-auto w-[min(560px,92vw)] rounded-xl border bg-background p-4 shadow-xl">
@@ -38,7 +38,7 @@ function showSuccessToast() {
           <div className="flex-1">
             <p className="font-semibold">Message sent!</p>
             <p className="text-sm text-muted-foreground">
-              Thanks for reaching out. I’ll reply to you at the email you provided.
+              {description || "Thanks for reaching out. I’ll reply to you at the email you provided."}
             </p>
           </div>
           <button
@@ -148,7 +148,12 @@ export function ContactSection() {
         throw new Error(errorMessage)
       }
 
-      showSuccessToast()
+      const fallbackMessage =
+        emailPayload && emailPayload.skippedEmail
+          ? "Email delivery is temporarily unavailable. Please send a direct email to umangthakkar005@gmail.com so I don't miss your message."
+          : undefined
+
+      showSuccessToast(fallbackMessage)
 
       // Reset form
       setFormData({
