@@ -109,18 +109,7 @@ export function ContactSection() {
     setIsSubmitting(true)
 
     try {
-      // Insert into Supabase
-      const supabase = createClient()
-      const { error: dbError } = await supabase.from("leads").insert({
-        name: formData.name,
-        email: formData.email,
-        website_social: formData.websiteSocial || null,
-        subject: formData.subject || null,
-        message: formData.message,
-      })
-      if (dbError) throw dbError
-
-      // Send email via API
+      // Send email via API (primary functionality)
       const emailRes = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -133,6 +122,22 @@ export function ContactSection() {
         }),
       })
       if (!emailRes.ok) throw new Error("Email API returned a non-200 response")
+
+      // Optionally insert into Supabase if configured
+      try {
+        if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+          const supabase = createClient()
+          await supabase.from("leads").insert({
+            name: formData.name,
+            email: formData.email,
+            website_social: formData.websiteSocial || null,
+            subject: formData.subject || null,
+            message: formData.message,
+          })
+        }
+      } catch (dbError) {
+        console.warn("Failed to save to database (non-critical):", dbError)
+      }
 
       showSuccessToast()
 
