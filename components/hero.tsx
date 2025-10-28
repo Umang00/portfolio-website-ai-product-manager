@@ -40,7 +40,7 @@ export function Hero() {
         <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80">
   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
   <img
-    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-dxvhPKosIlqvIAJZ0Ws5WpYwpJFVdU.png"
+    src="/umang-profile.png"
     alt="Umang Thakkar"
     className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
   />
