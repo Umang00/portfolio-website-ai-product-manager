@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Github, Linkedin, ArrowUp } from "lucide-react"
+import { Search, ArrowUp } from "lucide-react"
 import { Typewriter } from "react-simple-typewriter"
+import { LinkedInButton, GitHubButton, ResumeButton } from "@/components/ui/social-buttons"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
@@ -86,17 +87,10 @@ export function Hero() {
 
         </div>
 
-        <div className="flex justify-center gap-6">
-          <Button variant="outline" size="lg" className="h-14 w-14 rounded-2xl bg-transparent" asChild>
-            <a href="https://www.linkedin.com/in/umang-thakkar-90a4a5164/" target="_blank" rel="noopener noreferrer">
-              <Linkedin className="h-6 w-6" />
-            </a>
-          </Button>
-          <Button variant="outline" size="lg" className="h-14 w-14 rounded-2xl bg-transparent" asChild>
-            <a href="https://github.com/Umang00" target="_blank" rel="noopener noreferrer">
-              <Github className="h-6 w-6" />
-            </a>
-          </Button>
+        <div className="flex justify-center gap-4">
+          <LinkedInButton />
+          <GitHubButton />
+          <ResumeButton />
         </div>
       </div>
     </section>
