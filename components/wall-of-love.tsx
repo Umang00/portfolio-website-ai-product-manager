@@ -6,52 +6,28 @@ import { useState, useEffect } from "react"
 
 const testimonials = [
   {
-    avatar: "/placeholder.svg?height=48&width=48",
-    name: "Siddharth Arya",
-    title: "Director, Aryacorp",
+    avatar: "/ashutosh-gupta.png",
+    name: "Ashutosh Gupta",
+    title: "Head of Strategy at Hunch",
     quote:
-      "Umang is a highly enthusiastic product manager with exceptional analytical skills. His ability to translate complex user needs into actionable product features is remarkable.",
-    linkedin: "https://linkedin.com/in/example",
+      "What makes Umang stand out is his builder mindset and his ability to blend AI expertise with creativity and data-driven thinking. He fine-tuned internal chat models that significantly improved engagement and built an internal analytics dashboard that gave us real-time insights. He brings together creativity, analytical thinking, AI skills, and product vision in a way that's rare to find.",
+    linkedin: "https://www.linkedin.com/in/ashutosh-gupta-0321b2145/",
   },
   {
-    avatar: "/placeholder.svg?height=48&width=48",
-    name: "Sarah Chen",
-    title: "VP Engineering, TechFlow",
+    avatar: "/shiv-pande.png",
+    name: "Shiv Ram Pande",
+    title: "Founding Team & CBO at BitSave",
     quote:
-      "Working with Umang was a game-changer for our product development. His data-driven approach and user-centric mindset helped us achieve 3x growth in user engagement.",
-    linkedin: "https://linkedin.com/in/example",
+      "Umang rose to the challenge with dedication and endless ideas. He was a creative architect who shaped product direction through data-driven insights. His influence extended beyond his own work, shaping the content team through guidance and mentorship. His constructive criticism, always delivered with genuine desire for everyone's success, became a beacon.",
+    linkedin: "https://www.linkedin.com/in/shivrampande/",
   },
   {
-    avatar: "/placeholder.svg?height=48&width=48",
-    name: "Michael Rodriguez",
-    title: "Founder, StartupLab",
+    avatar: "/dipayan-chatterjee.png",
+    name: "Dipayan Chatterjee",
+    title: "Full-stack Marketer",
     quote:
-      "Umang has an incredible talent for identifying market opportunities and executing on them. His strategic thinking and execution skills are top-notch.",
-    linkedin: "https://linkedin.com/in/example",
-  },
-  {
-    avatar: "/placeholder.svg?height=48&width=48",
-    name: "Emily Johnson",
-    title: "Head of Product, InnovateCorp",
-    quote:
-      "Umang's strategic vision and execution capabilities are exceptional. He consistently delivers products that exceed user expectations and drive business growth.",
-    linkedin: "https://linkedin.com/in/example",
-  },
-  {
-    avatar: "/placeholder.svg?height=48&width=48",
-    name: "David Kim",
-    title: "CTO, NextGen Solutions",
-    quote:
-      "His ability to bridge the gap between technical complexity and user needs is outstanding. Umang is the kind of product leader every team needs.",
-    linkedin: "https://linkedin.com/in/example",
-  },
-  {
-    avatar: "/placeholder.svg?height=48&width=48",
-    name: "Lisa Wang",
-    title: "Product Designer, CreativeFlow",
-    quote:
-      "Collaborating with Umang was inspiring. His user-first approach and data-driven decisions resulted in products that users truly love.",
-    linkedin: "https://linkedin.com/in/example",
+      "Umang embodies resilience, adaptability and grit. No matter how complex a problem may be, you can expect it to be assessed, quantified and worn down to a solution with simple determination.",
+    linkedin: "https://www.linkedin.com/in/dipayanchatterjee/",
   },
 ]
 
@@ -75,7 +51,7 @@ export function WallOfLove() {
   }
 
   return (
-    <section id="testimonials" className="py-20 px-4">
+    <section id="testimonials" className="py-20 px-4 bg-muted/30">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Wall of Love</h2>
@@ -84,69 +60,81 @@ export function WallOfLove() {
 
         <div className="hidden md:block">
           <div
-            className="grid grid-cols-2 gap-8 min-h-[300px]"
+            className="grid grid-cols-2 gap-8 min-h-[320px]"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
             {getCurrentTestimonials().map((testimonial, index) => (
               <div
                 key={`${currentSet}-${index}`}
-                className="bg-card rounded-lg p-6 border animate-in slide-in-from-right-5 duration-500"
+                className="bg-card rounded-xl p-8 border shadow-sm hover:shadow-md transition-shadow animate-in slide-in-from-right-5 duration-500"
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="relative">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="relative flex-shrink-0">
                     <img
                       src={testimonial.avatar || "/placeholder.svg"}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full ring-2 ring-primary/20"
+                      className="w-16 h-16 rounded-full object-cover ring-2 ring-primary/20"
                     />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{testimonial.name}</h4>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h4 className="font-semibold text-lg">{testimonial.name}</h4>
                       {testimonial.linkedin && (
-                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" asChild>
-                          <a href={testimonial.linkedin} target="_blank" rel="noopener noreferrer">
-                            <Linkedin className="h-3 w-3" />
-                          </a>
-                        </Button>
+                        <a
+                          href={testimonial.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${testimonial.name}'s LinkedIn`}
+                          className="group inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-[#0A66C2]/10 transition-colors flex-shrink-0"
+                        >
+                          <Linkedin className="h-4 w-4 transition-colors group-hover:text-[#0A66C2]" />
+                        </a>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">{testimonial.title}</p>
                   </div>
                 </div>
-                <blockquote className="text-sm leading-relaxed">"{testimonial.quote}"</blockquote>
+                <blockquote className="text-base leading-relaxed text-foreground/90">
+                  "{testimonial.quote}"
+                </blockquote>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="md:hidden flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4">
+        <div className="md:hidden flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="flex-none w-80 snap-start bg-card rounded-lg p-6 border">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative">
+            <div key={index} className="flex-none w-[85vw] snap-start bg-card rounded-xl p-6 border shadow-sm">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="relative flex-shrink-0">
                   <img
                     src={testimonial.avatar || "/placeholder.svg"}
                     alt={testimonial.name}
-                    className="w-12 h-12 rounded-full ring-2 ring-primary/20"
+                    className="w-14 h-14 rounded-full object-cover ring-2 ring-primary/20"
                   />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold">{testimonial.name}</h4>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-1">
+                    <h4 className="font-semibold text-base">{testimonial.name}</h4>
                     {testimonial.linkedin && (
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0" asChild>
-                        <a href={testimonial.linkedin} target="_blank" rel="noopener noreferrer">
-                          <Linkedin className="h-3 w-3" />
-                        </a>
-                      </Button>
+                      <a
+                        href={testimonial.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${testimonial.name}'s LinkedIn`}
+                        className="group inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-card hover:bg-[#0A66C2]/10 transition-colors flex-shrink-0"
+                      >
+                        <Linkedin className="h-3.5 w-3.5 transition-colors group-hover:text-[#0A66C2]" />
+                      </a>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">{testimonial.title}</p>
                 </div>
               </div>
-              <blockquote className="text-sm leading-relaxed">"{testimonial.quote}"</blockquote>
+              <blockquote className="text-sm leading-relaxed text-foreground/90">
+                "{testimonial.quote}"
+              </blockquote>
             </div>
           ))}
         </div>
