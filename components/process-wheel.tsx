@@ -97,17 +97,20 @@ export function ProcessWheel() {
                     aria-hidden="true"
                   />
 
-                  {/* icon positioned at exact distance from center */}
+                  {/* node positioned at exact distance from center */}
                   <div
-                    className="absolute left-1/2 top-1/2"
-                    style={{ transform: `translate(${iconX}px, ${iconY}px)` }}
+                    className="absolute"
+                    style={{ 
+                      left: `calc(50% + ${iconX}px)`,
+                      top: `calc(50% + ${iconY}px)`,
+                    }}
                   >
-                    <div className="flex flex-col items-center text-center" style={{ width: NODE_WIDTH }}>
-                      <div className="w-14 h-14 rounded-full border border-muted-foreground/40 bg-card flex items-center justify-center shadow-sm -translate-x-1/2 -translate-y-1/2">
+                    <div className="flex flex-col items-center text-center -translate-x-1/2 -translate-y-1/2" style={{ width: NODE_WIDTH }}>
+                      <div className="w-14 h-14 rounded-full border border-muted-foreground/40 bg-card flex items-center justify-center shadow-sm">
                         <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
                       </div>
-                      <div className="mt-3 font-semibold -translate-x-1/2">{title}</div>
-                      <div className="mt-1 text-sm text-muted-foreground leading-snug -translate-x-1/2">{desc}</div>
+                      <div className="mt-3 font-semibold">{title}</div>
+                      <div className="mt-1 text-sm text-muted-foreground leading-snug">{desc}</div>
                     </div>
                   </div>
                 </div>
