@@ -57,10 +57,8 @@ export function ProcessWheel() {
           >
             {/* Full-bleed portrait / safe placeholder */}
             <div className="absolute inset-0 rounded-full overflow-hidden shadow-xl bg-muted/20">
-              {/* Put your photo in /public and update src below.
-                 Leave alt empty so missing images don't render text on top. */}
               <img
-                src="/umang-whiteboard.jpg"
+                src="/umang-profile.png"
                 alt=""
                 className="w-full h-full object-cover"
               />
