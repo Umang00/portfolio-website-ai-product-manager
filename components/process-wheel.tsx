@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { Search, Goal, ShieldCheck, Rocket, BarChart3 } from "lucide-react"
+import { Search, Target, Lightbulb, Rocket, RefreshCw } from "lucide-react"
 
 type Step = {
   title: string
@@ -10,18 +10,18 @@ type Step = {
 }
 
 const STEPS: Step[] = [
-  { title: "Discover",        desc: "Talk to users, audit data, map jobs-to-be-done.",                     Icon: Search },
-  { title: "Define",          desc: "Frame problem, success metrics, guardrails (lean PRD/PR-FAQ).",      Icon: Goal },
-  { title: "De-risk",         desc: "Prototype/MVP to test riskiest assumptions before scaling.",         Icon: ShieldCheck },
-  { title: "Deliver",         desc: "Build vertical slices, feature-flag, roll out gradually.",           Icon: Rocket },
-  { title: "Measure & Learn", desc: "Mixpanel/SQL + surveys → insights → next bets.",                     Icon: BarChart3 },
+  { title: "Discover",  desc: "Ground every decision in user truth through conversations, data analysis, and jobs-to-be-done mapping.", Icon: Search },
+  { title: "Define",    desc: "Translate ambiguity into clarity with crisp problem statements, success metrics, and guardrails.",        Icon: Target },
+  { title: "Prototype", desc: "Test the riskiest assumptions early with MVPs and experiments before committing to scale.",              Icon: Lightbulb },
+  { title: "Ship",      desc: "Deliver value iteratively using vertical slices and feature flags to learn fast and reduce risk.",       Icon: Rocket },
+  { title: "Iterate",   desc: "Turn metrics and user feedback into insights that drive continuous improvement and impact.",             Icon: RefreshCw },
 ]
 
 /** Layout constants */
 const RADIUS = 170                 // inner circle radius (340px diameter)
-const NODE_OFFSET = 150            // uniform distance from orbit edge to node (same for all five)
+const ICON_RADIUS = 320            // distance from center to icon center (equal for all)
 const ICON_DIAM = 56               // w-14 h-14 => 56px
-const CONNECTOR_GAP = 12           // small gap so connector ends just before the icon
+const CONNECTOR_GAP = 8            // small gap so connector ends just before the icon
 const NODE_WIDTH = 232             // text block width
 
 // Arc: start near upper-right, sweep across bottom to upper-left (no node at top).
@@ -47,6 +47,9 @@ export function ProcessWheel() {
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             A proven framework for shipping products that users love
           </p>
+          <p className="text-sm md:text-base text-muted-foreground/80 max-w-2xl mx-auto mt-2 italic">
+            Great products emerge from ruthless iteration, not perfect planning
+          </p>
         </div>
 
         {/* Desktop / tablet wheel */}
@@ -71,40 +74,40 @@ export function ProcessWheel() {
             {polar.map(({ angle, angleDeg }, i) => {
               const { Icon, title, desc } = STEPS[i]
 
-              // Point on orbit edge
-              const x = Math.cos(angle) * RADIUS
-              const y = Math.sin(angle) * RADIUS
+              // Point on orbit edge (where connector starts)
+              const orbitX = Math.cos(angle) * RADIUS
+              const orbitY = Math.sin(angle) * RADIUS
 
-              // Node position (equal offset for all)
-              const nx = Math.cos(angle) * (RADIUS + NODE_OFFSET)
-              const ny = Math.sin(angle) * (RADIUS + NODE_OFFSET)
+              // Icon center position (equal distance from center for all)
+              const iconX = Math.cos(angle) * ICON_RADIUS
+              const iconY = Math.sin(angle) * ICON_RADIUS
 
-              // Connector length: from orbit edge toward node, stop before icon
-              const connectorLen = Math.max(44, NODE_OFFSET - ICON_DIAM / 2 - CONNECTOR_GAP)
+              // Connector length: from orbit edge to icon edge (not center)
+              const connectorLen = ICON_RADIUS - RADIUS - ICON_DIAM / 2 - CONNECTOR_GAP
 
               return (
                 <div key={title}>
-                  {/* connector from orbit edge to just before the icon */}
+                  {/* connector from orbit edge to icon edge */}
                   <div
                     className="absolute left-1/2 top-1/2 origin-left border-t border-dashed border-muted-foreground/30"
                     style={{
                       width: `${connectorLen}px`,
-                      transform: `translate(${x}px, ${y}px) rotate(${angleDeg}deg)`,
+                      transform: `translate(${orbitX}px, ${orbitY}px) rotate(${angleDeg}deg)`,
                     }}
                     aria-hidden="true"
                   />
 
-                  {/* node */}
+                  {/* icon positioned at exact distance from center */}
                   <div
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    style={{ transform: `translate(${nx}px, ${ny}px)` }}
+                    className="absolute left-1/2 top-1/2"
+                    style={{ transform: `translate(${iconX}px, ${iconY}px)` }}
                   >
                     <div className="flex flex-col items-center text-center" style={{ width: NODE_WIDTH }}>
-                      <div className="w-14 h-14 rounded-full border border-muted-foreground/40 bg-card flex items-center justify-center shadow-sm">
+                      <div className="w-14 h-14 rounded-full border border-muted-foreground/40 bg-card flex items-center justify-center shadow-sm -translate-x-1/2 -translate-y-1/2">
                         <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
                       </div>
-                      <div className="mt-3 font-semibold">{title}</div>
-                      <div className="mt-1 text-sm text-muted-foreground leading-snug">{desc}</div>
+                      <div className="mt-3 font-semibold -translate-x-1/2">{title}</div>
+                      <div className="mt-1 text-sm text-muted-foreground leading-snug -translate-x-1/2">{desc}</div>
                     </div>
                   </div>
                 </div>
