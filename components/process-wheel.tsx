@@ -48,7 +48,7 @@ export function ProcessWheel() {
             A proven framework for shipping products that users love
           </p>
           <p className="text-sm md:text-base text-muted-foreground/80 max-w-2xl mx-auto mt-2 italic">
-            Great products emerge from ruthless iteration, not perfect planning
+            "Great products emerge from ruthless iteration, not perfect planning"
           </p>
         </div>
 
