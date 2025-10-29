@@ -1,0 +1,79 @@
+My Journey
+
+The path of building, scaling, and reimagining products.
+
+100x Engineers Cohort | AI Builder
+
+Jun 2025 – Present
+
+Upskilling in rapid MVP development and AI product experimentation through the cohort.
+
+Founded Lightning AI Solutions to deliver end-to-end AI products as a one-person product team.
+
+Built and shipped prototypes like Newsletter Generator, Lecture Lens, Foggy LoRA, and Astrology AI MVP.
+
+Specializing in End-to-End Product Building, LLM fine-tuning, Voice Agent Architectures, RAG Systems, and AI Agents.
+
+Hunch (Dating & Social App) | Associate Product Manager
+
+Oct 2024 – Jun 2025
+
+Increased user engagement by 200% through MBTI-based personality matching system.
+
+Created web onboarding revenue stream generating $1.5K monthly, contributing 30% boost to $5K monthly revenue.
+
+Built Retool analytics dashboard, saving $1K+ monthly and 15+ hours weekly of manual analysis.
+
+Improved session time by 100% with fine-tuned chat models and AI conversation starters.
+
+Deployed voice-based UXR agent, scaling research from 2 → 50+ daily calls, reducing costs by 70%.
+
+Enhanced View-to-Wave conversion by 50% through optimized shortvibes.
+
+Automated A/B testing workflows, reducing dependency on tech team by 80%.
+
+Built custom GPT for app store review sentiment analysis.
+
+Hunch (Polling App) | Content Strategist
+
+Oct 2023 – Sep 2024
+
+Orchestrated content strategy during app transition from polling to dating.
+
+Managed team of 6, improving output by 60%.
+
+Designed and launched Poll Promotion Interface, cutting manual work by 85%.
+
+Reduced Day-0 uninstall rate by 35% via optimized onboarding polls.
+
+Ran content experiments for female categories, achieving 80% increase in publications and 100% increase in share.
+
+Enhanced personalized feeds with category-based targeting.
+
+PlotX (Crypto Gaming Platform) | Content Writer
+
+Jun 2022 – Oct 2022
+
+Improved organic traffic by 50%, driving 3K+ monthly signups.
+
+Authored 30+ SEO-rich blogs, boosting engagement time by 100% and reducing bounce rate by 25%.
+
+Conducted 100+ research interviews, validating polling concepts for Hunch’s pivot.
+
+iNurture Education Solutions (EdTech) | Content Writer
+
+Feb 2022 – Jun 2022
+
+Improved course completion by 20% and student satisfaction by 15%.
+
+Developed academic content impacting 5K+ learners across AI, Finance, Law, and Cybersecurity.
+
+Freelance | Content Writer
+
+Nov 2021 – May 2022
+
+Reached 5M+ readers by ghostwriting 300+ articles for 20+ global clients (Blockchain Council, CoinFantasy, Guardian Link, Economic Times, Niva Bupa Life Insurance).
+
+Increased engagement by 30% for client brands in finance, investment, and crypto.
+
+Secured long-term partnerships with 80% of clients.
