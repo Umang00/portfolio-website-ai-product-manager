@@ -8,7 +8,6 @@ type TimelineItem = {
   title: string
   company: string
   date: string
-  year: number
   achievements: string[]
 }
 
@@ -17,7 +16,6 @@ const timelineItems: TimelineItem[] = [
     title: "AI Builder",
     company: "100x Engineers Cohort",
     date: "Jun 2025 – Present",
-    year: 2025,
     achievements: [
       "Upskilling in rapid MVP development and AI product experimentation through the cohort",
       "Founded Lightning AI Solutions to deliver end-to-end AI products as a one-person product team",
@@ -29,7 +27,6 @@ const timelineItems: TimelineItem[] = [
     title: "Associate Product Manager",
     company: "Hunch (Dating & Social App)",
     date: "Oct 2024 – Jun 2025",
-    year: 2024,
     achievements: [
       "Increased user engagement by 200% through MBTI-based personality matching system",
       "Created web onboarding revenue stream generating $1.5K monthly, contributing 30% boost to $5K monthly revenue",
@@ -45,7 +42,6 @@ const timelineItems: TimelineItem[] = [
     title: "Content Strategist",
     company: "Hunch (Polling App)",
     date: "Oct 2023 – Sep 2024",
-    year: 2023,
     achievements: [
       "Orchestrated content strategy during app transition from polling to dating",
       "Managed team of 6, improving output by 60%",
@@ -59,7 +55,6 @@ const timelineItems: TimelineItem[] = [
     title: "Content Writer",
     company: "PlotX (Crypto Gaming Platform)",
     date: "Jun 2022 – Oct 2022",
-    year: 2022,
     achievements: [
       "Improved organic traffic by 50%, driving 3K+ monthly signups",
       "Authored 30+ SEO-rich blogs, boosting engagement time by 100% and reducing bounce rate by 25%",
@@ -70,7 +65,6 @@ const timelineItems: TimelineItem[] = [
     title: "Content Writer",
     company: "iNurture Education Solutions (EdTech)",
     date: "Feb 2022 – Jun 2022",
-    year: 2022,
     achievements: [
       "Improved course completion by 20% and student satisfaction by 15%",
       "Developed academic content impacting 5K+ learners across AI, Finance, Law, and Cybersecurity",
@@ -80,7 +74,6 @@ const timelineItems: TimelineItem[] = [
     title: "Content Writer",
     company: "Freelance",
     date: "Nov 2021 – May 2022",
-    year: 2021,
     achievements: [
       "Reached 5M+ readers by ghostwriting 300+ articles for 20+ global clients (Blockchain Council, CoinFantasy, Guardian Link, Economic Times, Niva Bupa Life Insurance)",
       "Increased engagement by 30% for client brands in finance, investment, and crypto",
@@ -93,15 +86,6 @@ export function Timeline() {
   const [isExpanded, setIsExpanded] = useState(false)
   const visibleItems = isExpanded ? timelineItems : timelineItems.slice(0, 2)
 
-  // Track year changes to show year markers
-  const getYearMarker = (index: number) => {
-    if (index === 0) return visibleItems[0].year
-    if (visibleItems[index].year !== visibleItems[index - 1].year) {
-      return visibleItems[index].year
-    }
-    return null
-  }
-
   return (
     <section id="journey" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
@@ -110,75 +94,38 @@ export function Timeline() {
           <p className="text-lg text-muted-foreground">The path of building, scaling, and reimagining products</p>
         </div>
 
-        <div className="relative space-y-8">
-          {visibleItems.map((item, index) => {
-            const yearMarker = getYearMarker(index)
-            const isYearTransition = yearMarker !== null && index > 0
-            
-            return (
-              <div key={index}>
-                {/* Year marker */}
-                {yearMarker !== null && (
-                  <div className="flex gap-6 mb-8">
-                    <div className="flex flex-col items-center relative">
-                      <div className="w-12 h-12 rounded-full border-2 border-primary/30 bg-background flex items-center justify-center relative z-10">
-                        <div className="w-3 h-3 rounded-full bg-primary"></div>
-                      </div>
-                      {/* Gradient line after year marker */}
-                      {index < visibleItems.length - 1 && (
-                        <div 
-                          className="w-0.5 flex-1 mt-4" 
-                          style={{
-                            background: isYearTransition 
-                              ? 'linear-gradient(to bottom, hsl(var(--primary)) 0%, hsl(var(--border)) 100%)'
-                              : 'hsl(var(--border))'
-                          }}
-                        ></div>
-                      )}
-                    </div>
-                    <div className="flex-1 flex items-center">
-                      <span className="text-5xl md:text-6xl font-bold text-muted-foreground/40 tracking-tight">
-                        {yearMarker}
-                      </span>
-                    </div>
-                  </div>
-                )}
+        <div className="space-y-8">
+          {visibleItems.map((item, index) => (
+            <div key={index} className="flex gap-6 group">
+              <div className="flex flex-col items-center">
+                <div className="w-4 h-4 bg-primary rounded-full border-4 border-background ring-4 ring-primary/20"></div>
+                {index < visibleItems.length - 1 && <div className="w-0.5 flex-1 bg-border mt-4"></div>}
+              </div>
 
-                {/* Timeline entry */}
-                <div className="flex gap-6 group">
-                  <div className="flex flex-col items-center">
-                    <div className="w-4 h-4 bg-primary rounded-full border-4 border-background ring-4 ring-primary/20"></div>
-                    {index < visibleItems.length - 1 && !isYearTransition && (
-                      <div className="w-0.5 flex-1 bg-border mt-4"></div>
-                    )}
+              <div className="flex-1 pb-8">
+                <div className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold">{item.title}</h3>
+                      <p className="text-primary font-medium">{item.company}</p>
+                    </div>
+                    <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded w-fit">
+                      {item.date}
+                    </span>
                   </div>
 
-                  <div className="flex-1 pb-8">
-                    <div className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
-                        <div>
-                          <h3 className="text-xl font-semibold">{item.title}</h3>
-                          <p className="text-primary font-medium">{item.company}</p>
-                        </div>
-                        <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded w-fit">
-                          {item.date}
-                        </span>
-                      </div>
-
-                      <ul className="space-y-2.5">
-                        {item.achievements.map((achievement, i) => (
-                          <li key={i} className="text-muted-foreground leading-relaxed flex items-start gap-3">
-                            <span className="text-primary mt-1 flex-shrink-0 text-lg leading-none">•</span>
-                            <span className="flex-1">{achievement}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+                  <ul className="space-y-2.5">
+                    {item.achievements.map((achievement, i) => (
+                      <li key={i} className="text-muted-foreground leading-relaxed flex items-start gap-3">
+                        <span className="text-primary mt-1 flex-shrink-0 text-lg leading-none">•</span>
+                        <span className="flex-1">{achievement}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
 
         <div className="flex justify-center mt-12">
