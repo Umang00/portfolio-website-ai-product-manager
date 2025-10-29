@@ -1,3 +1,9 @@
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { ChevronDown, ChevronUp } from "lucide-react"
+
 type TimelineItem = {
   title: string
   company: string
@@ -77,6 +83,9 @@ const timelineItems: TimelineItem[] = [
 ]
 
 export function Timeline() {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const visibleItems = isExpanded ? timelineItems : timelineItems.slice(0, 2)
+
   return (
     <section id="journey" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
@@ -86,11 +95,11 @@ export function Timeline() {
         </div>
 
         <div className="space-y-8">
-          {timelineItems.map((item, index) => (
+          {visibleItems.map((item, index) => (
             <div key={index} className="flex gap-6 group">
               <div className="flex flex-col items-center">
                 <div className="w-4 h-4 bg-primary rounded-full border-4 border-background ring-4 ring-primary/20"></div>
-                {index < timelineItems.length - 1 && <div className="w-0.5 flex-1 bg-border mt-4"></div>}
+                {index < visibleItems.length - 1 && <div className="w-0.5 flex-1 bg-border mt-4"></div>}
               </div>
 
               <div className="flex-1 pb-8">
@@ -105,11 +114,11 @@ export function Timeline() {
                     </span>
                   </div>
 
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {item.achievements.map((achievement, i) => (
-                      <li key={i} className="text-muted-foreground leading-relaxed flex gap-2">
-                        <span className="text-primary mt-1.5 flex-shrink-0">•</span>
-                        <span>{achievement}</span>
+                      <li key={i} className="text-muted-foreground leading-relaxed flex items-start gap-3">
+                        <span className="text-primary mt-1 flex-shrink-0 text-lg leading-none">•</span>
+                        <span className="flex-1">{achievement}</span>
                       </li>
                     ))}
                   </ul>
@@ -117,6 +126,26 @@ export function Timeline() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-center mt-12">
+          <Button
+            onClick={() => setIsExpanded(!isExpanded)}
+            size="lg"
+            className="gap-2"
+          >
+            {isExpanded ? (
+              <>
+                Show Less
+                <ChevronUp className="w-4 h-4" />
+              </>
+            ) : (
+              <>
+                View Full Journey
+                <ChevronDown className="w-4 h-4" />
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </section>
