@@ -26,7 +26,7 @@ const coreSkills = [
 const techStack = [
   { header: "AI & ML Platforms", items: ["OpenAI","Anthropic","Groq","Grok","Gemini","OpenRouter","Hugging Face","ElevenLabs","Whisper","Runway ML","HeyGen"]},
   { header: "AI Development Frameworks", items: ["LangChain","LlamaIndex","AutoGen","CrewAI","DSPy","ComfyUI","FlashAttention","Gradio","Baseten"]},
-  { header: "Generative AI & Diffusion", items: ["Stable Diffusion","SDXL","Flux","Midjourney","ControlNet","AnimateDiff","DreamBooth","LoRA Training","Wan","Veo","NanoBanana","Seedream","ESRGAN","Pix2Pix","CycleGAN","Gaussian Splatting","NeRFs","InstantID","IP-Adapter"]},
+  { header: "Generative AI & Diffusion", items: ["Stable Diffusion","SDXL","Flux","Midjourney","ControlNet","AnimateDiff","DreamBooth","LoRA Training","Wan","Veo","NanoBanana","Seedream","InstantID","IP-Adapter"]},
   { header: "Frontend", items: ["React","Next.js","TypeScript","JavaScript","Tailwind","ShadCN","Framer Motion"]},
   { header: "Backend & APIs", items: ["Python","Node.js","FastAPI","Supabase","PostgreSQL","Prisma","Resend","Postman"]},
   { header: "Infra & DevOps", items: ["Vercel","AWS","Docker","GitHub Actions","Git","Serverless Deployment"]},
