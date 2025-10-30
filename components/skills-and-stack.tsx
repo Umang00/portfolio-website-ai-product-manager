@@ -6,9 +6,13 @@ import {
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiPython, SiNodedotjs,
   SiOpenai, SiAnthropic, SiGooglegemini, SiHuggingface, SiLangchain,
   SiSupabase, SiPostgresql, SiPrisma, SiVercel, SiAmazon, SiDocker,
-  SiGithub, SiMixpanel, SiFigma, SiNotion, SiLinear
+  SiGithub, SiMixpanel, SiFigma, SiNotion, SiLinear, SiTailwindcss,
+  SiFramer, SiFastapi, SiGit, SiPostman, SiGoogleanalytics,
+  SiTableau, SiAirtable, SiZapier, SiStripe, SiSlack, SiTrello,
+  SiJira, SiMongodb, SiRedis, SiGraphql, SiNginx, SiKubernetes,
+  SiTensorflow, SiPytorch, SiJupyter, SiNumpy, SiPandas,
+  SiStorybook, SiVite, SiFastapi as SiFastapiAlt, SiReplit, SiRetool
 } from "react-icons/si"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const coreSkills = [
   { header: "Product Management", items: ["MVP Building","Feature Prioritization","Roadmapping","PRD Writing","Cross-Functional Leadership","Experimentation Design","Product Visioning","Market Research","OKR Planning","Go-to-Market Planning","Business Case Development"]},
@@ -38,27 +42,49 @@ const techLogos: Array<{ name: string; Icon: IconType; color?: string }> = [
   { name: "JavaScript", Icon: SiJavascript, color: "#F7DF1E" },
   { name: "Python", Icon: SiPython, color: "#3776AB" },
   { name: "Node.js", Icon: SiNodedotjs, color: "#339933" },
+  { name: "Tailwind", Icon: SiTailwindcss, color: "#06B6D4" },
+  { name: "Vite", Icon: SiVite, color: "#646CFF" },
   { name: "OpenAI", Icon: SiOpenai },
-  { name: "Claude", Icon: SiAnthropic, color: "#D4A574" },
+  { name: "Anthropic", Icon: SiAnthropic, color: "#D4A574" },
   { name: "Gemini", Icon: SiGooglegemini, color: "#4285F4" },
-  { name: "Groq", Icon: SiOpenai },
   { name: "Hugging Face", Icon: SiHuggingface, color: "#FFD21E" },
   { name: "LangChain", Icon: SiLangchain },
-  { name: "LlamaIndex", Icon: SiOpenai },
+  { name: "Storybook", Icon: SiStorybook, color: "#FF4785" },
+  { name: "Replit", Icon: SiReplit },
+  { name: "Retool", Icon: SiRetool },
   { name: "Supabase", Icon: SiSupabase, color: "#3ECF8E" },
   { name: "PostgreSQL", Icon: SiPostgresql, color: "#4169E1" },
+  { name: "MongoDB", Icon: SiMongodb, color: "#47A248" },
+  { name: "Redis", Icon: SiRedis, color: "#DC382D" },
   { name: "Prisma", Icon: SiPrisma },
+  { name: "GraphQL", Icon: SiGraphql, color: "#E10098" },
+  { name: "FastAPI", Icon: SiFastapi, color: "#009688" },
   { name: "Vercel", Icon: SiVercel },
   { name: "AWS", Icon: SiAmazon, color: "#FF9900" },
   { name: "Docker", Icon: SiDocker, color: "#2496ED" },
+  { name: "Kubernetes", Icon: SiKubernetes, color: "#326CE5" },
+  { name: "Nginx", Icon: SiNginx, color: "#009639" },
   { name: "GitHub", Icon: SiGithub },
+  { name: "Git", Icon: SiGit, color: "#F05032" },
   { name: "Mixpanel", Icon: SiMixpanel, color: "#7856FF" },
-  { name: "PostHog", Icon: SiMixpanel },
+  { name: "Slack", Icon: SiSlack, color: "#4A154B" },
+  { name: "Google Analytics", Icon: SiGoogleanalytics, color: "#E37400" },
+  { name: "Tableau", Icon: SiTableau, color: "#E97627" },
   { name: "Figma", Icon: SiFigma, color: "#F24E1E" },
   { name: "Notion", Icon: SiNotion },
   { name: "Linear", Icon: SiLinear },
-  { name: "Cursor", Icon: SiLinear },
-  { name: "ElevenLabs", Icon: SiOpenai },
+  { name: "Airtable", Icon: SiAirtable, color: "#18BFFF" },
+  { name: "Zapier", Icon: SiZapier, color: "#FF4A00" },
+  { name: "Stripe", Icon: SiStripe, color: "#008CDD" },
+  { name: "Trello", Icon: SiTrello, color: "#0052CC" },
+  { name: "Jira", Icon: SiJira, color: "#0052CC" },
+  { name: "Postman", Icon: SiPostman, color: "#FF6C37" },
+  { name: "TensorFlow", Icon: SiTensorflow, color: "#FF6F00" },
+  { name: "PyTorch", Icon: SiPytorch, color: "#EE4C2C" },
+  { name: "Jupyter", Icon: SiJupyter, color: "#F37626" },
+  { name: "NumPy", Icon: SiNumpy, color: "#013243" },
+  { name: "Pandas", Icon: SiPandas, color: "#150458" },
+  { name: "Framer", Icon: SiFramer },
 ]
 
 function Capsule({ children }: { children: string }) {
@@ -108,63 +134,44 @@ function CategoryCard({ header, items }: { header: string; items: string[] }) {
   )
 }
 
+function TechCard({ name, Icon, color }: { name: string; Icon: IconType; color?: string }) {
+  const IconComponent = Icon as React.ComponentType<{ className?: string; style?: React.CSSProperties }>
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 rounded-lg px-6 py-4 min-w-[140px] bg-card border border-border hover:bg-accent hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0">
+      <IconComponent 
+        className="w-8 h-8" 
+        style={color ? { color } : undefined}
+      />
+      <span className="text-sm font-medium whitespace-nowrap">{name}</span>
+    </div>
+  )
+}
+
 function MarqueeLogos() {
   const midpoint = Math.ceil(techLogos.length / 2)
   const row1Logos = techLogos.slice(0, midpoint)
   const row2Logos = techLogos.slice(midpoint)
 
   return (
-    <TooltipProvider delayDuration={100}>
-      <div className="mb-12 space-y-6 overflow-hidden">
-        {/* Row 1: Left to Right */}
-        <div className="relative group">
-          <div className="flex gap-4 animate-marquee-ltr group-hover:pause group-focus-within:pause motion-reduce:animate-none">
-            {[...row1Logos, ...row1Logos].map((tool, index) => (
-              <Tooltip key={index}>
-                <TooltipTrigger asChild>
-                  <button
-                    className="inline-flex items-center justify-center rounded-full w-12 h-12 bg-muted border border-border hover:bg-accent hover:scale-110 hover:shadow-lg transition-all duration-300 flex-shrink-0"
-                    aria-label={tool.name}
-                  >
-                    <tool.Icon 
-                      className="w-5 h-5" 
-                      style={tool.color ? { color: tool.color } : undefined}
-                    />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tool.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </div>
-        </div>
-
-        {/* Row 2: Right to Left */}
-        <div className="relative group">
-          <div className="flex gap-4 animate-marquee-rtl group-hover:pause group-focus-within:pause motion-reduce:animate-none">
-            {[...row2Logos, ...row2Logos].map((tool, index) => (
-              <Tooltip key={index}>
-                <TooltipTrigger asChild>
-                  <button
-                    className="inline-flex items-center justify-center rounded-full w-12 h-12 bg-muted border border-border hover:bg-accent hover:scale-110 hover:shadow-lg transition-all duration-300 flex-shrink-0"
-                    aria-label={tool.name}
-                  >
-                    <tool.Icon 
-                      className="w-5 h-5" 
-                      style={tool.color ? { color: tool.color } : undefined}
-                    />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tool.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </div>
+    <div className="mb-12 space-y-4 overflow-hidden">
+      {/* Row 1: Left to Right */}
+      <div className="relative group">
+        <div className="flex gap-3 animate-marquee-ltr group-hover:pause group-focus-within:pause motion-reduce:animate-none">
+          {[...row1Logos, ...row1Logos].map((tool, index) => (
+            <TechCard key={index} name={tool.name} Icon={tool.Icon} color={tool.color} />
+          ))}
         </div>
       </div>
-    </TooltipProvider>
+
+      {/* Row 2: Right to Left */}
+      <div className="relative group">
+        <div className="flex gap-3 animate-marquee-rtl group-hover:pause group-focus-within:pause motion-reduce:animate-none">
+          {[...row2Logos, ...row2Logos].map((tool, index) => (
+            <TechCard key={index} name={tool.name} Icon={tool.Icon} color={tool.color} />
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 
