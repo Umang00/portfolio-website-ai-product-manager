@@ -1,0 +1,51 @@
+Make changes in My Toolkit and make 2 sections rather than single one
+
+Overall
+- Capsules: rounded-full, px-3 py-1, text-sm, bg-neutral-900, border border-neutral-800, hover:bg-neutral-800.
+- Cards: like we already have for others
+- Responsive across devices
+
+SECTION A — Core Skills
+Title: “Core Skills”
+Subtitle: “Capabilities I bring to product building.”
+Layout:
+- Category groups with capsule tags (no icons).
+- Categories (headers) and capsules EXACTLY from this data:
+const coreSkills = [
+  { header: "Product Management", items: ["MVP Building","Feature Prioritization","Roadmapping","PRD Writing","Cross-Functional Leadership","Experimentation Design","API Integration"]},
+  { header: "AI Development", items: ["LLM Fine-Tuning","LoRA Training","RAG Systems","Voice Agent Development","Prompt Engineering","Context Engineering","Function Calling","Tool Integration","Agentic Workflow Design","Text-to-Image Generation","Image-to-Image Translation","Inpainting & Outpainting","Style Transfer","ControlNet Implementation","Model Training"]},
+  { header: "Data & Analytics", items: ["SQL Analytics","Data Pipeline Design","Funnel Analysis","Cohort Analysis","Dashboard Building","Statistical Analysis","Performance Metrics","Vector Embeddings","Data Cleaning"]},
+  { header: "User & Growth", items: ["User Research","UX Strategy","Onboarding Optimization","Retention Strategy","Engagement Design","A/B Testing","Conversion Optimization"]},
+  { header: "Content & Strategy", items: ["Content Strategy","Storytelling","Trend Integration","Campaign Design","Growth Experiments"]},
+  { header: "Product Operations", items: ["Roadmap Execution","Feedback Loops","Documentation","Knowledge Management","Experiment Tracking","Stakeholder Management"]},
+];
+
+SECTION B — Tech Stack
+Title: “Tech Stack”
+Subtitle: “Technologies and tools I use to ship products.”
+
+Top banner (logos):
+- Two continuous rows of tool icons that auto-wrap and scroll horizontally on small screens; no scroll on desktop.
+- Use recognizable logos (SVGs) with tooltip labels.
+- Order: React, Next.js, TypeScript, JavaScript, Python, Node.js, OpenAI, Claude, Gemini, Groq, Hugging Face, LangChain, LlamaIndex, Supabase, PostgreSQL, Prisma, Vercel, AWS, Docker, GitHub, Mixpanel, PostHog, Figma, Notion, Linear, Cursor, ElevenLabs and keep other which are already there
+- Spacing tight but consistent; icons in pill buttons matching capsule style.
+
+Below banner (category cards with capsules, no icons inside cards):
+const techStack = [
+  { header: "AI & ML Platforms", items: ["OpenAI","Anthropic","Groq","Grok","Gemini","OpenRouter","Hugging Face","ElevenLabs","Whisper","Runway ML","HeyGen"]},
+  { header: "AI Development Frameworks", items: ["LangChain","LlamaIndex","AutoGen","CrewAI","DSPy","ComfyUI","FlashAttention","Gradio","Baseten"]},
+  { header: "Generative AI & Diffusion", items: ["Stable Diffusion","SDXL","Flux","Midjourney","ControlNet","AnimateDiff","DreamBooth","LoRA Training","Wan","Veo","NanoBanana","Seedream","ESRGAN","Pix2Pix","CycleGAN","Gaussian Splatting","NeRFs","InstantID","IP-Adapter"]},
+  { header: "Frontend", items: ["React","Next.js","TypeScript","JavaScript","Tailwind","ShadCN","Framer Motion"]},
+  { header: "Backend & APIs", items: ["Python","Node.js","FastAPI","Supabase","PostgreSQL","Prisma","Resend","Postman"]},
+  { header: "Infra & DevOps", items: ["Vercel","AWS","Docker","GitHub Actions","Git","Serverless Deployment"]},
+  { header: "Analytics & Operations", items: ["Mixpanel","PostHog","Amplitude","Google Analytics","Retool","Tableau","Notion","Linear","Coda","Airtable"]},
+  { header: "Design & Prototyping", items: ["Figma","V0","Cursor","Bolt.new","Lovable","Replit","VoiceFlow"]},
+  { header: "Automation & Workflows", items: ["Make.com","n8n","Zapier","Retool Workflows"]},
+];
+
+Component requirements
+- Build <SkillsAndStack/> that renders two sections using the above arrays.
+- Create <Capsule> and <CategoryCard> subcomponents for reuse.
+- Implement a responsive grid: cards in 1-col (mobile), 2-col (md), 3-col (xl).
+- Add subtle entrance animation (opacity/translate) respecting prefers-reduced-motion.
+- Provide a simple LogoRow component for the two-line icon banner with tooltips.

@@ -6,7 +6,7 @@ import { ShippedHighlights } from "@/components/shipped-highlights"
 import { ProjectsSlider } from "@/components/projects-slider"
 import { ClientLogos } from "@/components/client-logos"
 import { WallOfLove } from "@/components/wall-of-love"
-import { ToolsRing } from "@/components/tools-ring"
+import { SkillsAndStack } from "@/components/skills-and-stack"
 import { Timeline } from "@/components/timeline"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
@@ -30,9 +30,7 @@ export default function Home() {
       <section id="journey">
         <Timeline />
       </section>
-      <section id="tools">
-        <ToolsRing />
-      </section>
+      <SkillsAndStack />
       <ContactSection />
       <Footer />
       <BackToTop />
