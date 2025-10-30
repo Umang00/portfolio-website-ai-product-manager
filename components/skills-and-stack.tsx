@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { IconType } from "react-icons"
 import { 
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiPython, SiNodedotjs,
   SiOpenai, SiAnthropic, SiGooglegemini, SiHuggingface, SiLangchain,
@@ -10,8 +11,8 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const coreSkills = [
-  { header: "Product Management", items: ["MVP Building","Feature Prioritization","Roadmapping","PRD Writing","Cross-Functional Leadership","Experimentation Design","API Integration"]},
-  { header: "AI Development", items: ["LLM Fine-Tuning","LoRA Training","RAG Systems","Voice Agent Development","Prompt Engineering","Context Engineering","Function Calling","Tool Integration","Agentic Workflow Design","Text-to-Image Generation","Image-to-Image Translation","Inpainting & Outpainting","Style Transfer","ControlNet Implementation","Model Training"]},
+  { header: "Product Management", items: ["MVP Building","Feature Prioritization","Roadmapping","PRD Writing","Cross-Functional Leadership","Experimentation Design","Product Visioning","Market Research","OKR Planning","Go-to-Market Planning","Business Case Development"]},
+  { header: "AI Development", items: ["LLM Fine-Tuning","LoRA Training","RAG Systems","Voice Agent Development","Prompt Engineering","Context Engineering","Function Calling","Tool Integration","Agentic Workflow Design","Text-to-Image Generation","Image-to-Image Translation","Inpainting & Outpainting","Style Transfer","ControlNet Implementation","Model Training","API Integration"]},
   { header: "Data & Analytics", items: ["SQL Analytics","Data Pipeline Design","Funnel Analysis","Cohort Analysis","Dashboard Building","Statistical Analysis","Performance Metrics","Vector Embeddings","Data Cleaning"]},
   { header: "User & Growth", items: ["User Research","UX Strategy","Onboarding Optimization","Retention Strategy","Engagement Design","A/B Testing","Conversion Optimization"]},
   { header: "Content & Strategy", items: ["Content Strategy","Storytelling","Trend Integration","Campaign Design","Growth Experiments"]},
@@ -30,7 +31,7 @@ const techStack = [
   { header: "Automation & Workflows", items: ["Make.com","n8n","Zapier","Retool Workflows"]},
 ]
 
-const techLogos = [
+const techLogos: Array<{ name: string; Icon: IconType; color?: string }> = [
   { name: "React", Icon: SiReact, color: "#61DAFB" },
   { name: "Next.js", Icon: SiNextdotjs },
   { name: "TypeScript", Icon: SiTypescript, color: "#3178C6" },
@@ -107,22 +108,26 @@ function CategoryCard({ header, items }: { header: string; items: string[] }) {
   )
 }
 
-function LogoRow() {
+function MarqueeLogos() {
+  const midpoint = Math.ceil(techLogos.length / 2)
+  const row1Logos = techLogos.slice(0, midpoint)
+  const row2Logos = techLogos.slice(midpoint)
+
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="mb-12">
-        <div className="flex flex-wrap gap-3 justify-center items-center">
-          {techLogos.map((tool, index) => {
-            const Icon = tool.Icon
-            return (
+      <div className="mb-12 space-y-6 overflow-hidden">
+        {/* Row 1: Left to Right */}
+        <div className="relative group">
+          <div className="flex gap-4 animate-marquee-ltr group-hover:pause group-focus-within:pause motion-reduce:animate-none">
+            {[...row1Logos, ...row1Logos].map((tool, index) => (
               <Tooltip key={index}>
                 <TooltipTrigger asChild>
                   <button
-                    className="inline-flex items-center justify-center rounded-full px-3 py-1.5 text-sm bg-muted border border-border hover:bg-accent transition-colors"
+                    className="inline-flex items-center justify-center rounded-full w-12 h-12 bg-muted border border-border hover:bg-accent hover:scale-110 hover:shadow-lg transition-all duration-300 flex-shrink-0"
                     aria-label={tool.name}
                   >
-                    <Icon 
-                      className="w-4 h-4" 
+                    <tool.Icon 
+                      className="w-5 h-5" 
                       style={tool.color ? { color: tool.color } : undefined}
                     />
                   </button>
@@ -131,8 +136,32 @@ function LogoRow() {
                   <p>{tool.name}</p>
                 </TooltipContent>
               </Tooltip>
-            )
-          })}
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2: Right to Left */}
+        <div className="relative group">
+          <div className="flex gap-4 animate-marquee-rtl group-hover:pause group-focus-within:pause motion-reduce:animate-none">
+            {[...row2Logos, ...row2Logos].map((tool, index) => (
+              <Tooltip key={index}>
+                <TooltipTrigger asChild>
+                  <button
+                    className="inline-flex items-center justify-center rounded-full w-12 h-12 bg-muted border border-border hover:bg-accent hover:scale-110 hover:shadow-lg transition-all duration-300 flex-shrink-0"
+                    aria-label={tool.name}
+                  >
+                    <tool.Icon 
+                      className="w-5 h-5" 
+                      style={tool.color ? { color: tool.color } : undefined}
+                    />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tool.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
         </div>
       </div>
     </TooltipProvider>
@@ -164,7 +193,7 @@ export function SkillsAndStack() {
             <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
           </div>
 
-          <LogoRow />
+          <MarqueeLogos />
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {techStack.map((category, index) => (
