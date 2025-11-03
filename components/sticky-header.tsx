@@ -61,42 +61,41 @@ export function StickyHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-      <nav className="max-w-7xl mx-auto px-6 py-5">
-  <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-    {/* Left */}
-    <div className="justify-self-start font-bold text-xl md:text-2xl tracking-tight">
-      Umang Thakkar
-    </div>
+      <nav className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          {/* Left */}
+          <div className="font-bold text-xl md:text-2xl tracking-tight">
+            Umang Thakkar
+          </div>
 
-    {/* Center (desktop nav) */}
-      <div className="hidden lg:flex flex-1 justify-center gap-2 md:gap-4">
+          {/* Center (desktop nav) */}
+          <div className="hidden lg:flex items-center gap-1">
+            {navItems.map((item) => (
+              <Button
+                key={item.name}
+                variant={activeSection === item.href.slice(1) ? "default" : "ghost"}
+                size="default"
+                onClick={() => scrollTo(item.href)}
+                className="text-sm px-3 py-2 font-medium"
+              >
+                {item.name}
+              </Button>
+            ))}
+          </div>
 
-      {navItems.map((item) => (
-        <Button
-          key={item.name}
-          variant={activeSection === item.href.slice(1) ? "default" : "ghost"}
-          size="default"
-          onClick={() => scrollTo(item.href)}
-          className="text-base px-4 py-2 font-medium"
-        >
-          {item.name}
-        </Button>
-      ))}
-    </div>
-
-    {/* Right */}
-    <div className="justify-self-end flex items-center gap-3 pr-1">
-      <ThemeToggle />
-      <button
-        aria-label="Open menu"
-        className="p-2 lg:hidden hover:bg-accent rounded-md transition-colors"
-        onClick={() => setDrawerOpen(true)}
-      >
-        <Menu className="h-6 w-6" />
-      </button>
-    </div>
-  </div>
-</nav>
+          {/* Right */}
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <button
+              aria-label="Open menu"
+              className="p-2 lg:hidden hover:bg-accent rounded-md transition-colors"
+              onClick={() => setDrawerOpen(true)}
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      </nav>
 
 
       {/* Drawer & overlay for < lg */}
