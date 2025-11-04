@@ -152,88 +152,86 @@
 
 ### Copy Core Files from Reference Repo
 
-**Follow MIGRATION_GUIDE.md for exact file paths**
+**APPROACH CHANGED**: Instead of copying, we **rewrote everything in TypeScript**
 
-- [ ] Copy `/backend/config/mongodb.js` → `/lib/db/mongodb.js`
-  - [ ] Adapt for Next.js (remove Express-specific code)
-- [ ] Copy `/backend/services/aiService.js` → `/lib/ai/service.js`
-  - [ ] Keep as JavaScript (no TypeScript conversion)
-  - [ ] Update import paths for Next.js
-- [ ] Copy `/backend/utils/resumeLoader.js` → `/lib/ai/loaders/resume-loader.js`
-  - [ ] Update file paths to point to `/documents`
-- [ ] Copy `/backend/utils/githubFetcher.js` → `/lib/ai/loaders/github-loader.js`
-  - [ ] Update GitHub username to use env var
+- [✅] MongoDB client: `/lib/db/mongodb.ts` ✅ **COMPLETED**
+  - Rewrote from scratch with serverless caching for Vercel
+  - Removed Fastify-specific code, adapted for Next.js
+- [✅] AI Service: `/lib/ai/service.ts` ✅ **COMPLETED**
+  - Rewrote in TypeScript with proper types
+  - Updated all import paths for Next.js ESM
+- [✅] Resume Loader: `/lib/ai/loaders/pdf-loader.ts` ✅ **COMPLETED**
+  - Created generic PDF loader instead (handles all PDFs)
+  - Updated file paths to `/documents`
+- [✅] GitHub Loader: `/lib/ai/loaders/github-loader.ts` ✅ **COMPLETED**
+  - Rewrote in TypeScript
+  - GitHub username from `process.env.GITHUB_USERNAME`
 
 ### Create AI Service Modules
 
 These are extracted/refactored from aiService.js:
 
-- [ ] Create `/lib/ai/embeddings.js`
-  - [ ] Function: `generateEmbedding(text)`
-  - [ ] Function: `batchGenerateEmbeddings(texts)`
-  - [ ] Use OpenAI API directly (not OpenRouter)
-  
-- [ ] Create `/lib/ai/llm.js`
-  - [ ] Function: `generateResponse(context, query, history)`
-  - [ ] Use OpenRouter API
-  - [ ] Model from env var: `LLM_MODEL`
-  
-- [ ] Create `/lib/ai/vector-store.js`
-  - [ ] Function: `storeEmbeddings(chunks)`
-  - [ ] Function: `searchSimilar(queryEmbedding, limit)`
-  - [ ] Function: `deleteBySource(filename)`
-  - [ ] MongoDB Atlas kNN search integration
+- [✅] Create `/lib/ai/embeddings.ts` ✅ **COMPLETED**
+  - ✅ Function: `generateEmbedding(text)` - OpenAI API
+  - ✅ Function: `batchGenerateEmbeddings(texts)` - Batch processing with delays
+  - ✅ Function: `cosineSimilarity()` - Helper for re-ranking
 
-- [ ] Create `/lib/ai/file-watcher.js`
-  - [ ] Function: `getFileHash(filepath)` (SHA-256)
-  - [ ] Function: `checkForChanges()` (compare hashes)
-  - [ ] Function: `updateFileMetadata(filename, hash)`
+- [✅] Create `/lib/ai/llm.ts` ✅ **COMPLETED**
+  - ✅ Function: `generateResponse(context, query, history)` - OpenRouter API
+  - ✅ Function: `optimizeQuery()` - Query rewriting
+  - ✅ Function: `generateFollowUpQuestions()` - 3 suggestions
+  - ✅ Function: `compressMemory()` - Conversation compression
+  - ✅ Model from env: `LLM_MODEL`
+
+- [✅] Create `/lib/ai/vector-store.ts` ✅ **COMPLETED**
+  - ✅ Function: `storeEmbeddings(chunks)` - Batch insert to MongoDB
+  - ✅ Function: `searchSimilar(queryEmbedding, limit)` - Basic kNN
+  - ✅ Function: `smartSearch()` - Advanced with filters & re-ranking
+  - ✅ Function: `deleteBySource(filename)` - Delete by source
+  - ✅ Function: `analyzeQueryForCategories()` - Intent detection
+  - ✅ MongoDB Atlas Vector Search integration
+
+- [⏸️] Create `/lib/ai/file-watcher.ts` **SKIPPED** (Phase 3 task)
+  - Not implemented yet - marked for Phase 3
+  - Will add: `getFileHash()`, `checkForChanges()`, `updateFileMetadata()`
 
 ### Create API Routes
 
 #### Query Endpoint
-- [ ] Create `/app/api/ai/query/route.js`
-```javascript
-  // POST /api/ai/query
-  // Input: { query, conversationHistory }
-  // Output: { answer, sources, suggestedQuestions }
-```
-  - [ ] Import `queryAI` from `/lib/ai/service.js`
-  - [ ] Validate input
-  - [ ] Call `queryAI()`
-  - [ ] Return formatted response
+- [✅] Create `/app/api/ai/query/route.ts` ✅ **COMPLETED**
+  - ✅ POST endpoint with TypeScript types
+  - ✅ Input validation (query required, max 1000 chars)
+  - ✅ Calls `queryAI()` from service
+  - ✅ Returns: `{ answer, sources, suggestedQuestions }`
+  - ✅ Error handling with 400/500 status codes
 
 #### Create Index Endpoint
-- [ ] Create `/app/api/ai/create-index/route.js`
-```javascript
-  // POST /api/ai/create-index
-  // Input: { forceRebuild: boolean }
-  // Output: { success, chunksCreated }
-```
-  - [ ] Import `buildMemoryIndex` from service
-  - [ ] Call with forceRebuild parameter
-  - [ ] Return status
+- [✅] Create `/app/api/ai/create-index/route.ts` ✅ **COMPLETED**
+  - ✅ GET and POST methods
+  - ✅ Accepts `{ forceRebuild: boolean }`
+  - ✅ Calls `buildMemoryIndex(forceRebuild)`
+  - ✅ Returns build statistics
 
 #### Refresh Endpoint (Cron)
-- [ ] Create `/app/api/ai/refresh/route.js`
-```javascript
-  // POST /api/ai/refresh (called by Vercel Cron)
-  // Checks for changes, rebuilds if needed
-```
-  - [ ] Import `checkForChanges` and `buildMemoryIndex`
-  - [ ] Only rebuild if changes detected
-  - [ ] Log results
+- [✅] Create `/app/api/ai/refresh/route.ts` ✅ **COMPLETED**
+  - ✅ POST endpoint for Vercel Cron
+  - ✅ Optional Bearer token auth (`CRON_SECRET`)
+  - ✅ Calls `buildMemoryIndex(false)` - only if changes
+  - ✅ Returns skip status if no changes
 
 #### Rebuild Endpoint (Admin)
-- [ ] Create `/app/api/ai/rebuild/route.js`
-```javascript
-  // POST /api/ai/rebuild
-  // Auth: Requires ADMIN_SECRET
-  // Forces full rebuild
-```
-  - [ ] Verify `ADMIN_SECRET` from request body
-  - [ ] Force rebuild regardless of changes
-  - [ ] Return status
+- [✅] Create `/app/api/ai/rebuild/route.ts` ✅ **COMPLETED**
+  - ✅ POST endpoint with admin auth
+  - ✅ Requires `ADMIN_SECRET` in body
+  - ✅ Forces full rebuild
+  - ✅ Returns system stats after rebuild
+  - ✅ GET endpoint to view stats (also requires secret)
+
+#### Additional Endpoints (Bonus)
+- [✅] `/app/api/ai/optimize-query/route.ts` ✅ **COMPLETED**
+  - Query rewriting for better retrieval
+- [✅] `/app/api/ai/compress-memory/route.ts` ✅ **COMPLETED**
+  - Conversation history compression
 
 ### Test Phase 1
 - [✅] Test MongoDB connection ✅ **COMPLETED**
