@@ -1,0 +1,12 @@
+Environment: Windows 11
+Shell: PowerShell
+
+Rules:
+1. Use semicolon (;) for command chaining, not &&
+2. Use forward slashes (/) in code paths
+3. Test commands before suggesting
+4. Prefer npm scripts over direct commands
+5. When using Bash tool in Cursor, ensure proper escaping for Windows
+6. Use Next.js 15 App Router conventions
+7. Prefer TypeScript over JavaScript for type safety
+8. Use ESM imports (import/export) not CommonJS (require/module.exports)
