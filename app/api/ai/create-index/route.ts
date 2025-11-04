@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildMemoryIndex } from '@/lib/ai/service'
 
+// Force Node.js runtime (pdf-parse requires Node.js APIs)
+export const runtime = 'nodejs'
+
 export async function GET(req: NextRequest) {
   try {
     console.log('[Create Index API] Starting index build...')

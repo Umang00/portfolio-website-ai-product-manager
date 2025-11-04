@@ -9,6 +9,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Exclude pdf-parse from webpack bundling (requires Node.js APIs)
+  serverExternalPackages: ['pdf-parse'],
 }
 
 export default nextConfig

@@ -1,7 +1,7 @@
-// lib/ai/loaders/pdf-loader-dynamic.ts
-// Dynamic import version to work around Next.js webpack issues
+// lib/ai/loaders/pdf-loader.ts
 import fs from 'fs'
 import path from 'path'
+import pdfParse from 'pdf-parse'
 
 export interface PDFDocument {
   filename: string
@@ -21,15 +21,8 @@ export interface PDFDocument {
  */
 export async function parsePDF(filePath: string): Promise<string> {
   try {
-    // Use pdf-parse-new as the single parsing implementation
-    const alt = await import('pdf-parse-new')
-    const pdfFn = (alt as any)?.default ?? (alt as any)
-    if (typeof pdfFn !== 'function') {
-      throw new TypeError('pdf-parse-new did not export a function')
-    }
-
     const dataBuffer = fs.readFileSync(filePath)
-    const data = await (pdfFn as (b: Buffer) => Promise<{ text: string }>)(dataBuffer)
+    const data = await pdfParse(dataBuffer)
     return data.text
   } catch (error) {
     console.error(`Error parsing PDF ${filePath}:`, error)

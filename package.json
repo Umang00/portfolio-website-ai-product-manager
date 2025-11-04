@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev -p 5000 -H 0.0.0.0",
     "lint": "next lint",
-    "start": "next start -p 5000 -H 0.0.0.0"
+    "start": "next start -p 5000 -H 0.0.0.0",
+    "test:pdf": "node test-pdf-direct.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -59,7 +60,7 @@
     "next": "15.2.4",
     "node-fetch": "^2.7.0",
     "openai": "^6.8.0",
-    "pdf-parse": "^2.4.5",
+    "pdf-parse-new": "1.4.1",
     "react": "^19",
     "react-countup": "latest",
     "react-day-picker": "9.8.0",

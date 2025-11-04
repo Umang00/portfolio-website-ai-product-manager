@@ -1,6 +1,70 @@
 ## Migration Guide: AI Companion → Next.js (App Router)
 
-Use this checklist to port the AI Companion feature from this MERN reference repo into a Next.js project.
+Use this checklist to port the AI Companion feature from the MERN reference repo into a Next.js project.
+
+## ⚠️ CRITICAL: Next.js Conversion Rules
+
+All files copied from the reference MERN repo must be adapted for Next.js:
+
+### Quick Conversion Checklist
+For EVERY file copied:
+- [ ] Change `require()` → `import`
+- [ ] Change `module.exports` → `export` or `export default`
+- [ ] If it's an Express route → Convert to Next.js API route format
+- [ ] Update file paths to use `path.join(process.cwd(), ...)`
+- [ ] Test the file works after conversion
+
+### Common Patterns
+
+**Pattern 1: Module Exports**
+```javascript
+// ❌ Reference repo (Express)
+const helper = require('./helper');
+module.exports = { functionName };
+
+// ✅ Your project (Next.js)
+import helper from './helper';
+export { functionName };
+```
+
+**Pattern 2: Express Routes → Next.js API Routes**
+```javascript
+// ❌ Reference repo (Express)
+// File: /backend/routes/ai.js
+app.post('/api/query', async (req, res) => {
+  const { query } = req.body;
+  const result = await processQuery(query);
+  res.json({ result });
+});
+
+// ✅ Your project (Next.js)
+// File: /app/api/ai/query/route.js
+export async function POST(request) {
+  const { query } = await request.json();
+  const result = await processQuery(query);
+  return Response.json({ result });
+}
+```
+
+**Pattern 3: MongoDB Connection**
+```javascript
+// ❌ Reference repo (Express)
+mongoose.connect(process.env.MONGODB_URI);
+
+// ✅ Your project (Next.js)
+// Use MongoDB native driver with singleton pattern
+import { MongoClient } from 'mongodb';
+
+let cachedClient = null;
+
+export async function connectToDatabase() {
+  if (cachedClient) return cachedClient;
+  
+  const client = await MongoClient.connect(process.env.MONGODB_URI);
+  cachedClient = client;
+  return client;
+}
+```
 
 ### Backend files
 
@@ -66,6 +130,16 @@ Use this checklist to port the AI Companion feature from this MERN reference rep
   - **Dependencies**: none beyond Next.js platform; keep any logging logic within API handlers or a separate admin page.
 
 ### Frontend files
+
+- [ ] **File**: `frontend/src/App.js`
+  - **What it does**: Provides the `sendQuery` function that orchestrates the AI request flow from the client: optimize query → ask chat → suggest follow‑ups → snapshot memory; also manages chat UI state and uses `axios` to call backend endpoints.
+  - **Needed for Next.js?** Yes (logic).
+  - **Next.js location**: Co-locate inside the `AIChat` client component or move to a client‑side service `src/app/(ui)/components/AIChat/sendQuery.ts` and pass in setters via props/context.
+  - **Modifications**:
+    - Replace `API_URL` with relative `/api/ai/*` paths (Next API routes).
+    - Keep it client‑only; ensure no server‑only envs leak to the client.
+    - Consider using `fetch` instead of `axios` (optional); if keeping `axios`, install it in Next project.
+  - **Dependencies**: `axios` (or migrate to native `fetch`).
 
 - [ ] **File**: `frontend/src/components/WindowModal/AIChatTab.js`
   - **What it does**: React UI for AI chat: prompt input, mic button (Web Speech API), message rendering, follow‑ups, TTS via `speechSynthesis`.
@@ -145,6 +219,7 @@ Use this checklist to port the AI Companion feature from this MERN reference rep
   - [ ] `react-markdown`
   - [ ] `framer-motion`
   - [ ] `@react-spring/web`
+  - [ ] `axios` (used in `App.js` for API calls)
   - [ ] (Native) Web Speech API and `speechSynthesis` (no package)
 
 ### Minimal code migration stubs (sketch)
@@ -161,6 +236,21 @@ export async function POST(req: Request) {
   }
   const answer = await askLLM(query, conversationMemory || '');
   return NextResponse.json({ answer });
+}
+```
+
+- [ ] `app/api/ai/create-index/route.ts`
+```ts
+import { NextResponse } from 'next/server';
+import { updateDbContextFile, updateGithubContextFile, updateResumeContextFile } from '@/app/(server)/lib/ai/loaders/all';
+import { buildMemoryIndex } from '@/app/(server)/lib/ai/indexer';
+
+export async function POST() {
+  await updateDbContextFile();
+  await updateGithubContextFile();
+  await updateResumeContextFile();
+  await buildMemoryIndex(true);
+  return NextResponse.json({ message: 'Context updated and memory index rebuilt' });
 }
 ```
 

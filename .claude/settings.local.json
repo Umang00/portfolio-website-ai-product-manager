@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(node test-env.js:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm install)",
+      "Bash(pnpm add:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(node -e:*)",
+      "Bash(node test-phase2.js:*)",
+      "Bash(cat:*)",
+      "Bash(taskkill:*)",
+      "Bash(nul)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(Get-Process -Name node)",
+      "Bash(ForEach-Object { $_d })",
+      "Bash(Stop-Process -Name node -Force 2)",
+      "Bash($null)",
+      "Bash(wmic process where ProcessId=15564 delete)",
+      "Bash(node test-pdf-direct.js:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
