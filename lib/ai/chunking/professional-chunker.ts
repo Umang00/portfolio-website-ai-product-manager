@@ -54,24 +54,38 @@ export function chunkResume(content: string, source: string): Chunk[] {
   // Process SKILLS section
   if (sections.skills || sections.technical_skills || sections.skills_and_tools) {
     const skillsContent = sections.skills || sections.technical_skills || sections.skills_and_tools
-    chunks.push({
-      text: skillsContent.join('\n'),
-      category: 'resume',
-      subcategory: 'skills',
-      metadata: { source, section: 'SKILLS' },
-    })
+    // Only create chunk if section has content
+    if (skillsContent && skillsContent.length > 0) {
+      chunks.push({
+        text: skillsContent.join('\n'),
+        category: 'resume',
+        subcategory: 'skills',
+        metadata: { source, section: 'SKILLS' },
+      })
+    }
+  }
+
+  // Process KEY PROJECTS section
+  if (sections.key_projects || sections.key_projects_and_achievements || sections['key_projects_&_achievements'] || sections.projects) {
+    const projectsContent = sections.key_projects || sections.key_projects_and_achievements || sections['key_projects_&_achievements'] || sections.projects
+    const projectChunks = extractProjectEntries(projectsContent, source, 'resume')
+    chunks.push(...projectChunks)
   }
 
   // Process other sections (SUMMARY, ACHIEVEMENTS, etc.)
   for (const [sectionName, sectionContent] of Object.entries(sections)) {
     if (!['experience', 'education', 'skills', 'technical_skills', 'skills_and_tools',
-          'work_experience', 'professional_experience', 'employment'].includes(sectionName)) {
-      chunks.push({
-        text: sectionContent.join('\n'),
-        category: 'resume',
-        subcategory: sectionName,
-        metadata: { source, section: sectionName.toUpperCase().replace(/_/g, ' ') },
-      })
+          'work_experience', 'professional_experience', 'employment',
+          'key_projects', 'key_projects_and_achievements', 'key_projects_&_achievements', 'projects'].includes(sectionName)) {
+      // Only create chunk if section has content
+      if (sectionContent && sectionContent.length > 0) {
+        chunks.push({
+          text: sectionContent.join('\n'),
+          category: 'resume',
+          subcategory: sectionName,
+          metadata: { source, section: sectionName.toUpperCase().replace(/_/g, ' ') },
+        })
+      }
     }
   }
 
@@ -107,24 +121,38 @@ export function chunkLinkedIn(content: string, source: string): Chunk[] {
   // Process SKILLS section
   if (sections.skills || sections.technical_skills || sections.skills_and_tools) {
     const skillsContent = sections.skills || sections.technical_skills || sections.skills_and_tools
-    chunks.push({
-      text: skillsContent.join('\n'),
-      category: 'linkedin',
-      subcategory: 'skills',
-      metadata: { source, section: 'SKILLS' },
-    })
+    // Only create chunk if section has content
+    if (skillsContent && skillsContent.length > 0) {
+      chunks.push({
+        text: skillsContent.join('\n'),
+        category: 'linkedin',
+        subcategory: 'skills',
+        metadata: { source, section: 'SKILLS' },
+      })
+    }
+  }
+
+  // Process KEY PROJECTS section
+  if (sections.key_projects || sections.key_projects_and_achievements || sections['key_projects_&_achievements'] || sections.projects) {
+    const projectsContent = sections.key_projects || sections.key_projects_and_achievements || sections['key_projects_&_achievements'] || sections.projects
+    const projectChunks = extractProjectEntries(projectsContent, source, 'linkedin')
+    chunks.push(...projectChunks)
   }
 
   // Process other sections
   for (const [sectionName, sectionContent] of Object.entries(sections)) {
     if (!['experience', 'education', 'skills', 'technical_skills', 'skills_and_tools',
-          'work_experience', 'professional_experience', 'employment'].includes(sectionName)) {
-      chunks.push({
-        text: sectionContent.join('\n'),
-        category: 'linkedin',
-        subcategory: sectionName,
-        metadata: { source, section: sectionName.toUpperCase().replace(/_/g, ' ') },
-      })
+          'work_experience', 'professional_experience', 'employment',
+          'key_projects', 'key_projects_and_achievements', 'key_projects_&_achievements', 'projects'].includes(sectionName)) {
+      // Only create chunk if section has content
+      if (sectionContent && sectionContent.length > 0) {
+        chunks.push({
+          text: sectionContent.join('\n'),
+          category: 'linkedin',
+          subcategory: sectionName,
+          metadata: { source, section: sectionName.toUpperCase().replace(/_/g, ' ') },
+        })
+      }
     }
   }
 
@@ -217,11 +245,14 @@ function extractExperienceEntries(
   for (let i = 0; i < experienceLines.length; i++) {
     const line = experienceLines[i]
 
-    // Detect pipe delimiter format: "Company (Industry) | Position"
-    const pipeMatch = line.match(/^(.+?)\s*\|\s*(.+)$/)
+    // Detect pipe delimiter format - check if line has pipes
+    const hasPipes = line.includes('|')
+
+    // Split by pipes if present (handles multiple pipes)
+    const pipeParts = hasPipes ? line.split('|').map(p => p.trim()) : []
 
     // Detect company name with industry: "Company (Industry)"
-    const companyIndustryMatch = line.match(/^([^(]+?)\s*\(([^)]+)\)\s*$/)
+    const companyIndustryMatch = line.match(/^([^(]+?)\s*\(([^)]+)\)/)
 
     // Detect date range patterns
     const dateMatch = line.match(/(\d{4})\s*[-–]\s*(\d{4}|Present|Current)/i)
@@ -233,7 +264,8 @@ function extractExperienceEntries(
     const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('–')
 
     // If we detect a new job entry, save previous one
-    const isNewEntry = (pipeMatch || companyIndustryMatch || dateMatch) && currentEntry.length > 5 && !isBullet
+    // Improved: Don't require length > 5 (breaks first entry), use better heuristics
+    const isNewEntry = (hasPipes || (companyIndustryMatch && !currentCompany)) && currentEntry.length > 0 && !isBullet
 
     if (isNewEntry) {
       // Save previous entry
@@ -262,26 +294,52 @@ function extractExperienceEntries(
       currentIndustry = undefined
     }
 
-    // Parse pipe delimiter: "Company (Industry) | Position"
-    if (pipeMatch && !currentCompany) {
-      const [, left, right] = pipeMatch
+    // Parse pipe delimiter: Handle multiple formats
+    // Format 1: "Company (Industry) | Position | Location | Dates" (4 parts)
+    // Format 2: "Company (Industry) | Position" (2 parts)
+    // Format 3: "Company | Position" (2 parts)
+    if (hasPipes && pipeParts.length > 0 && !currentCompany) {
+      if (pipeParts.length >= 4) {
+        // Format 1: 4 parts - Company+Industry | Position | Location | Dates
+        const part1 = pipeParts[0]
+        const part2 = pipeParts[1]
+        const part3 = pipeParts[2]
+        const part4 = pipeParts[3]
 
-      // Check if left side has industry in parentheses
-      const industryMatch = left.match(/^(.+?)\s*\(([^)]+)\)/)
-      if (industryMatch) {
-        currentCompany = industryMatch[1].trim()
-        currentIndustry = industryMatch[2].trim()
-        currentPosition = right.trim()
-      } else {
-        // Could be "Position | Company" or "Company | Position"
-        // Heuristic: positions usually have keywords like Manager, Engineer, etc.
-        const positionKeywords = /manager|engineer|developer|analyst|designer|specialist|consultant|director|lead|associate|intern|coordinator/i
-        if (positionKeywords.test(left)) {
-          currentPosition = left.trim()
-          currentCompany = right.trim()
+        // Extract company and industry from first part
+        const industryMatch = part1.match(/^(.+?)\s*\(([^)]+)\)/)
+        if (industryMatch) {
+          currentCompany = industryMatch[1].trim()
+          currentIndustry = industryMatch[2].trim()
         } else {
-          currentCompany = left.trim()
-          currentPosition = right.trim()
+          currentCompany = part1
+        }
+
+        currentPosition = part2
+        currentLocation = part3
+        currentDateRange = part4
+      } else if (pipeParts.length >= 2) {
+        // Format 2 or 3: 2 parts
+        const part1 = pipeParts[0]
+        const part2 = pipeParts[1]
+
+        // Check if first part has industry in parentheses
+        const industryMatch = part1.match(/^(.+?)\s*\(([^)]+)\)/)
+        if (industryMatch) {
+          currentCompany = industryMatch[1].trim()
+          currentIndustry = industryMatch[2].trim()
+          currentPosition = part2
+        } else {
+          // Could be "Position | Company" or "Company | Position"
+          // Heuristic: positions usually have keywords
+          const positionKeywords = /manager|engineer|developer|analyst|designer|specialist|consultant|director|lead|associate|intern|coordinator/i
+          if (positionKeywords.test(part1)) {
+            currentPosition = part1
+            currentCompany = part2
+          } else {
+            currentCompany = part1
+            currentPosition = part2
+          }
         }
       }
     }
@@ -335,6 +393,90 @@ function extractExperienceEntries(
         metadata: { source, section: 'EXPERIENCE' },
       })
     }
+  }
+
+  return chunks
+}
+
+/**
+ * Extract project entries from KEY PROJECTS section
+ * Format: "Project Name | Goal" followed by bullet points
+ */
+function extractProjectEntries(
+  projectLines: string[],
+  source: string,
+  prefix: 'resume' | 'linkedin' = 'resume'
+): Chunk[] {
+  const chunks: Chunk[] = []
+  let currentEntry: string[] = []
+  let currentProjectName: string | undefined
+  let currentGoal: string | undefined
+
+  for (let i = 0; i < projectLines.length; i++) {
+    const line = projectLines[i]
+
+    // Detect pipe delimiter format: "Project Name | Goal"
+    const pipeMatch = line.match(/^(.+?)\s*\|\s*(.+)$/)
+
+    // Detect bullet points
+    const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('–')
+
+    // If we detect a new project entry (pipe-delimited line that's not a bullet), save previous one
+    const isNewEntry = pipeMatch && currentEntry.length > 0 && !isBullet
+
+    if (isNewEntry) {
+      // Save previous entry
+      chunks.push({
+        text: currentEntry.join('\n'),
+        category: prefix,
+        subcategory: 'projects',
+        metadata: {
+          source,
+          section: 'KEY PROJECTS',
+          projectName: currentProjectName,
+          goal: currentGoal,
+        },
+      })
+
+      // Reset for new entry
+      currentEntry = []
+      currentProjectName = undefined
+      currentGoal = undefined
+    }
+
+    // Parse pipe delimiter: "Project Name | Goal"
+    if (pipeMatch && !currentProjectName) {
+      const [, name, goal] = pipeMatch
+      currentProjectName = name.trim()
+      currentGoal = goal.trim()
+    }
+
+    currentEntry.push(line)
+  }
+
+  // Save last entry
+  if (currentEntry.length > 0) {
+    chunks.push({
+      text: currentEntry.join('\n'),
+      category: prefix,
+      subcategory: 'projects',
+      metadata: {
+        source,
+        section: 'KEY PROJECTS',
+        projectName: currentProjectName,
+        goal: currentGoal,
+      },
+    })
+  }
+
+  // If no pipe-delimited projects found, treat entire section as one chunk
+  if (chunks.length === 0 && projectLines.length > 0) {
+    chunks.push({
+      text: projectLines.join('\n'),
+      category: prefix,
+      subcategory: 'projects',
+      metadata: { source, section: 'KEY PROJECTS' },
+    })
   }
 
   return chunks

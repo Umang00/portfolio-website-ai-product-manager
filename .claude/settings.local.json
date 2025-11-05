@@ -22,7 +22,8 @@
       "Bash(Stop-Process -Name node -Force 2)",
       "Bash($null)",
       "Bash(wmic process where ProcessId=15564 delete)",
-      "Bash(node test-pdf-direct.js:*)"
+      "Bash(node test-pdf-direct.js:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

@@ -52,27 +52,18 @@ export function detectSentences(text: string): string[] {
 
 /**
  * Calculate smart overlap between chunks
- * Returns the last sentence OR 20-25 words, whichever is smaller
+ * Returns the last complete sentence, regardless of word count
+ * (Could be 4 words or 100 words - we preserve the complete sentence)
  */
-export function calculateSmartOverlap(previousChunk: string, maxWords: number = 25): string {
+export function calculateSmartOverlap(previousChunk: string, maxWords?: number): string {
   const sentences = detectSentences(previousChunk);
 
   if (sentences.length === 0) {
     return '';
   }
 
-  // Get last sentence
-  const lastSentence = sentences[sentences.length - 1];
-  const words = lastSentence.split(/\s+/);
-
-  // If last sentence is <= maxWords, use it entirely
-  if (words.length <= maxWords) {
-    return lastSentence;
-  }
-
-  // Otherwise, take last 20-25 words (use 23 as middle)
-  const targetWords = Math.min(maxWords - 2, words.length);
-  return words.slice(-targetWords).join(' ');
+  // Return last complete sentence (no word limit)
+  return sentences[sentences.length - 1];
 }
 
 /**

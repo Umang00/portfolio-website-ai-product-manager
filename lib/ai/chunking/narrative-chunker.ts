@@ -7,7 +7,6 @@ export interface Chunk {
   subcategory: string | null
   metadata: {
     source: string
-    year?: string
     fiscalYear?: string  // e.g., "FY25-26"
     paragraphRange?: string
     partInfo?: string  // e.g., "Part 1 of 3"
@@ -65,7 +64,6 @@ export function chunkJourney(
       subcategory: null,
       metadata: {
         source,
-        year,
         fiscalYear,
         paragraphRange: `1-${paragraphs.length}`,
         partInfo: 'Part 1 of 1',
@@ -97,7 +95,6 @@ export function chunkJourney(
         subcategory: null,
         metadata: {
           source,
-          year,
           fiscalYear,
           paragraphRange: `${startParagraph}-${currentParagraphIndex}`,
         },
@@ -125,7 +122,6 @@ export function chunkJourney(
       subcategory: null,
       metadata: {
         source,
-        year,
         fiscalYear,
         paragraphRange: `${startParagraph}-${currentParagraphIndex}`,
       },
@@ -176,7 +172,6 @@ export function chunkJourneyByTokens(
       subcategory: null,
       metadata: {
         source,
-        year,
         fiscalYear,
         partInfo: 'Part 1 of 1',
       },
@@ -202,7 +197,6 @@ export function chunkJourneyByTokens(
         subcategory: null,
         metadata: {
           source,
-          year,
           fiscalYear,
         },
       })
@@ -225,7 +219,6 @@ export function chunkJourneyByTokens(
       subcategory: null,
       metadata: {
         source,
-        year,
         fiscalYear,
       },
     })
@@ -301,7 +294,6 @@ export function extractJourneySections(content: string, source: string, year?: s
       subcategory: currentHeader.toLowerCase().replace(/\s+/g, '_'),
       metadata: {
         source,
-        year,
         fiscalYear,
       },
     })

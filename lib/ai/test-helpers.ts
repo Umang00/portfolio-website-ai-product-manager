@@ -119,14 +119,18 @@ function calculateBoundaries(
     const overlap = findOverlap(previousText, currentText);
     overlapWords = overlap.split(/\s+/).length;
 
-    // Determine split type
+    // Determine split type - check in priority order
     if (currentText.match(/^#+\s+/)) {
+      // Markdown section header
       splitAt = 'section_header';
-    } else if (currentText.startsWith('\n\n') || previousText.endsWith('\n\n')) {
+    } else if (previousText.includes('\n\n') || currentText.includes('\n\n')) {
+      // Contains paragraph breaks (double newlines)
       splitAt = 'paragraph_break';
-    } else if (previousText.match(/[.!?]\s*$/)) {
+    } else if (previousText.match(/[.!?]["']?\s*$/) || overlap.match(/[.!?]["']?\s*$/)) {
+      // Ends with sentence punctuation (with optional quotes)
       splitAt = 'sentence_end';
     }
+    // Otherwise remains 'fixed_size' (default)
   }
 
   return {
@@ -166,15 +170,14 @@ function estimateTokenCount(text: string): number {
  * Calculate statistics for chunks
  */
 function calculateStats(chunks: TestChunk[]): ChunkingStats {
-  const sizes = chunks.map(c => c.text.length);
-  const overlaps = chunks.slice(1).map(c => c.boundaries.overlapWords);
   const tokens = chunks.map(c => c.tokenCount);
+  const overlaps = chunks.slice(1).map(c => c.boundaries.overlapWords);
 
   return {
     totalChunks: chunks.length,
-    avgChunkSize: Math.round(sizes.reduce((a, b) => a + b, 0) / sizes.length),
-    minChunkSize: Math.min(...sizes),
-    maxChunkSize: Math.max(...sizes),
+    avgChunkSize: Math.round(tokens.reduce((a, b) => a + b, 0) / tokens.length),
+    minChunkSize: Math.min(...tokens),
+    maxChunkSize: Math.max(...tokens),
     avgOverlap: overlaps.length > 0
       ? Math.round(overlaps.reduce((a, b) => a + b, 0) / overlaps.length)
       : 0,

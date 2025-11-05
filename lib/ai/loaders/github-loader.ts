@@ -24,7 +24,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 export async function loadGitHubRepos(): Promise<GitHubRepo[]> {
   try {
     const headers: Record<string, string> = {
-      'Accept': 'application/vnd.github.v3+json',
+      'Accept': 'application/vnd.github.mercy-preview+json',  // Required for topics
       'User-Agent': 'Umang-Portfolio-AI',
     }
 
@@ -110,7 +110,7 @@ export async function loadGitHubRepos(): Promise<GitHubRepo[]> {
 export async function loadGitHubRepo(repoName: string): Promise<GitHubRepo | null> {
   try {
     const headers: Record<string, string> = {
-      'Accept': 'application/vnd.github.v3+json',
+      'Accept': 'application/vnd.github.mercy-preview+json',  // Required for topics
       'User-Agent': 'Umang-Portfolio-AI',
     }
 
@@ -176,7 +176,7 @@ export async function checkGitHubRateLimit(): Promise<{
 } | null> {
   try {
     const headers: Record<string, string> = {
-      'Accept': 'application/vnd.github.v3+json',
+      'Accept': 'application/vnd.github.mercy-preview+json',  // Required for topics
       'User-Agent': 'Umang-Portfolio-AI',
     }
 
