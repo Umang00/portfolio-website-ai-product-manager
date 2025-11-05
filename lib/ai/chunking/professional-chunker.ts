@@ -219,7 +219,15 @@ function detectSections(lines: string[]): Record<string, string[]> {
         sections[currentSection] = []
       }
     } else if (currentSection) {
+      // Add content to current section
       sections[currentSection].push(line)
+    } else {
+      // No section detected yet - treat as "about_me" or "summary" section
+      // This captures header info like name, contact, etc. at the top of resume/LinkedIn
+      if (!sections['about_me']) {
+        sections['about_me'] = []
+      }
+      sections['about_me'].push(line)
     }
   }
 
