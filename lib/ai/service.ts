@@ -4,6 +4,7 @@ import { loadGitHubRepos, GitHubRepo } from './loaders/github-loader'
 import { chunkResume, chunkLinkedIn, Chunk as ProfessionalChunk } from './chunking/professional-chunker'
 import { chunkJourney, Chunk as NarrativeChunk } from './chunking/narrative-chunker'
 import { chunkGeneric, Chunk as GenericChunk } from './chunking/generic-chunker'
+import { chunkGitHub, Chunk as MarkdownChunk } from './chunking/markdown-chunker'
 import { generateEmbedding, batchGenerateEmbeddings } from './embeddings'
 import {
   storeEmbeddings,
@@ -16,7 +17,7 @@ import {
 } from './vector-store'
 import { generateResponse, optimizeQuery, generateFollowUpQuestions, compressMemory } from './llm'
 
-type Chunk = ProfessionalChunk | NarrativeChunk | GenericChunk
+type Chunk = ProfessionalChunk | NarrativeChunk | GenericChunk | MarkdownChunk
 
 /**
  * Build or rebuild the memory index from all sources
@@ -77,43 +78,26 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
       allChunks.push(...docChunks)
     }
 
-    // Step 4: Chunk GitHub repositories
+    // Step 4: Chunk GitHub repositories with smart section-aware chunking
     for (const repo of githubRepos) {
       if (!repo.readme) continue
 
-      // Create chunk for repo metadata + README
-      const repoText = `${repo.name}\n${repo.description || ''}\n\nLanguage: ${repo.language}\nStars: ${repo.stars}\nTopics: ${repo.topics.join(', ')}\n\nREADME:\n${repo.readme}`
-
-      // Split README into smaller chunks if too long
-      const maxReadmeLength = 2000
-      if (repoText.length > maxReadmeLength) {
-        // Split into paragraphs
-        const paragraphs = repo.readme.split(/\n\n+/)
-        const repoMetadata = `${repo.name}\n${repo.description || ''}\nLanguage: ${repo.language}`
-
-        for (let i = 0; i < paragraphs.length; i += 3) {
-          const chunkParagraphs = paragraphs.slice(i, i + 3)
-          const chunkText = `${repoMetadata}\n\n${chunkParagraphs.join('\n\n')}`
-
-          allChunks.push({
-            text: chunkText,
-            category: 'github',
-            metadata: {
-              source: repo.name,
-              year: new Date(repo.updatedAt).getFullYear().toString(),
-            },
-          })
-        }
-      } else {
-        allChunks.push({
-          text: repoText,
-          category: 'github',
-          metadata: {
-            source: repo.name,
-            year: new Date(repo.updatedAt).getFullYear().toString(),
-          },
-        })
+      const repoMetadata = {
+        name: repo.name,
+        description: repo.description,
+        language: repo.language,
+        stars: repo.stars,
+        topics: repo.topics,
       }
+
+      const githubChunks = chunkGitHub(
+        repo.readme,
+        repoMetadata,
+        repo.name,
+        new Date(repo.updatedAt).getFullYear().toString()
+      )
+
+      allChunks.push(...githubChunks)
     }
 
     console.log(`✅ Created ${allChunks.length} chunks from all sources`)

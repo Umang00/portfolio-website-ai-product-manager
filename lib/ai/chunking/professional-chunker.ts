@@ -1,14 +1,25 @@
 // lib/ai/chunking/professional-chunker.ts
 
+import {
+  detectSectionHeaders,
+  parseHeaderMetadata,
+  calculateSmartOverlap,
+  detectParagraphs
+} from './boundary-detector';
+
 export interface Chunk {
   text: string
   category: string
-  subcategory?: string
+  subcategory: string | null
   metadata: {
     source: string
     section?: string
     company?: string
+    position?: string
     role?: string
+    location?: string
+    dateRange?: string
+    industry?: string
     year?: string
   }
 }
@@ -41,22 +52,25 @@ export function chunkResume(content: string, source: string): Chunk[] {
   }
 
   // Process SKILLS section
-  if (sections.skills) {
+  if (sections.skills || sections.technical_skills || sections.skills_and_tools) {
+    const skillsContent = sections.skills || sections.technical_skills || sections.skills_and_tools
     chunks.push({
-      text: sections.skills.join('\n'),
-      category: 'resume_skills',
+      text: skillsContent.join('\n'),
+      category: 'resume',
+      subcategory: 'skills',
       metadata: { source, section: 'SKILLS' },
     })
   }
 
   // Process other sections (SUMMARY, ACHIEVEMENTS, etc.)
   for (const [sectionName, sectionContent] of Object.entries(sections)) {
-    if (!['experience', 'education', 'skills'].includes(sectionName)) {
+    if (!['experience', 'education', 'skills', 'technical_skills', 'skills_and_tools',
+          'work_experience', 'professional_experience', 'employment'].includes(sectionName)) {
       chunks.push({
         text: sectionContent.join('\n'),
-        category: 'resume_general',
+        category: 'resume',
         subcategory: sectionName,
-        metadata: { source, section: sectionName.toUpperCase() },
+        metadata: { source, section: sectionName.toUpperCase().replace(/_/g, ' ') },
       })
     }
   }
@@ -91,22 +105,25 @@ export function chunkLinkedIn(content: string, source: string): Chunk[] {
   }
 
   // Process SKILLS section
-  if (sections.skills) {
+  if (sections.skills || sections.technical_skills || sections.skills_and_tools) {
+    const skillsContent = sections.skills || sections.technical_skills || sections.skills_and_tools
     chunks.push({
-      text: sections.skills.join('\n'),
-      category: 'linkedin_skills',
+      text: skillsContent.join('\n'),
+      category: 'linkedin',
+      subcategory: 'skills',
       metadata: { source, section: 'SKILLS' },
     })
   }
 
   // Process other sections
   for (const [sectionName, sectionContent] of Object.entries(sections)) {
-    if (!['experience', 'education', 'skills'].includes(sectionName)) {
+    if (!['experience', 'education', 'skills', 'technical_skills', 'skills_and_tools',
+          'work_experience', 'professional_experience', 'employment'].includes(sectionName)) {
       chunks.push({
         text: sectionContent.join('\n'),
-        category: 'linkedin_general',
+        category: 'linkedin',
         subcategory: sectionName,
-        metadata: { source, section: sectionName.toUpperCase() },
+        metadata: { source, section: sectionName.toUpperCase().replace(/_/g, ' ') },
       })
     }
   }
@@ -117,11 +134,13 @@ export function chunkLinkedIn(content: string, source: string): Chunk[] {
 
 /**
  * Detect sections in document (EXPERIENCE, EDUCATION, SKILLS, etc.)
+ * Now case-insensitive and includes more section headers
  */
 function detectSections(lines: string[]): Record<string, string[]> {
   const sections: Record<string, string[]> = {}
   let currentSection: string | null = null
 
+  // Expanded section headers - case insensitive matching
   const sectionHeaders = [
     'EXPERIENCE',
     'WORK EXPERIENCE',
@@ -130,25 +149,45 @@ function detectSections(lines: string[]): Record<string, string[]> {
     'EDUCATION',
     'SKILLS',
     'TECHNICAL SKILLS',
+    'SKILLS & TOOLS',
     'SUMMARY',
+    'PROFESSIONAL SUMMARY',
     'ABOUT',
+    'ABOUT ME',
     'ACHIEVEMENTS',
+    'KEY ACHIEVEMENTS',
     'PROJECTS',
+    'KEY PROJECTS',
+    'KEY PROJECTS AND ACHIEVEMENTS',
+    'KEY PROJECTS & ACHIEVEMENTS',
     'CERTIFICATIONS',
     'LICENSES & CERTIFICATIONS',
+    'LICENSES AND CERTIFICATIONS',
     'HONORS & AWARDS',
+    'HONORS AND AWARDS',
+    'AWARDS',
+    'CONTACT',
+    'LANGUAGES',
   ]
 
   for (const line of lines) {
-    const upperLine = line.toUpperCase()
+    const upperLine = line.toUpperCase().trim()
 
-    // Check if this line is a section header
+    // Skip empty lines
+    if (!upperLine) continue
+
+    // Check if this line is ALL CAPS and short (likely a section header)
+    const isAllCaps = upperLine === line.trim() && /^[A-Z\s&]+$/.test(upperLine) && upperLine.length < 100
+
+    // Check if this line matches known section headers (case-insensitive)
     const matchedSection = sectionHeaders.find(header => {
-      return upperLine === header || upperLine.startsWith(header)
+      return upperLine === header || upperLine.startsWith(header) || upperLine.includes(header)
     })
 
-    if (matchedSection) {
-      currentSection = matchedSection.toLowerCase().replace(/\s+/g, '_')
+    if (matchedSection || (isAllCaps && upperLine.length > 3)) {
+      // Use matched section or the line itself as section name
+      const sectionName = matchedSection || upperLine
+      currentSection = sectionName.toLowerCase().replace(/\s+/g, '_').replace(/[&]/g, 'and')
       sections[currentSection] = []
     } else if (currentSection) {
       sections[currentSection].push(line)
@@ -160,6 +199,7 @@ function detectSections(lines: string[]): Record<string, string[]> {
 
 /**
  * Extract individual job entries from experience section
+ * Now handles pipe delimiters and extracts proper metadata
  */
 function extractExperienceEntries(
   experienceLines: string[],
@@ -169,58 +209,96 @@ function extractExperienceEntries(
   const chunks: Chunk[] = []
   let currentEntry: string[] = []
   let currentCompany: string | undefined
-  let currentRole: string | undefined
-  let currentYear: string | undefined
+  let currentPosition: string | undefined
+  let currentLocation: string | undefined
+  let currentDateRange: string | undefined
+  let currentIndustry: string | undefined
 
   for (let i = 0; i < experienceLines.length; i++) {
     const line = experienceLines[i]
 
-    // Detect company name (usually bold/uppercase or followed by location)
-    // Heuristic: Lines that are all caps or have common company indicators
-    const isCompanyLine = /^[A-Z][A-Za-z\s&.,'-]+(\s*[|•]\s*|\s{2,})/.test(line)
+    // Detect pipe delimiter format: "Company (Industry) | Position"
+    const pipeMatch = line.match(/^(.+?)\s*\|\s*(.+)$/)
 
-    // Detect role line (usually has • separators or contains "duration" patterns)
-    const isRoleLine = line.includes('•') || /\d{4}\s*-\s*\d{4}|\d{4}\s*-\s*Present/i.test(line)
+    // Detect company name with industry: "Company (Industry)"
+    const companyIndustryMatch = line.match(/^([^(]+?)\s*\(([^)]+)\)\s*$/)
+
+    // Detect date range patterns
+    const dateMatch = line.match(/(\d{4})\s*[-–]\s*(\d{4}|Present|Current)/i)
+
+    // Detect location patterns: "City, State" or "City, Country"
+    const locationMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/)
 
     // Detect bullet points
-    const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*')
+    const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('–')
 
-    // If we detect a new company/role, save previous entry
-    if ((isCompanyLine || isRoleLine) && currentEntry.length > 0 && !isBullet) {
+    // If we detect a new job entry, save previous one
+    const isNewEntry = (pipeMatch || companyIndustryMatch || dateMatch) && currentEntry.length > 5 && !isBullet
+
+    if (isNewEntry) {
       // Save previous entry
       chunks.push({
         text: currentEntry.join('\n'),
-        category: `${prefix}_experience`,
+        category: prefix,
+        subcategory: 'experience',
         metadata: {
           source,
           section: 'EXPERIENCE',
           company: currentCompany,
-          role: currentRole,
-          year: currentYear,
+          position: currentPosition,
+          location: currentLocation,
+          dateRange: currentDateRange,
+          industry: currentIndustry,
+          year: currentDateRange?.match(/\d{4}/)?.[0]
         },
       })
 
       // Reset for new entry
       currentEntry = []
       currentCompany = undefined
-      currentRole = undefined
-      currentYear = undefined
+      currentPosition = undefined
+      currentLocation = undefined
+      currentDateRange = undefined
+      currentIndustry = undefined
     }
 
-    // Extract metadata
-    if (isCompanyLine && !currentCompany) {
-      currentCompany = line.split(/[|•]/)[0].trim()
-    }
+    // Parse pipe delimiter: "Company (Industry) | Position"
+    if (pipeMatch && !currentCompany) {
+      const [, left, right] = pipeMatch
 
-    if (isRoleLine && !currentRole) {
-      const roleParts = line.split('•').map(p => p.trim())
-      currentRole = roleParts[0]
-
-      // Extract year if present
-      const yearMatch = line.match(/\d{4}/)
-      if (yearMatch) {
-        currentYear = yearMatch[0]
+      // Check if left side has industry in parentheses
+      const industryMatch = left.match(/^(.+?)\s*\(([^)]+)\)/)
+      if (industryMatch) {
+        currentCompany = industryMatch[1].trim()
+        currentIndustry = industryMatch[2].trim()
+        currentPosition = right.trim()
+      } else {
+        // Could be "Position | Company" or "Company | Position"
+        // Heuristic: positions usually have keywords like Manager, Engineer, etc.
+        const positionKeywords = /manager|engineer|developer|analyst|designer|specialist|consultant|director|lead|associate|intern|coordinator/i
+        if (positionKeywords.test(left)) {
+          currentPosition = left.trim()
+          currentCompany = right.trim()
+        } else {
+          currentCompany = left.trim()
+          currentPosition = right.trim()
+        }
       }
+    }
+    // Parse company with industry: "Company (Industry)"
+    else if (companyIndustryMatch && !currentCompany) {
+      currentCompany = companyIndustryMatch[1].trim()
+      currentIndustry = companyIndustryMatch[2].trim()
+    }
+
+    // Extract date range
+    if (dateMatch && !currentDateRange) {
+      currentDateRange = dateMatch[0]
+    }
+
+    // Extract location
+    if (locationMatch && !currentLocation && !isBullet) {
+      currentLocation = locationMatch[0]
     }
 
     currentEntry.push(line)
@@ -230,13 +308,17 @@ function extractExperienceEntries(
   if (currentEntry.length > 0) {
     chunks.push({
       text: currentEntry.join('\n'),
-      category: `${prefix}_experience`,
+      category: prefix,
+      subcategory: 'experience',
       metadata: {
         source,
         section: 'EXPERIENCE',
         company: currentCompany,
-        role: currentRole,
-        year: currentYear,
+        position: currentPosition,
+        location: currentLocation,
+        dateRange: currentDateRange,
+        industry: currentIndustry,
+        year: currentDateRange?.match(/\d{4}/)?.[0]
       },
     })
   }
@@ -248,7 +330,8 @@ function extractExperienceEntries(
       const chunkLines = experienceLines.slice(i, i + 12)
       chunks.push({
         text: chunkLines.join('\n'),
-        category: `${prefix}_experience`,
+        category: prefix,
+        subcategory: 'experience',
         metadata: { source, section: 'EXPERIENCE' },
       })
     }
@@ -277,7 +360,8 @@ function extractEducationEntries(
     if (currentEntry.length >= 5) {
       chunks.push({
         text: currentEntry.join('\n'),
-        category: `${prefix}_education`,
+        category: prefix,
+        subcategory: 'education',
         metadata: { source, section: 'EDUCATION' },
       })
       currentEntry = []
@@ -288,7 +372,8 @@ function extractEducationEntries(
   if (currentEntry.length > 0) {
     chunks.push({
       text: currentEntry.join('\n'),
-      category: `${prefix}_education`,
+      category: prefix,
+      subcategory: 'education',
       metadata: { source, section: 'EDUCATION' },
     })
   }
@@ -297,7 +382,8 @@ function extractEducationEntries(
   if (chunks.length === 0 && educationLines.length > 0) {
     chunks.push({
       text: educationLines.join('\n'),
-      category: `${prefix}_education`,
+      category: prefix,
+      subcategory: 'education',
       metadata: { source, section: 'EDUCATION' },
     })
   }

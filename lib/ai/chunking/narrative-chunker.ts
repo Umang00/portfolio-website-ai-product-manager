@@ -1,20 +1,36 @@
 // lib/ai/chunking/narrative-chunker.ts
+import { detectParagraphs, detectSentences, calculateSmartOverlap } from './boundary-detector'
 
 export interface Chunk {
   text: string
   category: string
-  subcategory?: string
+  subcategory: string | null
   metadata: {
     source: string
     year?: string
+    fiscalYear?: string  // e.g., "FY25-26"
     paragraphRange?: string
+    partInfo?: string  // e.g., "Part 1 of 3"
   }
 }
 
 /**
- * Chunk journey documents using sliding window approach
- * Journey documents are narrative-style, so we use overlapping windows
- * to preserve context across chunk boundaries
+ * Extract fiscal year from filename (e.g., "fy25-26" -> "FY25-26")
+ */
+function extractFiscalYear(source: string): string | undefined {
+  const fyMatch = source.match(/fy-?(\d{2,4})-(\d{2,4})/i)
+  if (fyMatch) {
+    const year1 = fyMatch[1].length === 2 ? fyMatch[1] : fyMatch[1].slice(-2)
+    const year2 = fyMatch[2].length === 2 ? fyMatch[2] : fyMatch[2].slice(-2)
+    return `FY${year1}-${year2}`
+  }
+  return undefined
+}
+
+/**
+ * Chunk journey documents using smart boundary-aware approach
+ * Journey documents are narrative-style, so we use smart overlap
+ * (1 sentence or 20-25 words) to preserve context across chunk boundaries
  *
  * @param content The extracted journey text
  * @param source Source filename
@@ -28,84 +44,125 @@ export function chunkJourney(
 ): Chunk[] {
   const chunks: Chunk[] = []
 
-  // Split into paragraphs (separated by double newlines or single newlines)
-  const paragraphs = content
-    .split(/\n\n+/)
-    .map(p => p.trim())
-    .filter(p => p.length > 0)
-    .map(p => {
-      // Clean up line breaks within paragraphs
-      return p.replace(/\n/g, ' ').replace(/\s+/g, ' ')
-    })
+  // Extract fiscal year from filename (e.g., "FY25-26")
+  const fiscalYear = extractFiscalYear(source)
+
+  // Use smart paragraph detection (respects empty lines)
+  const paragraphs = detectParagraphs(content)
 
   console.log(`Journey document has ${paragraphs.length} paragraphs`)
 
-  // Sliding window parameters
-  const windowSize = 4 // Number of paragraphs per chunk
-  const overlapSize = 2 // Number of paragraphs to overlap
+  // Target: ~600-800 words per chunk
+  const targetWords = 700
+  const maxWords = 800
 
   // If document is very short, create single chunk
-  if (paragraphs.length <= windowSize) {
+  const totalWords = paragraphs.join(' ').split(/\s+/).length
+  if (totalWords <= maxWords) {
     chunks.push({
       text: paragraphs.join('\n\n'),
-      category: 'journey_narrative',
+      category: 'journey',
+      subcategory: null,
       metadata: {
         source,
         year,
+        fiscalYear,
         paragraphRange: `1-${paragraphs.length}`,
+        partInfo: 'Part 1 of 1',
       },
     })
     return chunks
   }
 
-  // Create sliding windows
-  for (let i = 0; i < paragraphs.length; i += (windowSize - overlapSize)) {
-    const window = paragraphs.slice(i, i + windowSize)
+  // Build chunks respecting paragraph boundaries
+  let currentChunk: string[] = []
+  let currentWordCount = 0
+  let chunkIndex = 1
+  let startParagraph = 1
+  let currentParagraphIndex = 0
 
-    if (window.length === 0) break
+  for (let i = 0; i < paragraphs.length; i++) {
+    const paragraph = paragraphs[i]
+    const paragraphWords = paragraph.split(/\s+/).length
 
-    // Stop if we're just repeating the same content
-    if (window.length < overlapSize && i > 0) {
-      break
+    // Check if adding this paragraph exceeds max words
+    if (currentWordCount > 0 && currentWordCount + paragraphWords > maxWords) {
+      // Save current chunk with smart overlap
+      const chunkText = currentChunk.join('\n\n')
+      const overlap = calculateSmartOverlap(chunkText, 25)
+
+      chunks.push({
+        text: chunkText,
+        category: 'journey',
+        subcategory: null,
+        metadata: {
+          source,
+          year,
+          fiscalYear,
+          paragraphRange: `${startParagraph}-${currentParagraphIndex}`,
+        },
+      })
+
+      // Start new chunk with overlap
+      currentChunk = [overlap, paragraph]
+      currentWordCount = overlap.split(/\s+/).length + paragraphWords
+      startParagraph = currentParagraphIndex + 1
+      chunkIndex++
+    } else {
+      // Add paragraph to current chunk
+      currentChunk.push(paragraph)
+      currentWordCount += paragraphWords
     }
 
-    const startParagraph = i + 1
-    const endParagraph = i + window.length
+    currentParagraphIndex = i + 1
+  }
 
+  // Save last chunk
+  if (currentChunk.length > 0) {
     chunks.push({
-      text: window.join('\n\n'),
-      category: 'journey_narrative',
+      text: currentChunk.join('\n\n'),
+      category: 'journey',
+      subcategory: null,
       metadata: {
         source,
         year,
-        paragraphRange: `${startParagraph}-${endParagraph}`,
+        fiscalYear,
+        paragraphRange: `${startParagraph}-${currentParagraphIndex}`,
       },
     })
   }
 
-  console.log(`✅ Chunked journey into ${chunks.length} chunks with overlap`)
+  // Add part info to all chunks
+  const totalChunks = chunks.length
+  chunks.forEach((chunk, index) => {
+    chunk.metadata.partInfo = `Part ${index + 1} of ${totalChunks}`
+  })
+
+  console.log(`✅ Chunked journey into ${chunks.length} chunks with smart overlap`)
   return chunks
 }
 
 /**
- * Alternative chunking by token count (more precise)
+ * Alternative chunking by token count with smart overlap
  * @param content The extracted journey text
  * @param source Source filename
  * @param year Optional year
  * @param targetTokens Target tokens per chunk (default: 700)
- * @param overlapTokens Overlap tokens between chunks (default: 150)
  * @returns Array of chunks
  */
 export function chunkJourneyByTokens(
   content: string,
   source: string,
   year?: string,
-  targetTokens: number = 700,
-  overlapTokens: number = 150
+  targetTokens: number = 700
 ): Chunk[] {
   const chunks: Chunk[] = []
 
-  // Simple tokenization (split by whitespace, rough approximation)
+  // Extract fiscal year from filename
+  const fiscalYear = extractFiscalYear(source)
+
+  // Use paragraph-aware chunking for better boundaries
+  const paragraphs = detectParagraphs(content)
   const words = content.split(/\s+/)
   const totalTokens = words.length
 
@@ -115,39 +172,72 @@ export function chunkJourneyByTokens(
     // Document is short enough to be a single chunk
     chunks.push({
       text: content,
-      category: 'journey_narrative',
-      metadata: { source, year },
+      category: 'journey',
+      subcategory: null,
+      metadata: {
+        source,
+        year,
+        fiscalYear,
+        partInfo: 'Part 1 of 1',
+      },
     })
     return chunks
   }
 
+  // Build chunks with smart sentence-based overlap
+  let currentText = ''
+  let currentTokens = 0
   let chunkIndex = 1
-  for (let i = 0; i < words.length; i += (targetTokens - overlapTokens)) {
-    const windowWords = words.slice(i, i + targetTokens)
 
-    if (windowWords.length === 0) break
+  for (const paragraph of paragraphs) {
+    const paragraphTokens = paragraph.split(/\s+/).length
 
-    // Stop if we're just repeating a tiny fragment
-    if (windowWords.length < overlapTokens && i > 0) {
-      break
+    if (currentTokens > 0 && currentTokens + paragraphTokens > targetTokens) {
+      // Save current chunk with smart overlap
+      const overlap = calculateSmartOverlap(currentText, 25)
+
+      chunks.push({
+        text: currentText,
+        category: 'journey',
+        subcategory: null,
+        metadata: {
+          source,
+          year,
+          fiscalYear,
+        },
+      })
+
+      // Start new chunk with overlap
+      currentText = overlap + '\n\n' + paragraph
+      currentTokens = overlap.split(/\s+/).length + paragraphTokens
+      chunkIndex++
+    } else {
+      currentText += (currentText ? '\n\n' : '') + paragraph
+      currentTokens += paragraphTokens
     }
+  }
 
-    const chunkText = windowWords.join(' ')
-
+  // Save last chunk
+  if (currentText) {
     chunks.push({
-      text: chunkText,
-      category: 'journey_narrative',
-      subcategory: `chunk_${chunkIndex}`,
+      text: currentText,
+      category: 'journey',
+      subcategory: null,
       metadata: {
         source,
         year,
+        fiscalYear,
       },
     })
-
-    chunkIndex++
   }
 
-  console.log(`✅ Chunked journey into ${chunks.length} token-based chunks`)
+  // Add part info to all chunks
+  const totalChunks = chunks.length
+  chunks.forEach((chunk, index) => {
+    chunk.metadata.partInfo = `Part ${index + 1} of ${totalChunks}`
+  })
+
+  console.log(`✅ Chunked journey into ${chunks.length} token-based chunks with smart overlap`)
   return chunks
 }
 
@@ -157,6 +247,9 @@ export function chunkJourneyByTokens(
  */
 export function extractJourneySections(content: string, source: string, year?: string): Chunk[] {
   const chunks: Chunk[] = []
+
+  // Extract fiscal year from filename
+  const fiscalYear = extractFiscalYear(source)
 
   // Try to detect section headers (month names, quarter labels, etc.)
   const lines = content.split('\n')
@@ -182,11 +275,12 @@ export function extractJourneySections(content: string, source: string, year?: s
       if (currentSection.length > 0 && currentHeader) {
         chunks.push({
           text: currentSection.join('\n'),
-          category: 'journey_section',
+          category: 'journey',
           subcategory: currentHeader.toLowerCase().replace(/\s+/g, '_'),
           metadata: {
             source,
             year,
+            fiscalYear,
           },
         })
       }
@@ -203,11 +297,12 @@ export function extractJourneySections(content: string, source: string, year?: s
   if (currentSection.length > 0 && currentHeader) {
     chunks.push({
       text: currentSection.join('\n'),
-      category: 'journey_section',
+      category: 'journey',
       subcategory: currentHeader.toLowerCase().replace(/\s+/g, '_'),
       metadata: {
         source,
         year,
+        fiscalYear,
       },
     })
   }
