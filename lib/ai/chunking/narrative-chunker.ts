@@ -51,13 +51,14 @@ export function chunkJourney(
 
   console.log(`Journey document has ${paragraphs.length} paragraphs`)
 
-  // Target: ~600-800 words per chunk
-  const targetWords = 700
-  const maxWords = 800
+  // Target: ~450 tokens per chunk, soft max 500, allow up to 600 to complete naturally
+  const targetTokens = 450
+  const softMaxTokens = 500
+  const bufferMaxTokens = 600  // Allow up to 600 to avoid tiny orphan chunks
 
   // If document is very short, create single chunk
   const totalWords = paragraphs.join(' ').split(/\s+/).length
-  if (totalWords <= maxWords) {
+  if (totalWords <= softMaxTokens) {
     chunks.push({
       text: paragraphs.join('\n\n'),
       category: 'journey',
@@ -81,13 +82,27 @@ export function chunkJourney(
 
   for (let i = 0; i < paragraphs.length; i++) {
     const paragraph = paragraphs[i]
-    const paragraphWords = paragraph.split(/\s+/).length
+    const paragraphTokens = paragraph.split(/\s+/).length
 
-    // Check if adding this paragraph exceeds max words
-    if (currentWordCount > 0 && currentWordCount + paragraphWords > maxWords) {
-      // Save current chunk with smart overlap
+    // Check if adding this paragraph exceeds limits
+    if (currentWordCount > 0 && currentWordCount + paragraphTokens > softMaxTokens) {
+      // If we're in the buffer zone (500-600 tokens) and this completes naturally, allow it
+      const projectedTotal = currentWordCount + paragraphTokens
+      const isInBufferZone = projectedTotal <= bufferMaxTokens
+      const isLastParagraph = i === paragraphs.length - 1
+
+      // Allow buffer zone completion if it's reasonable
+      if (isInBufferZone && (isLastParagraph || paragraphTokens < 100)) {
+        // Add paragraph to complete chunk naturally
+        currentChunk.push(paragraph)
+        currentWordCount += paragraphTokens
+        currentParagraphIndex = i + 1
+        continue
+      }
+
+      // Otherwise, split here - save current chunk with smart overlap
       const chunkText = currentChunk.join('\n\n')
-      const overlap = calculateSmartOverlap(chunkText, 25)
+      const overlap = calculateSmartOverlap(chunkText)  // Last complete sentence only
 
       chunks.push({
         text: chunkText,
@@ -102,13 +117,13 @@ export function chunkJourney(
 
       // Start new chunk with overlap
       currentChunk = [overlap, paragraph]
-      currentWordCount = overlap.split(/\s+/).length + paragraphWords
+      currentWordCount = overlap.split(/\s+/).length + paragraphTokens
       startParagraph = currentParagraphIndex + 1
       chunkIndex++
     } else {
       // Add paragraph to current chunk
       currentChunk.push(paragraph)
-      currentWordCount += paragraphWords
+      currentWordCount += paragraphTokens
     }
 
     currentParagraphIndex = i + 1
@@ -143,14 +158,14 @@ export function chunkJourney(
  * @param content The extracted journey text
  * @param source Source filename
  * @param year Optional year
- * @param targetTokens Target tokens per chunk (default: 700)
+ * @param targetTokens Target tokens per chunk (default: 450)
  * @returns Array of chunks
  */
 export function chunkJourneyByTokens(
   content: string,
   source: string,
   year?: string,
-  targetTokens: number = 700
+  targetTokens: number = 450
 ): Chunk[] {
   const chunks: Chunk[] = []
 
@@ -189,7 +204,7 @@ export function chunkJourneyByTokens(
 
     if (currentTokens > 0 && currentTokens + paragraphTokens > targetTokens) {
       // Save current chunk with smart overlap
-      const overlap = calculateSmartOverlap(currentText, 25)
+      const overlap = calculateSmartOverlap(currentText)  // Last complete sentence only
 
       chunks.push({
         text: currentText,

@@ -204,19 +204,20 @@ function detectSections(lines: string[]): Record<string, string[]> {
     // Skip empty lines
     if (!upperLine) continue
 
-    // Check if this line is ALL CAPS and short (likely a section header)
-    const isAllCaps = upperLine === line.trim() && /^[A-Z\s&]+$/.test(upperLine) && upperLine.length < 100
-
     // Check if this line matches known section headers (case-insensitive)
+    // Use exact match or startsWith only - no includes() to avoid false positives
     const matchedSection = sectionHeaders.find(header => {
-      return upperLine === header || upperLine.startsWith(header) || upperLine.includes(header)
+      return upperLine === header || upperLine.startsWith(header + ' ')
     })
 
-    if (matchedSection || (isAllCaps && upperLine.length > 3)) {
-      // Use matched section or the line itself as section name
-      const sectionName = matchedSection || upperLine
-      currentSection = sectionName.toLowerCase().replace(/\s+/g, '_').replace(/[&]/g, 'and')
-      sections[currentSection] = []
+    if (matchedSection) {
+      // Use the matched section header as the section name
+      currentSection = matchedSection.toLowerCase().replace(/\s+/g, '_').replace(/[&]/g, 'and')
+
+      // Only create new section if it doesn't already exist (avoid overwrites)
+      if (!sections[currentSection]) {
+        sections[currentSection] = []
+      }
     } else if (currentSection) {
       sections[currentSection].push(line)
     }
