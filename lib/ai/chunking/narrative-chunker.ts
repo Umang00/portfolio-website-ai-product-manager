@@ -91,22 +91,16 @@ export function chunkJourney(
     const paragraph = paragraphs[i]
     const paragraphTokens = estimateTokens(paragraph)
 
-    // HARD LIMIT: Never allow a chunk to exceed bufferMaxTokens
+    // Check if adding this paragraph would exceed soft max (500 tokens)
     const projectedTotal = currentTokenCount + paragraphTokens
 
-    if (currentTokenCount > 0 && projectedTotal > bufferMaxTokens) {
-      // Would exceed hard limit - must save current chunk now
+    if (currentTokenCount > 0 && projectedTotal > softMaxTokens) {
+      // Would exceed 500 tokens - save current chunk WITHOUT adding this paragraph
       const chunkText = currentChunk.join('\n\n')
 
-      // Pre-calculate overlap with size constraints (25-100 token overlap)
-      const overlap = calculateSmartOverlap(chunkText, 25, 100)
+      // Calculate overlap with max constraints (30 words, 50 tokens)
+      const overlap = calculateSmartOverlap(chunkText, 30, 50)
       const overlapTokens = estimateTokens(overlap)
-
-      // VALIDATION: Ensure chunk doesn't exceed 600 tokens
-      const finalChunkTokens = estimateTokens(chunkText)
-      if (finalChunkTokens > bufferMaxTokens) {
-        console.warn(`⚠️ Journey chunk exceeded ${bufferMaxTokens} tokens (${finalChunkTokens}). This should not happen!`)
-      }
 
       chunks.push({
         text: chunkText,
@@ -119,64 +113,13 @@ export function chunkJourney(
         },
       })
 
-      // Start new chunk with overlap - validate overlap + paragraph doesn't exceed limit
-      const newChunkStartTokens = overlapTokens + paragraphTokens
-      if (newChunkStartTokens > bufferMaxTokens) {
-        // Overlap + paragraph would exceed limit - start without overlap
-        console.warn(`⚠️ Overlap (${overlapTokens}) + paragraph (${paragraphTokens}) exceeds ${bufferMaxTokens}. Starting fresh chunk.`)
-        currentChunk = [paragraph]
-        currentTokenCount = paragraphTokens
-      } else {
-        currentChunk = [overlap, paragraph]
-        currentTokenCount = newChunkStartTokens
-      }
-      startParagraph = currentParagraphIndex + 1
-      chunkIndex++
-    } else if (currentTokenCount > 0 && projectedTotal > softMaxTokens) {
-      // Exceeds soft limit but within buffer zone (500-600)
-      // Add this paragraph and then immediately save chunk (no continue!)
-      currentChunk.push(paragraph)
-      currentTokenCount += paragraphTokens
-      currentParagraphIndex = i + 1
-
-      // Save chunk immediately - buffer zone means "finish here"
-      const chunkText = currentChunk.join('\n\n')
-
-      // Pre-calculate overlap with size constraints (25-100 token overlap)
-      const overlap = calculateSmartOverlap(chunkText, 25, 100)
-      const overlapTokens = estimateTokens(overlap)
-
-      // VALIDATION: Ensure chunk doesn't exceed 600 tokens
-      const finalChunkTokens = estimateTokens(chunkText)
-      if (finalChunkTokens > bufferMaxTokens) {
-        console.warn(`⚠️ Journey chunk exceeded ${bufferMaxTokens} tokens (${finalChunkTokens}). This should not happen!`)
-      }
-
-      chunks.push({
-        text: chunkText,
-        category: 'journey',
-        subcategory: null,
-        metadata: {
-          source,
-          fiscalYear,
-          paragraphRange: `${startParagraph}-${currentParagraphIndex}`,
-        },
-      })
-
-      // Start new chunk with overlap - validate it doesn't exceed limit
-      if (overlapTokens > bufferMaxTokens) {
-        // Overlap itself exceeds limit (should be caught by calculateSmartOverlap's 100 token max, but double-check)
-        console.warn(`⚠️ Overlap (${overlapTokens}) exceeds ${bufferMaxTokens}. Starting fresh chunk.`)
-        currentChunk = []
-        currentTokenCount = 0
-      } else {
-        currentChunk = [overlap]
-        currentTokenCount = overlapTokens
-      }
+      // Start new chunk with overlap + the paragraph that didn't fit
+      currentChunk = [overlap, paragraph]
+      currentTokenCount = overlapTokens + paragraphTokens
       startParagraph = currentParagraphIndex + 1
       chunkIndex++
     } else {
-      // Within target range - add paragraph to current chunk
+      // Adding this paragraph keeps us under 500 tokens - add it
       currentChunk.push(paragraph)
       currentTokenCount += paragraphTokens
     }
@@ -258,8 +201,8 @@ export function chunkJourneyByTokens(
     const paragraphTokens = paragraph.split(/\s+/).length
 
     if (currentTokens > 0 && currentTokens + paragraphTokens > targetTokens) {
-      // Save current chunk with smart overlap (25-100 token overlap)
-      const overlap = calculateSmartOverlap(currentText, 25, 100)
+      // Save current chunk with smart overlap (max 30 words, 50 tokens)
+      const overlap = calculateSmartOverlap(currentText, 30, 50)
       const overlapTokens = overlap.split(/\s+/).length
 
       chunks.push({
