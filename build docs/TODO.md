@@ -19,6 +19,25 @@
 - [ ] Phase 6: MongoDB Configuration (1 hour)
 - [✅] **Phase 7: Deployment** (2-3 hours) - COMPLETED (lockfile fixed)
 
+## 🧪 Testing Requirements
+
+**IMPORTANT:** Each phase of the RAG pipeline MUST have a dedicated test endpoint that allows testing without generating embeddings or calling external APIs. This enables rapid iteration and debugging without incurring API costs.
+
+**Current Test Endpoints:**
+- ✅ `/api/ai/test-pdfs` - Test PDF loading and parsing
+- ✅ `/api/ai/test-pdf-parsing` - Test PDF parsing with section detection
+- ✅ `/api/ai/test-chunking` - Test document chunking strategies
+- [ ] `/api/ai/test-embeddings` - Test embedding generation (future)
+- [ ] `/api/ai/test-vector-search` - Test vector search without LLM (future)
+- [ ] `/api/ai/test-llm` - Test LLM responses with mock context (future)
+
+**Test Endpoint Requirements:**
+1. All test endpoints require `ADMIN_SECRET` authentication
+2. Test endpoints should NOT trigger expensive operations (embeddings, LLM calls)
+3. Test endpoints should return detailed debugging information
+4. Test endpoints should validate input and provide clear error messages
+5. Test endpoints should be documented in the API testing UI (Swagger-like interface)
+
 **Total:** 24-31 hours
 **Completed:** 14-18 hours (Phase 0 + Phase 1 + Phase 2 + Phase 4 + Phase 7)
 
@@ -375,7 +394,14 @@ Root:
 
 **Objective:** Implement loaders and chunkers for all document types
 
-**Status:** ✅ COMPLETED
+**Status:** ✅ COMPLETED (with recent improvements)
+
+**Recent Updates (Commits fff0143 - e6b1fcf):**
+- Fixed Journey chunking token calculation mismatches
+- Enforced strict token limits (500 soft, 600 hard max)
+- Implemented smart boundary detection with `boundary-detector.ts`
+- Fixed section detection for professional documents
+- Added comprehensive test endpoints for each RAG phase
 
 ### Create Generic PDF Loader
 - [✅] Create `/lib/ai/loaders/pdf-loader.ts` (TypeScript implementation)
@@ -525,10 +551,26 @@ Root:
   - More reliable parsing in Next.js environment
 - [✅] **TypeScript Implementation**: All code written in TypeScript with proper types
 - [✅] **Error Handling**: Robust error handling for failed PDFs
-- [✅] **Testing Infrastructure**: Created offline test script and API test endpoint
+- [✅] **Testing Infrastructure**: Created offline test script and API test endpoints
 - [✅] **Documentation**: Updated loader with comprehensive JSDoc comments
+- [✅] **Smart Boundary Detection**: Created `boundary-detector.ts` utility for intelligent chunking
+  - Paragraph-aware detection (respects empty lines)
+  - Sentence detection with abbreviation handling
+  - Smart overlap calculation (max 30 words, 50 tokens)
+  - Section header detection (ALL CAPS, Title Case, Markdown)
+- [✅] **Journey Chunking Fixes**: Comprehensive fixes for token limits and boundary detection
+  - Enforced 500 token soft limit, 600 token hard limit
+  - Fixed token calculation mismatches
+  - Implemented smart overlap (sentence-based, max 30 words)
+  - Added paragraph range and part info metadata
+- [✅] **Professional Chunking Improvements**: Enhanced section detection
+  - Case-insensitive section header matching
+  - Expanded section headers (ABOUT ME, KEY PROJECTS, etc.)
+  - Captures header content (name, contact) as `about_me` section
+  - Improved job entry extraction with pipe delimiter support
+  - Better metadata extraction (company, industry, dates, location)
 
-**Checkpoint:** ✅ All PDFs loading, chunking strategies working, chunk quality verified, tested end-to-end
+**Checkpoint:** ✅ All PDFs loading, chunking strategies working with smart boundaries, chunk quality verified, tested end-to-end
 
 ---
 

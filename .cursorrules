@@ -10,3 +10,15 @@ Rules:
 6. Use Next.js 15 App Router conventions
 7. Prefer TypeScript over JavaScript for type safety
 8. Use ESM imports (import/export) not CommonJS (require/module.exports)
+
+RAG Pipeline Testing Requirements:
+9. Each phase of the RAG pipeline MUST have a dedicated test endpoint
+   - Test endpoints allow testing without generating embeddings or calling external APIs
+   - Enables rapid iteration and debugging without incurring API costs
+   - All test endpoints require ADMIN_SECRET authentication
+   - Test endpoints should return detailed debugging information
+10. Current test endpoints:
+    - /api/ai/test-pdfs - Test PDF loading and parsing
+    - /api/ai/test-pdf-parsing - Test PDF parsing with section detection
+    - /api/ai/test-chunking - Test document chunking strategies
+    - Future: test-embeddings, test-vector-search, test-llm endpoints

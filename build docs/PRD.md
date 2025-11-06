@@ -54,6 +54,11 @@ Add an intelligent AI companion to the portfolio website that can answer questio
 - Automatic daily rebuild (via cron job)
 - File change detection (hash-based)
 - Health check endpoint
+- **API Testing Interface**: Swagger-like UI for testing all endpoints with authentication handled automatically
+  - Located at `/api-test`
+  - Tests all RAG pipeline phases without generating embeddings
+  - Secure admin authentication with local storage
+  - Interactive request/response interface
 
 ## Technical Requirements
 

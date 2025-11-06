@@ -57,13 +57,23 @@
 
 ### 1. Frontend Layer
 
-**Location:** `/components/ai/`
+**Location:** `/components/ai/` and `/components/api-test/`
 
 **Components:**
 - `chat-modal.jsx` - Main chat interface (modal overlay)
 - `message-bubble.jsx` - Individual message display
 - `voice-input.jsx` - Speech-to-text input
 - `suggested-questions.jsx` - Follow-up prompts
+
+**API Testing Interface:**
+- `/app/api-test/page.tsx` - Main API testing page
+- `/components/api-test/APITester.tsx` - Interactive API tester component
+- Features:
+  - Swagger-like interface for all endpoints
+  - Admin authentication with local storage
+  - Automatic secret injection for authenticated requests
+  - Request/response display with syntax highlighting
+  - Support for GET (query params) and POST (JSON body) requests
 
 **State Management:**
 - Conversation history (array of messages)
@@ -81,35 +91,63 @@
 
 **Endpoints:**
 
-#### `/api/ai/query/route.js`
+#### `/api/ai/query/route.ts`
 - **Method:** POST
-- **Input:** `{ query: string, conversationHistory: array }`
+- **Input:** `{ query: string, conversationHistory?: array }`
 - **Process:**
-  1. Validate input
+  1. Validate input (non-empty, max 1000 chars)
   2. Call `queryAI()` from service layer
   3. Return response with sources
-- **Output:** `{ answer: string, sources: array, suggestedQuestions: array }`
+- **Output:** `{ answer: string, sources: array, suggestedQuestions?: array }`
 
-#### `/api/ai/create-index/route.js`
+#### `/api/ai/create-index/route.ts`
 - **Method:** POST
-- **Input:** `{ forceRebuild: boolean }`
+- **Input:** `{ forceRebuild?: boolean }`
 - **Process:**
   1. Call `buildMemoryIndex(forceRebuild)`
   2. Log progress
-- **Output:** `{ success: boolean, chunksCreated: number }`
+- **Output:** `{ success: boolean, chunksCreated: number, documentsProcessed: number }`
 
-#### `/api/ai/refresh/route.js`
+#### `/api/ai/refresh/route.ts`
 - **Method:** POST (called by Vercel Cron)
 - **Process:**
   1. Check for file changes
   2. Rebuild if needed
 - **Output:** `{ success: boolean, message: string }`
 
-#### `/api/ai/rebuild/route.js`
+#### `/api/ai/rebuild/route.ts`
+- **Method:** POST, GET
+- **Auth:** Requires `ADMIN_SECRET` in request body (POST) or query param (GET)
+- **Process:** Force full rebuild regardless of changes
+- **Output:** `{ success: boolean, message: string, chunksCreated: number, documentsProcessed: number, stats: object }`
+
+#### `/api/ai/test-pdf-parsing/route.ts` (Test Endpoint)
 - **Method:** POST
 - **Auth:** Requires `ADMIN_SECRET` in request body
-- **Process:** Force full rebuild regardless of changes
-- **Output:** `{ success: boolean, message: string }`
+- **Input:** `{ filename: string, secret: string }`
+- **Purpose:** Test PDF parsing and section detection without generating embeddings
+- **Output:** `{ success: boolean, filename, type, metadata, rawText, sectionsDetected, sectionDetails }`
+
+#### `/api/ai/test-chunking/route.ts` (Test Endpoint)
+- **Method:** POST, GET
+- **Auth:** Requires `ADMIN_SECRET` in request body (POST) or query param (GET)
+- **Input:** `{ filename: string, documentType?: string, secret: string, testAll?: boolean }`
+- **Purpose:** Test document chunking without generating embeddings
+- **Output:** `{ chunks: TestChunk[], stats: ChunkingStats, quality: ChunkQualityReport }`
+
+#### `/api/ai/test-pdfs/route.ts` (Test Endpoint)
+- **Method:** GET
+- **Auth:** Requires `ADMIN_SECRET` in query param
+- **Purpose:** List and test all PDFs without triggering embeddings/OpenAI
+- **Output:** Array of parsed PDF documents with types and text lengths
+
+#### `/api/ai/optimize-query/route.ts`
+- **Method:** POST
+- **Purpose:** Query rewriting for better retrieval
+
+#### `/api/ai/compress-memory/route.ts`
+- **Method:** POST
+- **Purpose:** Conversation history compression
 
 ### 3. AI Service Layer
 
@@ -245,44 +283,69 @@ Query: "What did Umang work on recently?"
 **Strategy:** Get repos → fetch READMEs → paragraph chunking
 **Output:** Array of chunks with repo metadata
 
-#### `generic-pdf-loader.js` (New)
-**Purpose:** Load LinkedIn + Journey PDFs
+#### `pdf-loader.ts` (TypeScript Implementation)
+**Purpose:** Load all PDF documents (resume, LinkedIn, journey, generic)
 **Strategy:**
-1. Scan `/documents` for all PDFs
-2. Exclude `resume.pdf` (has dedicated loader)
-3. Detect document type (linkedin vs journey vs generic)
-4. Route to appropriate chunker
-**Output:** Array of { source, content, type, metadata }
+1. Scan `/documents` folder for all PDF files
+2. Uses `pdf-parse-new` library (migrated from `pdf-parse` for stability)
+3. Dynamic import to avoid Next.js webpack issues
+4. Detect document type (resume vs linkedin vs journey vs generic)
+5. Extract year metadata from filename (e.g., "journey_fy-2025-2026.pdf")
+6. Clean PDF artifacts (page numbers, form feeds)
+7. Route to appropriate chunker based on type
+**Output:** Array of { filename, content, type, metadata: { pages, year, source } }
+**Functions:**
+- `loadAllPDFs()` - Load all PDFs from `/documents`
+- `loadPDF(filename)` - Load single PDF
+- `parsePDF(filePath)` - Parse PDF with `pdf-parse-new`
+- `detectDocumentType(filename, content)` - Classify document type
+- `extractYearFromFilename(filename)` - Extract year metadata
+- `listPDFs()` - List all PDF files
 
 ### 5. Chunking Strategies
 
 **Location:** `/lib/ai/chunking/`
 
-#### `professional-chunker.js` (New)
+#### `professional-chunker.ts` (TypeScript Implementation)
 **For:** LinkedIn PDF, Resume
 **Strategy:**
-- Detect sections (EXPERIENCE, EDUCATION, SKILLS)
-- Each job entry = 1 chunk
+- Smart section detection (case-insensitive, expanded headers)
+- Detects: EXPERIENCE, EDUCATION, SKILLS, KEY PROJECTS, SUMMARY, ABOUT ME, etc.
+- Each job entry = 1 chunk (for resume)
+- LinkedIn: Groups multiple jobs per chunk
 - Skills grouped in batches
 - No overlap (independent bullets)
+- Captures header content (name, contact) as `about_me` section
 **Chunk Size:** 400-800 tokens
-**Metadata:** company, role, duration, location
+**Metadata:** company, role, duration, location, industry, section
 
-#### `narrative-chunker.js` (New)
+#### `narrative-chunker.ts` (TypeScript Implementation)
 **For:** Journey PDFs
 **Strategy:**
-- Detect topic boundaries (headers, semantic shifts)
-- Sliding window: 3-4 paragraphs per chunk
-- 2-paragraph overlap (~150-200 tokens)
-- Preserve context for storytelling
-**Chunk Size:** 600-900 tokens
-**Metadata:** topic, section, timeframe
+- Smart boundary detection using `boundary-detector.ts`
+- Paragraph-aware chunking (respects empty lines)
+- Smart overlap: 1 sentence or 20-30 words (max 50 tokens)
+- Strict token limits: Target 450, soft max 500, hard max 600 tokens
+- Preserves narrative flow with intelligent overlap
+- Extracts fiscal year from filename (e.g., "FY25-26")
+**Chunk Size:** 450-500 tokens (target), max 600 tokens
+**Overlap:** Smart sentence-based (max 30 words, 50 tokens)
+**Metadata:** fiscalYear, paragraphRange, partInfo (e.g., "Part 1 of 3")
 
-#### `generic-chunker.js` (Fallback)
+#### `boundary-detector.ts` (New - Shared Utility)
+**Purpose:** Smart boundary detection for all chunkers
+**Features:**
+- `detectParagraphs()` - Respects empty lines
+- `detectSentences()` - Handles abbreviations (Dr., Mr., etc.)
+- `calculateSmartOverlap()` - Sentence-aware overlap (max 30 words, 50 tokens)
+- `detectSectionHeaders()` - Detects ALL CAPS, Title Case, Markdown headers
+- `parseHeaderMetadata()` - Extracts company, position, dates from headers
+
+#### `generic-chunker.ts` (Fallback)
 **For:** Unknown document types
 **Strategy:** Simple paragraph-based splitting
 **Chunk Size:** 500 tokens
-**Overlap:** 50 tokens
+**Overlap:** Minimal (50 tokens)
 
 ### 6. Vector Database
 
@@ -370,11 +433,11 @@ Query: "What did Umang work on recently?"
 | Frontend | Next.js 14 (App Router) | React framework |
 | Styling | Tailwind CSS | UI styling |
 | API Routes | Next.js API Routes | Backend endpoints |
-| Language | JavaScript (ES6+) | No TypeScript |
+| Language | TypeScript | Full type safety |
 | Vector DB | MongoDB Atlas (M0) | Embeddings storage |
 | Embeddings | OpenAI text-embedding-3-small | Vector generation |
 | LLM | OpenRouter (Llama 3.1 8B free) | Chat completions |
-| PDF Parsing | pdf-parse | Extract text from PDFs |
+| PDF Parsing | pdf-parse-new | Extract text from PDFs (migrated from pdf-parse for stability) |
 | GitHub API | node-fetch | Fetch repository data |
 | Scheduling | Vercel Cron | Daily rebuild trigger |
 | Hosting | Vercel | Deployment platform |
