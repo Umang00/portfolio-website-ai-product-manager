@@ -160,10 +160,12 @@ function findOverlap(text1: string, text2: string): string {
 }
 
 /**
- * Estimate token count (rough approximation: 1 token ≈ 4 characters)
+ * Estimate token count using SAME formula as chunker
+ * Uses word count × 1.3 multiplier (matches narrative-chunker.ts)
  */
 function estimateTokenCount(text: string): number {
-  return Math.ceil(text.length / 4);
+  const words = text.split(/\s+/).filter(w => w.length > 0).length;
+  return Math.ceil(words * 1.3);
 }
 
 /**

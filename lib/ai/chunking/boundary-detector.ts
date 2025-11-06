@@ -79,9 +79,21 @@ export function calculateSmartOverlap(
   const lastSentenceWords = countWords(lastSentence);
   const lastSentenceTokens = estimateTokens(lastSentence);
 
-  // If last sentence fits within constraints, use it
-  if (lastSentenceWords <= maxWords && lastSentenceTokens <= maxTokens) {
+  // If last sentence is reasonable size (10-30 words), use it
+  if (lastSentenceWords >= 10 && lastSentenceWords <= maxWords && lastSentenceTokens <= maxTokens) {
     return lastSentence;
+  }
+
+  // If last sentence < 10 words, try last 2 sentences
+  if (lastSentenceWords < 10 && sentences.length >= 2) {
+    const lastTwoSentences = sentences.slice(-2).join(' ');
+    const lastTwoWords = countWords(lastTwoSentences);
+    const lastTwoTokens = estimateTokens(lastTwoSentences);
+
+    // Use both if they fit within constraints
+    if (lastTwoWords <= maxWords && lastTwoTokens <= maxTokens) {
+      return lastTwoSentences;
+    }
   }
 
   // If last sentence is too large, check if last 2 sentences together fit
