@@ -143,16 +143,61 @@ function calculateBoundaries(
 
 /**
  * Find overlapping text between two chunks
+ * Uses fuzzy matching to detect overlap even with formatting and punctuation differences
  */
 function findOverlap(text1: string, text2: string): string {
+  // Normalize whitespace and punctuation for comparison
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim();
+  const normalizePunctuation = (text: string) => text.replace(/[.!?,;:]/g, '').replace(/\s+/g, ' ').trim();
+
   const maxOverlap = Math.min(200, text1.length, text2.length);
 
+  // Try exact match first
   for (let i = maxOverlap; i > 10; i--) {
     const end1 = text1.slice(-i);
     const start2 = text2.slice(0, i);
 
     if (end1 === start2) {
       return end1;
+    }
+  }
+
+  // Try normalized match (handles whitespace differences)
+  const normalized1 = normalize(text1);
+  const normalized2 = normalize(text2);
+
+  // Look for word-level overlap (more robust - handles punctuation)
+  const words1 = normalizePunctuation(normalized1).split(' ').filter(w => w.length > 0);
+  const words2 = normalizePunctuation(normalized2).split(' ').filter(w => w.length > 0);
+
+  // Check last N words of chunk 1 against first N words of chunk 2
+  const maxWords = Math.min(50, words1.length, words2.length);
+
+  for (let wordCount = maxWords; wordCount >= 5; wordCount--) {
+    const lastWords = words1.slice(-wordCount).join(' ');
+    const firstWords = words2.slice(0, wordCount).join(' ');
+
+    if (lastWords === firstWords) {
+      // Found a match! Return word count
+      return lastWords;
+    }
+  }
+
+  // Fallback: Try even more aggressive fuzzy matching
+  // Sometimes the overlap is there but with slightly different word boundaries or punctuation
+  // Check if chunk 2 starts with significant content from end of chunk 1
+  for (let wordCount = Math.min(35, words1.length); wordCount >= 8; wordCount--) {
+    const lastWords = words1.slice(-wordCount).join(' ');
+
+    // Check if these words appear at the start of chunk 2 (with some tolerance)
+    // Allow up to 3 extra words at the beginning of chunk 2
+    for (let offset = 0; offset <= 3; offset++) {
+      const testWords = words2.slice(offset, offset + wordCount).join(' ');
+
+      if (lastWords === testWords && offset + wordCount <= words2.length) {
+        // Found overlap with slight offset
+        return lastWords;
+      }
     }
   }
 

@@ -91,52 +91,6 @@ export function chunkJourney(
     const paragraph = paragraphs[i]
     const paragraphTokens = estimateTokens(paragraph)
 
-    // SPECIAL CASE: If single paragraph exceeds limit, split at sentence boundaries
-    if (paragraphTokens > softMaxTokens) {
-      const sentences = detectSentences(paragraph)
-      let sentenceGroup: string[] = []
-      let groupTokenCount = 0
-
-      for (const sentence of sentences) {
-        const sentenceTokens = estimateTokens(sentence)
-        const projectedGroupTotal = groupTokenCount + sentenceTokens
-
-        if (groupTokenCount > 0 && projectedGroupTotal > softMaxTokens) {
-          // Save current sentence group as a chunk
-          const chunkText = sentenceGroup.join(' ')
-          const overlap = calculateSmartOverlap(chunkText, 30, 50)
-          const overlapTokens = estimateTokens(overlap)
-
-          chunks.push({
-            text: chunkText,
-            category: 'journey',
-            subcategory: null,
-            metadata: {
-              source,
-              fiscalYear,
-              paragraphRange: `${startParagraph}-${currentParagraphIndex} (split)`,
-            },
-          })
-
-          // Start new group with overlap + sentence
-          sentenceGroup = [overlap, sentence]
-          groupTokenCount = overlapTokens + sentenceTokens
-          chunkIndex++
-        } else {
-          sentenceGroup.push(sentence)
-          groupTokenCount += sentenceTokens
-        }
-      }
-
-      // Add remaining sentences to current chunk
-      if (sentenceGroup.length > 0) {
-        currentChunk.push(sentenceGroup.join(' '))
-        currentTokenCount += groupTokenCount
-      }
-      currentParagraphIndex = i + 1
-      continue
-    }
-
     // Check if adding this paragraph would exceed soft max (500 tokens)
     const projectedTotal = currentTokenCount + paragraphTokens
 
