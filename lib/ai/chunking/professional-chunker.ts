@@ -272,26 +272,60 @@ function extractExperienceEntries(
     // Detect bullet points
     const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('–')
 
+    // Improved job header detection - distinguish from location/date lines
+    const isJobHeader = hasPipes && pipeParts.length > 0 && !isBullet && (() => {
+      // Position keywords that appear in job titles
+      const positionKeywords = /manager|engineer|developer|analyst|designer|specialist|consultant|director|lead|associate|intern|coordinator|writer|strategist|architect|scientist|researcher/i
+
+      // Check if line contains position keywords (likely a job header)
+      const hasPositionKeyword = pipeParts.some(part => positionKeywords.test(part))
+
+      // Check if line is primarily dates (NOT a job header)
+      const isDatesLine = pipeParts.some(part =>
+        /^\d{4}\s*[-–]\s*(\d{4}|Present|Current)/i.test(part) ||
+        /^(January|February|March|April|May|June|July|August|September|October|November|December)/i.test(part)
+      )
+
+      // Check if line starts with location pattern (NOT a job header)
+      const startsWithLocation = locationMatch !== null
+
+      // A line is a job header if:
+      // 1. Has position keywords, OR
+      // 2. Has company with industry pattern AND at least 2 pipe parts, AND
+      // 3. Doesn't start with location, AND
+      // 4. Doesn't have dates as first element
+      return (hasPositionKeyword || (companyIndustryMatch && pipeParts.length >= 2)) &&
+             !startsWithLocation &&
+             !isDatesLine
+    })()
+
     // If we detect a new job entry, save previous one
-    // Improved: Don't require length > 5 (breaks first entry), use better heuristics
-    const isNewEntry = (hasPipes || (companyIndustryMatch && !currentCompany)) && currentEntry.length > 0 && !isBullet
+    const isNewEntry = isJobHeader && currentEntry.length > 0
 
     if (isNewEntry) {
       // Save previous entry
+      // For LinkedIn: only basic metadata (experience is one large chunk with multiple jobs)
+      // For Resume: full metadata per job (each job is a separate chunk)
+      const metadata: Record<string, any> = {
+        source,
+        section: 'EXPERIENCE'
+      }
+
+      // Only add detailed metadata for Resume (not LinkedIn)
+      if (prefix === 'resume') {
+        metadata.company = currentCompany
+        metadata.position = currentPosition
+        metadata.location = currentLocation
+        metadata.dateRange = currentDateRange
+        metadata.industry = currentIndustry
+        metadata.year = currentDateRange?.match(/\d{4}/)?.[0]
+      }
+
       chunks.push({
         text: currentEntry.join('\n'),
         category: prefix,
         subcategory: 'experience',
-        metadata: {
-          source,
-          section: 'EXPERIENCE',
-          company: currentCompany,
-          position: currentPosition,
-          location: currentLocation,
-          dateRange: currentDateRange,
-          industry: currentIndustry,
-          year: currentDateRange?.match(/\d{4}/)?.[0]
-        },
+        metadata,
       })
 
       // Reset for new entry
@@ -307,7 +341,8 @@ function extractExperienceEntries(
     // Format 1: "Company (Industry) | Position | Location | Dates" (4 parts)
     // Format 2: "Company (Industry) | Position" (2 parts)
     // Format 3: "Company | Position" (2 parts)
-    if (hasPipes && pipeParts.length > 0 && !currentCompany) {
+    // Only extract from job headers, not from location/date lines
+    if (isJobHeader && !currentCompany) {
       if (pipeParts.length >= 4) {
         // Format 1: 4 parts - Company+Industry | Position | Location | Dates
         const part1 = pipeParts[0]
@@ -358,6 +393,19 @@ function extractExperienceEntries(
       currentIndustry = companyIndustryMatch[2].trim()
     }
 
+    // Handle location | date line (second line format after job header)
+    if (hasPipes && !isJobHeader && currentCompany && pipeParts.length >= 2) {
+      // Check if this is a "Location | Date" format line
+      const part1 = pipeParts[0]
+      const part2 = pipeParts[1]
+
+      // First part looks like location, second part looks like date
+      if (locationMatch || /^[A-Z][a-z]+/.test(part1)) {
+        if (!currentLocation) currentLocation = part1
+        if (!currentDateRange && dateMatch) currentDateRange = part2
+      }
+    }
+
     // Extract date range
     if (dateMatch && !currentDateRange) {
       currentDateRange = dateMatch[0]
@@ -373,20 +421,28 @@ function extractExperienceEntries(
 
   // Save last entry
   if (currentEntry.length > 0) {
+    // For LinkedIn: only basic metadata (experience is one large chunk with multiple jobs)
+    // For Resume: full metadata per job (each job is a separate chunk)
+    const metadata: Record<string, any> = {
+      source,
+      section: 'EXPERIENCE'
+    }
+
+    // Only add detailed metadata for Resume (not LinkedIn)
+    if (prefix === 'resume') {
+      metadata.company = currentCompany
+      metadata.position = currentPosition
+      metadata.location = currentLocation
+      metadata.dateRange = currentDateRange
+      metadata.industry = currentIndustry
+      metadata.year = currentDateRange?.match(/\d{4}/)?.[0]
+    }
+
     chunks.push({
       text: currentEntry.join('\n'),
       category: prefix,
       subcategory: 'experience',
-      metadata: {
-        source,
-        section: 'EXPERIENCE',
-        company: currentCompany,
-        position: currentPosition,
-        location: currentLocation,
-        dateRange: currentDateRange,
-        industry: currentIndustry,
-        year: currentDateRange?.match(/\d{4}/)?.[0]
-      },
+      metadata,
     })
   }
 

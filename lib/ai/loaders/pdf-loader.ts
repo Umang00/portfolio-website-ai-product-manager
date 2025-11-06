@@ -30,7 +30,14 @@ export async function parsePDF(filePath: string): Promise<string> {
 
     const dataBuffer = fs.readFileSync(filePath)
     const data = await (pdfFn as (b: Buffer) => Promise<{ text: string }>)(dataBuffer)
-    return data.text
+
+    // Filter out common PDF artifacts like page numbers
+    let cleanedText = data.text
+      .replace(/^Page \d+ of \d+$/gm, '')  // Remove "Page X of Y" lines
+      .replace(/\f/g, '')  // Remove form feed characters (page breaks)
+      .replace(/\n{3,}/g, '\n\n')  // Normalize multiple newlines to max 2
+
+    return cleanedText
   } catch (error) {
     console.error(`Error parsing PDF ${filePath}:`, error)
     throw error

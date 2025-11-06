@@ -51,14 +51,21 @@ export function chunkJourney(
 
   console.log(`Journey document has ${paragraphs.length} paragraphs`)
 
-  // Target: ~450 tokens per chunk, soft max 500, allow up to 600 to complete naturally
+  // Target: ~450 tokens per chunk, soft max 500, HARD max 600 (with buffer zone)
+  // Use 1.3x multiplier to convert words to approximate tokens
+  const TOKEN_MULTIPLIER = 1.3
   const targetTokens = 450
   const softMaxTokens = 500
-  const bufferMaxTokens = 600  // Allow up to 600 to avoid tiny orphan chunks
+  const bufferMaxTokens = 600  // Absolute maximum - no exceptions
+
+  // Helper function to estimate tokens from text
+  const estimateTokens = (text: string): number => {
+    return Math.ceil(text.split(/\s+/).length * TOKEN_MULTIPLIER)
+  }
 
   // If document is very short, create single chunk
-  const totalWords = paragraphs.join(' ').split(/\s+/).length
-  if (totalWords <= softMaxTokens) {
+  const totalTokens = estimateTokens(paragraphs.join(' '))
+  if (totalTokens <= softMaxTokens) {
     chunks.push({
       text: paragraphs.join('\n\n'),
       category: 'journey',
@@ -73,36 +80,25 @@ export function chunkJourney(
     return chunks
   }
 
-  // Build chunks respecting paragraph boundaries
+  // Build chunks respecting paragraph boundaries with strict token limits
   let currentChunk: string[] = []
-  let currentWordCount = 0
+  let currentTokenCount = 0
   let chunkIndex = 1
   let startParagraph = 1
   let currentParagraphIndex = 0
 
   for (let i = 0; i < paragraphs.length; i++) {
     const paragraph = paragraphs[i]
-    const paragraphTokens = paragraph.split(/\s+/).length
+    const paragraphTokens = estimateTokens(paragraph)
 
-    // Check if adding this paragraph exceeds limits
-    if (currentWordCount > 0 && currentWordCount + paragraphTokens > softMaxTokens) {
-      // If we're in the buffer zone (500-600 tokens) and this completes naturally, allow it
-      const projectedTotal = currentWordCount + paragraphTokens
-      const isInBufferZone = projectedTotal <= bufferMaxTokens
-      const isLastParagraph = i === paragraphs.length - 1
+    // HARD LIMIT: Never allow a chunk to exceed bufferMaxTokens
+    const projectedTotal = currentTokenCount + paragraphTokens
 
-      // Allow buffer zone completion if it's reasonable
-      if (isInBufferZone && (isLastParagraph || paragraphTokens < 100)) {
-        // Add paragraph to complete chunk naturally
-        currentChunk.push(paragraph)
-        currentWordCount += paragraphTokens
-        currentParagraphIndex = i + 1
-        continue
-      }
-
-      // Otherwise, split here - save current chunk with smart overlap
+    if (currentTokenCount > 0 && projectedTotal > bufferMaxTokens) {
+      // Would exceed hard limit - must save current chunk now
       const chunkText = currentChunk.join('\n\n')
       const overlap = calculateSmartOverlap(chunkText)  // Last complete sentence only
+      const overlapTokens = estimateTokens(overlap)
 
       chunks.push({
         text: chunkText,
@@ -117,13 +113,41 @@ export function chunkJourney(
 
       // Start new chunk with overlap
       currentChunk = [overlap, paragraph]
-      currentWordCount = overlap.split(/\s+/).length + paragraphTokens
+      currentTokenCount = overlapTokens + paragraphTokens
+      startParagraph = currentParagraphIndex + 1
+      chunkIndex++
+    } else if (currentTokenCount > 0 && projectedTotal > softMaxTokens) {
+      // Exceeds soft limit but within buffer zone (500-600)
+      // Add this paragraph and then immediately save chunk (no continue!)
+      currentChunk.push(paragraph)
+      currentTokenCount += paragraphTokens
+      currentParagraphIndex = i + 1
+
+      // Save chunk immediately - buffer zone means "finish here"
+      const chunkText = currentChunk.join('\n\n')
+      const overlap = calculateSmartOverlap(chunkText)
+      const overlapTokens = estimateTokens(overlap)
+
+      chunks.push({
+        text: chunkText,
+        category: 'journey',
+        subcategory: null,
+        metadata: {
+          source,
+          fiscalYear,
+          paragraphRange: `${startParagraph}-${currentParagraphIndex}`,
+        },
+      })
+
+      // Start new chunk with overlap
+      currentChunk = [overlap]
+      currentTokenCount = overlapTokens
       startParagraph = currentParagraphIndex + 1
       chunkIndex++
     } else {
-      // Add paragraph to current chunk
+      // Within target range - add paragraph to current chunk
       currentChunk.push(paragraph)
-      currentWordCount += paragraphTokens
+      currentTokenCount += paragraphTokens
     }
 
     currentParagraphIndex = i + 1
