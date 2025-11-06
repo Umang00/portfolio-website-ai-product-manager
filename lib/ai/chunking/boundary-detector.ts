@@ -52,18 +52,60 @@ export function detectSentences(text: string): string[] {
 
 /**
  * Calculate smart overlap between chunks
- * Returns the last complete sentence, regardless of word count
- * (Could be 4 words or 100 words - we preserve the complete sentence)
+ * Returns the last complete sentence with size constraints:
+ * - Minimum: 25 words (if last sentence is too small, tries last 2 sentences or last 30 words)
+ * - Maximum: 100 tokens (~77 words)
+ *
+ * This ensures meaningful context overlap without eating up the chunk size limit
  */
-export function calculateSmartOverlap(previousChunk: string, maxWords?: number): string {
+export function calculateSmartOverlap(
+  previousChunk: string,
+  minWords: number = 25,
+  maxTokens: number = 100
+): string {
   const sentences = detectSentences(previousChunk);
 
   if (sentences.length === 0) {
     return '';
   }
 
-  // Return last complete sentence (no word limit)
-  return sentences[sentences.length - 1];
+  // Estimate tokens (1.3x multiplier)
+  const estimateTokens = (text: string) => Math.ceil(text.split(/\s+/).length * 1.3);
+  const countWords = (text: string) => text.split(/\s+/).length;
+
+  // Try last sentence first
+  const lastSentence = sentences[sentences.length - 1];
+  const lastSentenceWords = countWords(lastSentence);
+  const lastSentenceTokens = estimateTokens(lastSentence);
+
+  // If last sentence is within constraints, use it
+  if (lastSentenceWords >= minWords && lastSentenceTokens <= maxTokens) {
+    return lastSentence;
+  }
+
+  // If last sentence is too small, try last 2 sentences
+  if (lastSentenceWords < minWords && sentences.length >= 2) {
+    const lastTwoSentences = sentences.slice(-2).join(' ');
+    const lastTwoTokens = estimateTokens(lastTwoSentences);
+
+    // If last 2 sentences are within max tokens, use them
+    if (lastTwoTokens <= maxTokens) {
+      return lastTwoSentences;
+    }
+  }
+
+  // If last sentence is too large, try to truncate to last N words
+  if (lastSentenceTokens > maxTokens) {
+    const words = lastSentence.split(/\s+/);
+    const maxWords = Math.floor(maxTokens / 1.3); // Convert tokens back to words
+    const truncated = words.slice(-maxWords).join(' ');
+    return truncated;
+  }
+
+  // Fallback: Take last 30 words from entire chunk
+  const allWords = previousChunk.split(/\s+/);
+  const fallbackWords = Math.min(30, allWords.length);
+  return allWords.slice(-fallbackWords).join(' ');
 }
 
 /**

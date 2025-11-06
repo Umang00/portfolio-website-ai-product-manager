@@ -97,8 +97,16 @@ export function chunkJourney(
     if (currentTokenCount > 0 && projectedTotal > bufferMaxTokens) {
       // Would exceed hard limit - must save current chunk now
       const chunkText = currentChunk.join('\n\n')
-      const overlap = calculateSmartOverlap(chunkText)  // Last complete sentence only
+
+      // Pre-calculate overlap with size constraints (25-100 token overlap)
+      const overlap = calculateSmartOverlap(chunkText, 25, 100)
       const overlapTokens = estimateTokens(overlap)
+
+      // VALIDATION: Ensure chunk doesn't exceed 600 tokens
+      const finalChunkTokens = estimateTokens(chunkText)
+      if (finalChunkTokens > bufferMaxTokens) {
+        console.warn(`⚠️ Journey chunk exceeded ${bufferMaxTokens} tokens (${finalChunkTokens}). This should not happen!`)
+      }
 
       chunks.push({
         text: chunkText,
@@ -111,9 +119,17 @@ export function chunkJourney(
         },
       })
 
-      // Start new chunk with overlap
-      currentChunk = [overlap, paragraph]
-      currentTokenCount = overlapTokens + paragraphTokens
+      // Start new chunk with overlap - validate overlap + paragraph doesn't exceed limit
+      const newChunkStartTokens = overlapTokens + paragraphTokens
+      if (newChunkStartTokens > bufferMaxTokens) {
+        // Overlap + paragraph would exceed limit - start without overlap
+        console.warn(`⚠️ Overlap (${overlapTokens}) + paragraph (${paragraphTokens}) exceeds ${bufferMaxTokens}. Starting fresh chunk.`)
+        currentChunk = [paragraph]
+        currentTokenCount = paragraphTokens
+      } else {
+        currentChunk = [overlap, paragraph]
+        currentTokenCount = newChunkStartTokens
+      }
       startParagraph = currentParagraphIndex + 1
       chunkIndex++
     } else if (currentTokenCount > 0 && projectedTotal > softMaxTokens) {
@@ -125,8 +141,16 @@ export function chunkJourney(
 
       // Save chunk immediately - buffer zone means "finish here"
       const chunkText = currentChunk.join('\n\n')
-      const overlap = calculateSmartOverlap(chunkText)
+
+      // Pre-calculate overlap with size constraints (25-100 token overlap)
+      const overlap = calculateSmartOverlap(chunkText, 25, 100)
       const overlapTokens = estimateTokens(overlap)
+
+      // VALIDATION: Ensure chunk doesn't exceed 600 tokens
+      const finalChunkTokens = estimateTokens(chunkText)
+      if (finalChunkTokens > bufferMaxTokens) {
+        console.warn(`⚠️ Journey chunk exceeded ${bufferMaxTokens} tokens (${finalChunkTokens}). This should not happen!`)
+      }
 
       chunks.push({
         text: chunkText,
@@ -139,9 +163,16 @@ export function chunkJourney(
         },
       })
 
-      // Start new chunk with overlap
-      currentChunk = [overlap]
-      currentTokenCount = overlapTokens
+      // Start new chunk with overlap - validate it doesn't exceed limit
+      if (overlapTokens > bufferMaxTokens) {
+        // Overlap itself exceeds limit (should be caught by calculateSmartOverlap's 100 token max, but double-check)
+        console.warn(`⚠️ Overlap (${overlapTokens}) exceeds ${bufferMaxTokens}. Starting fresh chunk.`)
+        currentChunk = []
+        currentTokenCount = 0
+      } else {
+        currentChunk = [overlap]
+        currentTokenCount = overlapTokens
+      }
       startParagraph = currentParagraphIndex + 1
       chunkIndex++
     } else {
@@ -227,8 +258,9 @@ export function chunkJourneyByTokens(
     const paragraphTokens = paragraph.split(/\s+/).length
 
     if (currentTokens > 0 && currentTokens + paragraphTokens > targetTokens) {
-      // Save current chunk with smart overlap
-      const overlap = calculateSmartOverlap(currentText)  // Last complete sentence only
+      // Save current chunk with smart overlap (25-100 token overlap)
+      const overlap = calculateSmartOverlap(currentText, 25, 100)
+      const overlapTokens = overlap.split(/\s+/).length
 
       chunks.push({
         text: currentText,
@@ -242,7 +274,7 @@ export function chunkJourneyByTokens(
 
       // Start new chunk with overlap
       currentText = overlap + '\n\n' + paragraph
-      currentTokens = overlap.split(/\s+/).length + paragraphTokens
+      currentTokens = overlapTokens + paragraphTokens
       chunkIndex++
     } else {
       currentText += (currentText ? '\n\n' : '') + paragraph

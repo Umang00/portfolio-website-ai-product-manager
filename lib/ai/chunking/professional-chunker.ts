@@ -176,6 +176,9 @@ function detectSections(lines: string[]): Record<string, string[]> {
     'EMPLOYMENT',
     'EDUCATION',
     'SKILLS',
+    'TOP SKILLS',
+    'KEY SKILLS',
+    'CORE SKILLS',
     'TECHNICAL SKILLS',
     'SKILLS & TOOLS',
     'SUMMARY',
@@ -263,8 +266,11 @@ function extractExperienceEntries(
     // Detect company name with industry: "Company (Industry)"
     const companyIndustryMatch = line.match(/^([^(]+?)\s*\(([^)]+)\)/)
 
-    // Detect date range patterns
-    const dateMatch = line.match(/(\d{4})\s*[-–]\s*(\d{4}|Present|Current)/i)
+    // Detect date range patterns - support month names + year format
+    // Matches: "October 2024 – June 2025", "Oct 2024 - Present", "2024 - 2025"
+    const dateMatch = line.match(
+      /((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}|\d{4})\s*[-–—]\s*((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}|\d{4}|Present|Current)/i
+    )
 
     // Detect location patterns: "City, State" or "City, Country"
     const locationMatch = line.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/)
@@ -399,10 +405,15 @@ function extractExperienceEntries(
       const part1 = pipeParts[0]
       const part2 = pipeParts[1]
 
+      // Check if part2 contains a date pattern
+      const dateInPart2 = part2.match(
+        /((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}|\d{4})\s*[-–—]\s*((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}|\d{4}|Present|Current)/i
+      )
+
       // First part looks like location, second part looks like date
       if (locationMatch || /^[A-Z][a-z]+/.test(part1)) {
         if (!currentLocation) currentLocation = part1
-        if (!currentDateRange && dateMatch) currentDateRange = part2
+        if (!currentDateRange && dateInPart2) currentDateRange = part2
       }
     }
 
