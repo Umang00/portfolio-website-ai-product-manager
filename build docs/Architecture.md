@@ -59,11 +59,13 @@
 
 **Location:** `/components/ai/` and `/components/api-test/`
 
-**Components:**
-- `chat-modal.jsx` - Main chat interface (modal overlay)
-- `message-bubble.jsx` - Individual message display
-- `voice-input.jsx` - Speech-to-text input
-- `suggested-questions.jsx` - Follow-up prompts
+**Components:** ⚠️ **NOT YET IMPLEMENTED** - Phase 5
+- `chat-modal.tsx` - Main chat interface (modal overlay) - **MISSING**
+- `message-bubble.tsx` - Individual message display - **MISSING**
+- `voice-input.tsx` - Speech-to-text input (optional) - **MISSING**
+- `suggested-questions.tsx` - Follow-up prompts - **MISSING**
+
+**Note:** The `components/ai/` folder exists but is currently empty. The `components/chat-fab.tsx` file is a contact form, not the AI chat interface.
 
 **API Testing Interface:**
 - `/app/api-test/page.tsx` - Main API testing page
@@ -212,13 +214,14 @@ queryAI():
 - `deleteBySource(filename)` - Remove old chunks on update
 
 **Collections:**
-- `embeddings` - Stores chunks with embeddings
-- `file_metadata` - Tracks file hashes and update times
+- `memoryIndex` - Stores chunks with embeddings (NOTE: Collection name is `memoryIndex`, not `embeddings`)
+- `file_metadata` - Tracks file hashes and update times (NOT YET IMPLEMENTED - Phase 3)
 - `conversations` - Optional: store chat histories
 
-#### `file-watcher.js`
+#### `file-watcher.ts` (NOT YET IMPLEMENTED - Phase 3)
 **Purpose:** Detect document changes
-**Key Functions:**
+**Status:** ⚠️ **NOT IMPLEMENTED** - Currently `buildMemoryIndex()` always does full rebuild
+**Key Functions (Planned):**
 - `getFileHash(filepath)` - SHA-256 hash of file
 - `checkForChanges()` - Compare current vs stored hashes
 - `updateFileMetadata(filename, hash)` - Store new hash
@@ -347,6 +350,16 @@ Query: "What did Umang work on recently?"
 **Chunk Size:** 500 tokens
 **Overlap:** Minimal (50 tokens)
 
+#### `markdown-chunker.ts` (TypeScript Implementation)
+**For:** GitHub repository README files
+**Strategy:**
+- Detects markdown headers (# Header, ## Header, etc.)
+- Creates chunks that respect section boundaries
+- Smart paragraph-aware chunking with section awareness
+- Preserves markdown structure
+**Chunk Size:** 400-600 tokens
+**Metadata:** Repository name, language, stars, topics, section names
+
 ### 6. Vector Database
 
 **Platform:** MongoDB Atlas (Free M0 tier)
@@ -371,6 +384,8 @@ Query: "What did Umang work on recently?"
 }
 ```
 
+**Note:** ⚠️ **VERIFICATION NEEDED** - Ensure the vector search index named `vector_index` exists in MongoDB Atlas for the `memoryIndex` collection. The index must be created manually in the Atlas dashboard before vector search will work.
+
 **Document Schema:**
 ```javascript
 {
@@ -394,36 +409,40 @@ Query: "What did Umang work on recently?"
 
 ### Indexing Flow (Startup/Daily Rebuild)
 ```
-1. Cron job triggers /api/ai/refresh
-2. checkForChanges() compares file hashes
-3. If changes detected:
-   a. Load changed PDFs (loaders)
+1. Cron job triggers /api/ai/refresh (⚠️ vercel.json not yet configured)
+2. checkForChanges() compares file hashes (⚠️ NOT IMPLEMENTED - Phase 3)
+   - Currently: buildMemoryIndex() always does full rebuild
+   - Future: Will detect changes and only rebuild modified files
+3. If changes detected (or forceRebuild=true):
+   a. Load all PDFs (loaders) - Currently loads all, not just changed
    b. Chunk based on document type (chunkers)
    c. Generate embeddings (OpenAI API)
-   d. Delete old chunks from vector DB
+   d. Clear all embeddings (clearEmbeddings())
    e. Insert new chunks
-   f. Update file hashes in metadata collection
+   f. Update file hashes in metadata collection (⚠️ NOT IMPLEMENTED)
 4. Return success
 ```
 
 ### Query Flow (User Asks Question)
 ```
-1. User types question in chat modal
-2. Frontend sends POST to /api/ai/query
-3. API route calls queryAI(query, history)
+1. User types question in chat modal (⚠️ NOT IMPLEMENTED - Phase 5)
+   - Currently: No frontend UI exists
+   - Workaround: Use /api-test page or direct API calls
+2. Frontend sends POST to /api/ai/query (✅ IMPLEMENTED)
+3. API route calls queryAI(query, history) (✅ IMPLEMENTED)
 4. Service layer:
-   a. Analyze query intent (NEW: analyzeQuery)
-   b. Generate embedding for query (OpenAI)
-   c. Smart vector search (NEW: with filters & re-ranking)
-      - Get 20 candidates from MongoDB
+   a. Analyze query intent (✅ analyzeQueryForCategories)
+   b. Generate embedding for query (OpenAI) (✅ IMPLEMENTED)
+   c. Smart vector search (✅ with filters & re-ranking)
+      - Get candidates from MongoDB
       - Apply metadata filters
       - Re-rank by multiple signals
       - Select top 5
-   d. Construct context from retrieved chunks
-   e. Call LLM (OpenRouter) with context + history + query
-   f. Generate suggested follow-ups (NEW)
-5. Return response + sources + suggestions to frontend
-6. Frontend displays with relevance scores (NEW)
+   d. Construct context from retrieved chunks (✅ IMPLEMENTED)
+   e. Call LLM (OpenRouter) with context + history + query (✅ IMPLEMENTED)
+   f. Generate suggested follow-ups (✅ IMPLEMENTED)
+5. Return response + sources + suggestions (✅ IMPLEMENTED)
+6. Frontend displays with relevance scores (⚠️ NOT IMPLEMENTED - Phase 5)
 ```
 
 ## Technology Stack
@@ -439,7 +458,7 @@ Query: "What did Umang work on recently?"
 | LLM | OpenRouter (Llama 3.1 8B free) | Chat completions |
 | PDF Parsing | pdf-parse-new | Extract text from PDFs (migrated from pdf-parse for stability) |
 | GitHub API | node-fetch | Fetch repository data |
-| Scheduling | Vercel Cron | Daily rebuild trigger |
+| Scheduling | Vercel Cron | Daily rebuild trigger (⚠️ vercel.json not configured) |
 | Hosting | Vercel | Deployment platform |
 
 ## Environment Variables

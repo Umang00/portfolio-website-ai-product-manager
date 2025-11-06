@@ -13,11 +13,11 @@
 - [✅] **Phase 0: Pre-Setup** (2 hours) - COMPLETED
 - [✅] **Phase 1: Backend Setup** (6-8 hours) - COMPLETED
 - [✅] **Phase 2: Document Processing** (4-5 hours) - COMPLETED
-- [ ] Phase 3: Change Detection (3-4 hours)
+- [❌] **Phase 3: Change Detection** (3-4 hours) - **NOT STARTED** (file-watcher.ts missing)
 - [✅] **Phase 4: LLM Integration** (2-3 hours) - COMPLETED
-- [ ] Phase 5: Frontend Integration (4-5 hours)
-- [ ] Phase 6: MongoDB Configuration (1 hour)
-- [✅] **Phase 7: Deployment** (2-3 hours) - COMPLETED (lockfile fixed)
+- [❌] **Phase 5: Frontend Integration** (4-5 hours) - **NOT STARTED** (components/ai/ folder empty)
+- [⚠️] **Phase 6: MongoDB Configuration** (1 hour) - **NEEDS VERIFICATION** (index may exist, needs confirmation)
+- [⚠️] **Phase 7: Deployment** (2-3 hours) - **PARTIAL** (lockfile fixed, but vercel.json missing for cron)
 
 ## 🧪 Testing Requirements
 
@@ -39,7 +39,14 @@
 5. Test endpoints should be documented in the API testing UI (Swagger-like interface)
 
 **Total:** 24-31 hours
-**Completed:** 14-18 hours (Phase 0 + Phase 1 + Phase 2 + Phase 4 + Phase 7)
+**Completed:** 14-18 hours (Phase 0 + Phase 1 + Phase 2 + Phase 4)
+**Remaining:** ~10-13 hours (Phase 3: 3-4h, Phase 5: 4-5h, Phase 6: 1h verification, Phase 7: 1h vercel.json)
+
+**Critical Blockers:**
+1. ❌ Phase 5 (Frontend) - Blocks user-facing feature
+2. ❌ Phase 3 (Change Detection) - Increases operational costs
+3. ⚠️ Phase 6 (MongoDB Index) - May cause vector search to fail
+4. ⚠️ Phase 7 (Vercel Cron) - Prevents automated daily rebuilds
 
 ---
 
@@ -267,6 +274,11 @@ These are extracted/refactored from aiService.js:
   - All routes compiled successfully
 
 **Checkpoint:** ✅ Backend infrastructure in place, MongoDB connected, API routes created
+
+**Additional Notes:**
+- Collection name is `memoryIndex` (not `embeddings`)
+- All code is TypeScript with proper types
+- Serverless-friendly MongoDB connection caching implemented
 
 ### 📝 Phase 1 Completion Notes
 
@@ -572,11 +584,20 @@ Root:
 
 **Checkpoint:** ✅ All PDFs loading, chunking strategies working with smart boundaries, chunk quality verified, tested end-to-end
 
+**Additional Implementations:**
+- ✅ `markdown-chunker.ts` exists for GitHub README chunking (not originally documented)
+- ✅ `boundary-detector.ts` utility for smart chunking boundaries
+- ✅ Test endpoints for PDF parsing and chunking
+
 ---
 
 ## 🔄 PHASE 3: Change Detection System
 
+**Status:** ❌ **NOT STARTED** - This phase is critical for reducing API costs
+
 **Objective:** Implement file change detection for incremental updates
+
+**Current Impact:** Without change detection, every rebuild regenerates embeddings for all documents, increasing OpenAI API costs unnecessarily.
 
 ### Create File Metadata Collection
 - [ ] Design MongoDB schema
@@ -817,7 +838,17 @@ Root:
 
 ## 🎨 PHASE 5: Frontend Integration
 
+**Status:** ❌ **NOT STARTED** - This is the highest priority blocker for user-facing features
+
 **Objective:** Add chat UI to existing portfolio site
+
+**Current State:** 
+- Backend API is fully functional (`/api/ai/query`)
+- `components/ai/` folder exists but is **empty**
+- `components/chat-fab.tsx` exists but is a contact form, NOT the AI chat
+- No chat integration in `app/page.tsx`
+
+**Impact:** Users cannot interact with the AI companion from the website. The backend is complete but unusable without frontend.
 
 ### Copy Components from Reference
 - [ ] Copy `/frontend/components/AICompanion.jsx` → `/components/ai/chat-modal.jsx`
@@ -934,7 +965,14 @@ Root:
 
 ## 🗄️ PHASE 6: MongoDB Atlas Configuration
 
+**Status:** ⚠️ **NEEDS VERIFICATION** - Code is ready, but index may not be created in Atlas
+
 **Objective:** Set up vector search index for production
+
+**Important Notes:**
+- Collection name in code: `memoryIndex` (not `embeddings` as some docs suggest)
+- Index name in code: `vector_index`
+- The vector search will fail if the index doesn't exist in MongoDB Atlas
 
 ### Create Atlas Search Index
 - [ ] Log in to MongoDB Atlas
@@ -1042,7 +1080,7 @@ Root:
   - [ ] Note your production URL (e.g., your-site.vercel.app)
 
 ### Configure Vercel Cron
-- [ ] Create `vercel.json` in repo root
+- [ ] Create `vercel.json` in repo root ⚠️ **MISSING**
 ```json
   {
     "crons": [{
@@ -1060,6 +1098,8 @@ Root:
 - [ ] Verify cron in Vercel dashboard
   - [ ] Go to Project → Cron Jobs
   - [ ] Should see job scheduled for 2 AM daily
+
+**Current Status:** The `/api/ai/refresh` endpoint exists and works, but there is no `vercel.json` file to schedule it.
 
 ### Post-Deployment Testing
 - [ ] Visit production site
@@ -1113,22 +1153,22 @@ Root:
 ## 🎉 COMPLETION CHECKLIST
 
 ### Functional Requirements
-- [ ] Users can open chat modal from portfolio site
-- [ ] Users can ask questions in natural language
-- [ ] AI responds with relevant, contextual answers
-- [ ] Responses cite sources (LinkedIn, Resume, Journey, GitHub)
-- [ ] Conversation history maintained within session
-- [ ] Responses are in Umang's voice (first person)
+- [❌] Users can open chat modal from portfolio site - **BLOCKED** (Phase 5 not implemented)
+- [✅] Users can ask questions in natural language - **API works** (via /api-test or direct API calls)
+- [✅] AI responds with relevant, contextual answers - **IMPLEMENTED**
+- [✅] Responses cite sources (LinkedIn, Resume, Journey, GitHub) - **IMPLEMENTED**
+- [✅] Conversation history maintained within session - **IMPLEMENTED** (API supports it)
+- [✅] Responses are in Umang's voice (first person) - **IMPLEMENTED** (system prompt configured)
 
 ### Technical Requirements
-- [ ] All PDFs loading correctly
-- [ ] Chunking strategies working (LinkedIn vs Journey)
-- [ ] Embeddings generated via OpenAI
-- [ ] Vector search returning relevant results
-- [ ] LLM using OpenRouter free tier
-- [ ] File change detection functional
-- [ ] Daily cron job running
-- [ ] Manual rebuild endpoint working
+- [✅] All PDFs loading correctly - **IMPLEMENTED**
+- [✅] Chunking strategies working (LinkedIn vs Journey vs GitHub) - **IMPLEMENTED** (includes markdown chunker)
+- [✅] Embeddings generated via OpenAI - **IMPLEMENTED**
+- [⚠️] Vector search returning relevant results - **NEEDS VERIFICATION** (MongoDB index may not exist)
+- [✅] LLM using OpenRouter free tier - **IMPLEMENTED**
+- [❌] File change detection functional - **NOT IMPLEMENTED** (Phase 3)
+- [❌] Daily cron job running - **NOT CONFIGURED** (vercel.json missing)
+- [✅] Manual rebuild endpoint working - **IMPLEMENTED**
 
 ### Performance Requirements
 - [ ] Query response time < 3 seconds (p95)
@@ -1143,11 +1183,12 @@ Root:
 - [ ] Error handling works (graceful failures)
 
 ### Documentation
-- [ ] PRD.md exists and is current
-- [ ] ARCHITECTURE.md exists and is current
-- [ ] TODO.md completed (this file)
-- [ ] MIGRATION_GUIDE.md exists
-- [ ] README.md updated with AI companion feature
+- [✅] PRD.md exists and is current - **UPDATED** (reflects current status)
+- [✅] ARCHITECTURE.md exists and is current - **UPDATED** (fixed discrepancies)
+- [✅] TODO.md completed (this file) - **UPDATED** (reflects actual status)
+- [✅] MIGRATION_GUIDE.md exists
+- [⚠️] README.md updated with AI companion feature - **NEEDS UPDATE** (README is minimal)
+- [✅] CODEBASE_ANALYSIS.md created - **NEW** (comprehensive analysis document)
 
 ---
 

@@ -41,7 +41,10 @@ Add an intelligent AI companion to the portfolio website that can answer questio
 - **Relevance Scoring:** Display confidence scores for retrieved sources
 - **Suggested Follow-ups:** Context-aware follow-up questions based on retrieved content
 
-### 4. Chat Interface
+### 4. Chat Interface ⚠️ **NOT YET IMPLEMENTED** (Phase 5)
+**Status:** Backend API is complete, but frontend UI components are missing.
+
+**Planned Features:**
 - Modal overlay (doesn't disrupt main site navigation)
 - Clean, modern UI matching portfolio theme
 - Message history display
@@ -49,12 +52,13 @@ Add an intelligent AI companion to the portfolio website that can answer questio
 - Optional: Voice input support
 - Optional: Suggested follow-up questions
 
+**Current Workaround:** Users can test the API via `/api-test` page, but there is no integrated chat UI on the main portfolio site.
+
 ### 5. Admin Features
-- Manual index rebuild trigger (authenticated endpoint)
-- Automatic daily rebuild (via cron job)
-- File change detection (hash-based)
-- Health check endpoint
-- **API Testing Interface**: Swagger-like UI for testing all endpoints with authentication handled automatically
+- ✅ Manual index rebuild trigger (authenticated endpoint) - **IMPLEMENTED**
+- ⚠️ Automatic daily rebuild (via cron job) - **PARTIAL** (endpoint exists, vercel.json not configured)
+- ❌ File change detection (hash-based) - **NOT IMPLEMENTED** (Phase 3)
+- ✅ **API Testing Interface**: Swagger-like UI for testing all endpoints - **IMPLEMENTED**
   - Located at `/api-test`
   - Tests all RAG pipeline phases without generating embeddings
   - Secure admin authentication with local storage
