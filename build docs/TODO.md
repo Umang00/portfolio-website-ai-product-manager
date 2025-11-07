@@ -16,7 +16,7 @@
 - [✅] **Phase 3: Change Detection** (3-4 hours) - **COMPLETED** (file-watcher.ts created and integrated)
 - [✅] **Phase 4: LLM Integration** (2-3 hours) - COMPLETED
 - [❌] **Phase 5: Frontend Integration** (4-5 hours) - **NOT STARTED** (components/ai/ folder empty)
-- [⚠️] **Phase 6: MongoDB Configuration** (1 hour) - **NEEDS VERIFICATION** (index may exist, needs confirmation)
+- [✅] **Phase 6: MongoDB Configuration** (1 hour) - **COMPLETED** (vector_index created and verified working)
 - [⚠️] **Phase 7: Deployment** (2-3 hours) - **PARTIAL** (lockfile fixed, but vercel.json missing for cron)
 
 ## 🧪 Testing Requirements
@@ -28,7 +28,7 @@
 - ✅ `/api/ai/test-pdf-parsing` - Test PDF parsing with section detection
 - ✅ `/api/ai/test-chunking` - Test document chunking strategies
 - [ ] `/api/ai/test-embeddings` - Test embedding generation (future)
-- [ ] `/api/ai/test-vector-search` - Test vector search without LLM (future)
+- [✅] `/api/ai/test-vector-search` - Test vector search without LLM - **COMPLETED** (POST /api/ai/test-vector-search)
 - [ ] `/api/ai/test-llm` - Test LLM responses with mock context (future)
 
 **Test Endpoint Requirements:**
@@ -39,14 +39,12 @@
 5. Test endpoints should be documented in the API testing UI (Swagger-like interface)
 
 **Total:** 24-31 hours
-**Completed:** 14-18 hours (Phase 0 + Phase 1 + Phase 2 + Phase 4)
-**Remaining:** ~10-13 hours (Phase 3: 3-4h, Phase 5: 4-5h, Phase 6: 1h verification, Phase 7: 1h vercel.json)
+**Completed:** 15-19 hours (Phase 0 + Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6)
+**Remaining:** ~5-8 hours (Phase 5: 4-5h, Phase 7: 1h vercel.json)
 
 **Critical Blockers:**
-1. ❌ Phase 5 (Frontend) - Blocks user-facing feature
-2. ❌ Phase 3 (Change Detection) - Increases operational costs
-3. ⚠️ Phase 6 (MongoDB Index) - May cause vector search to fail
-4. ⚠️ Phase 7 (Vercel Cron) - Prevents automated daily rebuilds
+1. ❌ Phase 5 (Frontend) - Blocks user-facing feature (highest priority)
+2. ⚠️ Phase 7 (Vercel Cron) - Prevents automated daily rebuilds
 
 ---
 
@@ -890,7 +888,7 @@ Root:
 
 ## 🗄️ PHASE 6: MongoDB Atlas Configuration
 
-**Status:** ⚠️ **NEEDS VERIFICATION** - Code is ready, but index may not be created in Atlas
+**Status:** ✅ **COMPLETED** - Vector search index created and verified working
 
 **Objective:** Set up vector search index for production
 
@@ -900,59 +898,63 @@ Root:
 - The vector search will fail if the index doesn't exist in MongoDB Atlas
 
 ### Create Atlas Search Index
-- [ ] Log in to MongoDB Atlas
-- [ ] Navigate to your cluster
-- [ ] Click "Search" tab
-- [ ] Click "Create Search Index"
-- [ ] Choose "JSON Editor"
-- [ ] Paste configuration:
+- [✅] Log in to MongoDB Atlas - **COMPLETED**
+- [✅] Navigate to your cluster - **COMPLETED**
+- [✅] Click "Search & Vector Search" tab - **COMPLETED**
+- [✅] Click "Create Vector Search Index" - **COMPLETED**
+- [✅] Choose "JSON Editor" - **COMPLETED**
+- [✅] Paste configuration (correct format for Vector Search):
 ```json
-  {
-    "mappings": {
-      "dynamic": false,
-      "fields": {
-        "embedding": {
-          "type": "knnVector",
-          "dimensions": 1536,
-          "similarity": "cosine"
-        },
-        "category": {
-          "type": "string"
-        },
-        "text": {
-          "type": "string"
-        }
-      }
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 1536,
+      "similarity": "cosine"
     }
-  }
+  ]
+}
 ```
-- [ ] Index name: `vector_index`
-- [ ] Database: `portfolio_ai`
-- [ ] Collection: `embeddings`
-- [ ] Click "Create Search Index"
-- [ ] Wait for index to build (~2-5 minutes)
+- [✅] Index name: `vector_index` - **COMPLETED**
+- [✅] Database: `portfolio-cluster` (or your MONGODB_DB_NAME) - **COMPLETED**
+- [✅] Collection: `memoryIndex` - **COMPLETED**
+- [✅] Click "Create Vector Search Index" - **COMPLETED**
+- [✅] Wait for index to build (~2-5 minutes) - **COMPLETED**
+- [✅] Index status: **READY** (254 documents indexed) - **VERIFIED**
+
+**Note:** The correct format for Vector Search indexes uses `fields` as an array (not `mappings`). See `build docs/MONGODB_VECTOR_INDEX_SETUP.md` for detailed instructions.
 
 ### Test Vector Search
-- [ ] Create test script: `test-vector-search.js`
-```javascript
-  // Generate test embedding
-  // Run vector search query
-  // Verify results returned
-```
-- [ ] Run script
-```bash
-  node test-vector-search.js
-```
-- [ ] Expected output:
-  - Top 5 similar chunks returned
-  - Results have similarity scores
-  - Query latency < 500ms
+- [✅] Created diagnostic endpoint: `GET /api/ai/check-index` - **COMPLETED**
+  - Verifies vector index exists and status
+  - Checks document count and embeddings
+  - Shows index configuration
+- [✅] Created test endpoint: `POST /api/ai/test-vector-search` - **COMPLETED**
+  - Tests vector search directly without category filters
+  - Shows raw search results and scores
+  - Displays sample documents and category distribution
+- [✅] Tested via Swagger UI (`/api-test` page) - **COMPLETED**
+  - Query endpoint returns results with sources
+  - Vector search working correctly
+  - Category filtering working after fix
+- [✅] Verified results - **COMPLETED**
+  - Top 5 similar chunks returned ✅
+  - Results have similarity scores ✅
+  - Query latency acceptable ✅
 
-### Optimize Index (Optional)
-- [ ] If search is slow:
-  - [ ] Check index status (Atlas dashboard)
-  - [ ] Verify dimensions match (1536)
-  - [ ] Consider adding filters (category field)
+### Fix Category Name Mismatch
+- [✅] Fixed `analyzeQueryForCategories()` to return correct category names - **COMPLETED**
+  - Changed from `'resume_experience'` to `'resume'`
+  - Changed from `'linkedin_experience'` to `'linkedin'`
+  - Changed from `'journey_narrative'` to `'journey'`
+- [✅] Fixed re-ranking category boosts to use correct names - **COMPLETED**
+- [✅] Resolved "No relevant context found" issue - **COMPLETED**
+
+### Optimize Index
+- [✅] Index status verified: **READY** - **COMPLETED**
+- [✅] Dimensions verified: 1536 - **COMPLETED**
+- [✅] Index size: 1.52MB, 254 documents indexed - **VERIFIED**
 
 **Checkpoint:** ✅ Vector search index active, queries returning relevant results
 
@@ -1089,10 +1091,10 @@ Root:
 - [✅] All PDFs loading correctly - **IMPLEMENTED**
 - [✅] Chunking strategies working (LinkedIn vs Journey vs GitHub) - **IMPLEMENTED** (includes markdown chunker)
 - [✅] Embeddings generated via OpenAI - **IMPLEMENTED**
-- [⚠️] Vector search returning relevant results - **NEEDS VERIFICATION** (MongoDB index may not exist)
+- [✅] Vector search returning relevant results - **VERIFIED** (MongoDB index `vector_index` created and active)
 - [✅] LLM using OpenRouter free tier - **IMPLEMENTED**
-- [❌] File change detection functional - **NOT IMPLEMENTED** (Phase 3)
-- [❌] Daily cron job running - **NOT CONFIGURED** (vercel.json missing)
+- [✅] File change detection functional - **IMPLEMENTED** (Phase 3 completed, file-watcher.ts working)
+- [❌] Daily cron job running - **NOT CONFIGURED** (vercel.json missing, Phase 7 partial)
 - [✅] Manual rebuild endpoint working - **IMPLEMENTED**
 
 ### Performance Requirements

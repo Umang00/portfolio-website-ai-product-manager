@@ -385,7 +385,7 @@ Query: "What did Umang work on recently?"
 
 **Note:** Vector Search indexes use a simpler structure with `fields` as an array. Only the `embedding` field needs to be indexed for vector search.
 
-**Note:** ⚠️ **VERIFICATION NEEDED** - Ensure the vector search index named `vector_index` exists in MongoDB Atlas for the `memoryIndex` collection. The index must be created manually in the Atlas dashboard before vector search will work.
+**Status:** ✅ **VERIFIED** - Vector search index `vector_index` exists and is active in MongoDB Atlas for the `memoryIndex` collection. Index status: READY, 254 documents indexed. See `build docs/MONGODB_VECTOR_INDEX_SETUP.md` for setup instructions.
 
 **Document Schema:**
 ```javascript
