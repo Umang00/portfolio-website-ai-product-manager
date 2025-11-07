@@ -23,7 +23,10 @@
       "Bash($null)",
       "Bash(wmic process where ProcessId=15564 delete)",
       "Bash(node test-pdf-direct.js:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(python3:*)",
+      "Bash(timeout /t 15 /nobreak)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

@@ -12,6 +12,7 @@ import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
 import { BackToTop } from "@/components/back-to-top"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ChatFAB } from "@/components/chat-fab"
 
 export default function Home() {
   return (
@@ -34,7 +35,7 @@ export default function Home() {
       <ContactSection />
       <Footer />
       <BackToTop />
-
+      <ChatFAB />
     </main>
   )
 }

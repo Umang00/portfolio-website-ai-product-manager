@@ -9,16 +9,43 @@ const endpoints: APIEndpoint[] = [
     name: 'Query AI (Chat)',
     method: 'POST',
     path: '/api/ai/query',
-    description: 'Query the AI companion with a question.\n• Returns AI response based on retrieved context\n• Supports conversation history for context\n• Includes suggested follow-up questions',
+    description: 'Query the AI companion with a question.\n• Returns AI response based on retrieved context\n• Supports conversation history for multi-turn conversations\n• Returns updated conversationHistory array (ready to pass to next request)\n• Includes suggested follow-up questions\n\n💡 Tip: Use the returned conversationHistory in your next request for context-aware responses',
     requiresAuth: false,
     body: {
-      query: 'string (required)',
-      conversationHistory: 'array (optional)'
+      query: 'string (required) - Your question',
+      conversationHistory: 'array (optional) - Previous messages in format [{role: "user"|"assistant", content: string}]'
     },
     example: {
       query: 'What did Umang work on at Hunch?',
       conversationHistory: []
-    }
+    },
+    examples: [
+      {
+        name: 'First Query (No History)',
+        description: 'Start a new conversation',
+        body: {
+          query: 'What did Umang work on at Hunch?',
+          conversationHistory: []
+        }
+      },
+      {
+        name: 'Follow-up Query (With History)',
+        description: 'Continue conversation using returned conversationHistory',
+        body: {
+          query: 'What was his biggest achievement there?',
+          conversationHistory: [
+            {
+              role: 'user',
+              content: 'What did Umang work on at Hunch?'
+            },
+            {
+              role: 'assistant',
+              content: 'At Hunch, I worked on building an AI product that helped users discover personalized recommendations...'
+            }
+          ]
+        }
+      }
+    ]
   },
   {
     name: 'Create Index (Change Detection)',

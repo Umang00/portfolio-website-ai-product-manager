@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Search, ArrowUp } from "lucide-react"
 import { Typewriter } from "react-simple-typewriter"
 import { LinkedInButton, GitHubButton, ResumeButton } from "@/components/ui/social-buttons"
+import { ChatOverlay } from "@/components/ai/chat-overlay"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
 export function Hero() {
   const [currentGreeting, setCurrentGreeting] = useState(0)
+  const [query, setQuery] = useState("")
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -19,6 +22,22 @@ export function Hero() {
     }, 4000)
     return () => clearInterval(interval)
   }, [])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmedQuery = query.trim()
+    if (trimmedQuery) {
+      setIsChatOpen(true)
+      // The ChatOverlay will handle sending the query via initialQuery prop
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleSubmit(e)
+    }
+  }
 
   return (
     <section
@@ -69,23 +88,25 @@ export function Hero() {
 
         </div>
 
-        <div className="relative w-full max-w-3xl mx-auto">
-
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <form onSubmit={handleSubmit} className="relative w-full max-w-3xl mx-auto">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
           <Input
-              placeholder="Ask me anything..."
-              className="pl-12 pr-16 h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300"
-        />
-
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask me anything..."
+            className="pl-12 pr-16 h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300"
+          />
           <Button
-  size="icon"
-  variant="ghost"
-  className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300"
->
-  <ArrowUp className="h-5 w-5" />
-</Button>
-
-        </div>
+            type="submit"
+            size="icon"
+            variant="ghost"
+            disabled={!query.trim()}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 disabled:opacity-50"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>
+        </form>
 
         <div className="flex justify-center gap-4">
           <LinkedInButton />
@@ -93,6 +114,16 @@ export function Hero() {
           <ResumeButton />
         </div>
       </div>
+
+      {/* Full-page Chat Overlay */}
+      <ChatOverlay
+        open={isChatOpen}
+        onClose={() => {
+          setIsChatOpen(false)
+          setQuery("")
+        }}
+        initialQuery={query}
+      />
     </section>
   )
 }

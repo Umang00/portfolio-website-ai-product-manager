@@ -11,6 +11,11 @@ export interface APIEndpoint {
   body?: Record<string, string>
   queryParams?: Record<string, string>
   example?: Record<string, any>
+  examples?: Array<{
+    name: string
+    description: string
+    body: Record<string, any>
+  }>
 }
 
 interface APITesterProps {
@@ -20,6 +25,7 @@ interface APITesterProps {
 
 export function APITester({ endpoints, adminSecret }: APITesterProps) {
   const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint | null>(null)
+  const [selectedExampleIndex, setSelectedExampleIndex] = useState<number | null>(null)
   const [requestBody, setRequestBody] = useState<string>('')
   const [queryParams, setQueryParams] = useState<Record<string, string>>({})
   const [response, setResponse] = useState<any>(null)
@@ -28,6 +34,7 @@ export function APITester({ endpoints, adminSecret }: APITesterProps) {
 
   const handleEndpointSelect = (endpoint: APIEndpoint) => {
     setSelectedEndpoint(endpoint)
+    setSelectedExampleIndex(null)
     setResponse(null)
     setError(null)
     
@@ -204,10 +211,45 @@ export function APITester({ endpoints, adminSecret }: APITesterProps) {
             {/* Request Body (for POST) */}
             {selectedEndpoint.method === 'POST' && selectedEndpoint.body && (
               <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h3 className="text-lg font-semibold mb-3">Request Body</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold">Request Body</h3>
+                  {selectedEndpoint.examples && selectedEndpoint.examples.length > 0 && (
+                    <div className="flex gap-2">
+                      {selectedEndpoint.examples.map((example, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setSelectedExampleIndex(idx)
+                            const exampleBody = { ...example.body }
+                            if (exampleBody.secret === '' && adminSecret) {
+                              exampleBody.secret = adminSecret
+                            }
+                            setRequestBody(JSON.stringify(exampleBody, null, 2))
+                          }}
+                          className={`px-3 py-1 text-xs rounded transition-colors ${
+                            selectedExampleIndex === idx
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                          title={example.description}
+                        >
+                          {example.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {selectedEndpoint.examples && selectedExampleIndex !== null && (
+                  <div className="mb-3 p-2 bg-blue-900/30 border border-blue-700 rounded text-sm text-blue-300">
+                    {selectedEndpoint.examples[selectedExampleIndex].description}
+                  </div>
+                )}
                 <textarea
                   value={requestBody}
-                  onChange={(e) => setRequestBody(e.target.value)}
+                  onChange={(e) => {
+                    setRequestBody(e.target.value)
+                    setSelectedExampleIndex(null) // Clear selection when manually editing
+                  }}
                   className="w-full h-48 px-4 py-2 bg-gray-900 border border-gray-600 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter JSON request body..."
                 />
@@ -273,10 +315,38 @@ export function APITester({ endpoints, adminSecret }: APITesterProps) {
             {/* Response Display */}
             {response && (
               <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h3 className="text-lg font-semibold mb-3">Response</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold">Response</h3>
+                  {selectedEndpoint.path === '/api/ai/query' && response.conversationHistory && (
+                    <button
+                      onClick={() => {
+                        const nextRequest = {
+                          query: '', // User can fill this in
+                          conversationHistory: response.conversationHistory,
+                        }
+                        setRequestBody(JSON.stringify(nextRequest, null, 2))
+                        setSelectedExampleIndex(null) // Clear example selection
+                      }}
+                      className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
+                      title="Use this conversationHistory for your next request"
+                    >
+                      📋 Use History for Next Request
+                    </button>
+                  )}
+                </div>
                 <pre className="bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm">
                   {JSON.stringify(response, null, 2)}
                 </pre>
+                {selectedEndpoint.path === '/api/ai/query' && response.conversationHistory && (
+                  <div className="mt-4 p-3 bg-blue-900/30 border border-blue-700 rounded text-sm">
+                    <p className="text-blue-300 font-semibold mb-2">💡 Conversation History:</p>
+                    <p className="text-gray-300">
+                      The response includes a <code className="bg-gray-800 px-1 rounded">conversationHistory</code> array 
+                      with {response.conversationHistory.length} messages. Click "Use for Next Request" above to 
+                      automatically populate it for your follow-up query.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
