@@ -1,5 +1,5 @@
 // lib/ai/service.ts
-import { loadAllPDFs, PDFDocument } from './loaders/pdf-loader'
+import { loadAllPDFs, loadPDF, PDFDocument } from './loaders/pdf-loader'
 import { loadGitHubRepos, GitHubRepo } from './loaders/github-loader'
 import { chunkResume, chunkLinkedIn, Chunk as ProfessionalChunk } from './chunking/professional-chunker'
 import { chunkJourney, Chunk as NarrativeChunk } from './chunking/narrative-chunker'
@@ -9,6 +9,7 @@ import { generateEmbedding, batchGenerateEmbeddings } from './embeddings'
 import {
   storeEmbeddings,
   clearEmbeddings,
+  deleteBySource,
   searchSimilar,
   smartSearch,
   analyzeQueryForCategories,
@@ -16,6 +17,14 @@ import {
   VectorDocument,
 } from './vector-store'
 import { generateResponse, optimizeQuery, generateFollowUpQuestions, compressMemory } from './llm'
+import {
+  checkForChanges,
+  updateFileMetadata,
+  getFileHash,
+  getFileSize,
+} from './file-watcher'
+import path from 'path'
+import crypto from 'crypto'
 
 type Chunk = ProfessionalChunk | NarrativeChunk | GenericChunk | MarkdownChunk
 
@@ -29,29 +38,105 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
   skipped?: boolean
   chunksCreated: number
   documentsProcessed: number
+  filesUpdated?: string[]
   error?: string
 }> {
   try {
     console.log('🔨 Building memory index...')
 
-    // Step 1: Load all documents
-    console.log('📥 Loading documents...')
-    const pdfDocuments = await loadAllPDFs()
-    console.log(`Loaded ${pdfDocuments.length} PDF documents`)
+    // Step 1: Check for changes (unless force rebuild)
+    let changedPDFs: string[] = []
+    let changedGitHubRepos: string[] = []
 
-    // Step 2: Load GitHub data (optional)
+    if (!forceRebuild) {
+      console.log('🔍 Checking for file changes...')
+      
+      // Load GitHub repos first to check for changes
+      let githubReposForCheck: Array<{ name: string; updatedAt: string }> = []
+      if (process.env.GITHUB_USERNAME) {
+        const repos = await loadGitHubRepos()
+        githubReposForCheck = repos.map(r => ({ name: r.name, updatedAt: r.updatedAt }))
+      }
+
+      const changes = await checkForChanges(githubReposForCheck)
+      changedPDFs = changes.changedPDFs
+      changedGitHubRepos = changes.changedGitHubRepos
+
+      if (changedPDFs.length === 0 && changedGitHubRepos.length === 0) {
+        console.log('✅ No changes detected, skipping rebuild')
+        return {
+          success: true,
+          skipped: true,
+          chunksCreated: 0,
+          documentsProcessed: 0,
+        }
+      }
+
+      console.log(`📝 Changes detected: ${changedPDFs.length} PDF(s), ${changedGitHubRepos.length} GitHub repo(s)`)
+    }
+
+    // Step 2: Load documents (all if force rebuild, or only changed if incremental)
+    console.log('📥 Loading documents...')
+    let pdfDocuments: PDFDocument[] = []
+
+    if (forceRebuild) {
+      // Load all PDFs
+      pdfDocuments = await loadAllPDFs()
+      console.log(`Loaded ${pdfDocuments.length} PDF documents (full rebuild)`)
+    } else {
+      // Load only changed PDFs
+      if (changedPDFs.length > 0) {
+        console.log(`Loading ${changedPDFs.length} changed PDF file(s)...`)
+        for (const filename of changedPDFs) {
+          try {
+            const doc = await loadPDF(filename)
+            pdfDocuments.push(doc)
+          } catch (error) {
+            console.error(`Error loading ${filename}:`, error)
+          }
+        }
+        console.log(`Loaded ${pdfDocuments.length} changed PDF documents`)
+      }
+    }
+
+    // Step 3: Load GitHub data (optional)
     let githubRepos: GitHubRepo[] = []
+
     if (process.env.GITHUB_USERNAME) {
       console.log('📥 Loading GitHub repositories...')
       githubRepos = await loadGitHubRepos()
-      console.log(`Loaded ${githubRepos.length} GitHub repositories`)
+
+      if (!forceRebuild) {
+        // Filter to only changed repos
+        if (changedGitHubRepos.length > 0) {
+          githubRepos = githubRepos.filter(r => changedGitHubRepos.includes(r.name))
+          console.log(`Filtered to ${githubRepos.length} changed GitHub repository/repositories`)
+        } else {
+          githubRepos = []
+          console.log('No changed GitHub repositories')
+        }
+      } else {
+        console.log(`Loaded ${githubRepos.length} GitHub repositories (full rebuild)`)
+      }
     } else {
       console.log('⏭️  Skipping GitHub (no GITHUB_USERNAME configured)')
     }
 
-    // Step 3: Chunk documents based on type
+    // Step 4: Delete old embeddings for changed files (before processing new chunks)
+    if (!forceRebuild && (changedPDFs.length > 0 || changedGitHubRepos.length > 0)) {
+      const sourcesToDelete = [...changedPDFs, ...changedGitHubRepos]
+      console.log(`🗑️  Deleting old embeddings for changed sources: ${sourcesToDelete.join(', ')}`)
+      await deleteBySource(sourcesToDelete)
+    } else if (forceRebuild) {
+      // Clear all embeddings for full rebuild
+      console.log('🗑️  Clearing all embeddings (full rebuild)')
+      await clearEmbeddings()
+    }
+
+    // Step 5: Chunk documents based on type
     console.log('✂️  Chunking documents...')
     const allChunks: Chunk[] = []
+    const fileChunkCounts: Map<string, number> = new Map()
 
     for (const doc of pdfDocuments) {
       let docChunks: Chunk[] = []
@@ -75,10 +160,11 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
           break
       }
 
+      fileChunkCounts.set(doc.filename, docChunks.length)
       allChunks.push(...docChunks)
     }
 
-    // Step 4: Chunk GitHub repositories with smart section-aware chunking
+    // Step 6: Chunk GitHub repositories with smart section-aware chunking
     for (const repo of githubRepos) {
       if (!repo.readme) continue
 
@@ -97,10 +183,11 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
         new Date(repo.updatedAt).getFullYear().toString()
       )
 
+      fileChunkCounts.set(repo.name, githubChunks.length)
       allChunks.push(...githubChunks)
     }
 
-    console.log(`✅ Created ${allChunks.length} chunks from all sources`)
+    console.log(`✅ Created ${allChunks.length} chunks from ${pdfDocuments.length + githubRepos.length} source(s)`)
 
     if (allChunks.length === 0) {
       console.warn('⚠️  No chunks created. Check your documents folder.')
@@ -112,7 +199,7 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
       }
     }
 
-    // Step 5: Generate embeddings
+    // Step 7: Generate embeddings
     console.log('🧠 Generating embeddings...')
     const texts = allChunks.map(chunk => chunk.text)
     const embeddings = await batchGenerateEmbeddings(texts)
@@ -121,7 +208,7 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
       throw new Error('Embeddings count mismatch with chunks count')
     }
 
-    // Step 6: Prepare vector documents
+    // Step 8: Prepare vector documents
     const vectorDocuments: VectorDocument[] = allChunks.map((chunk, index) => ({
       text: chunk.text,
       embedding: embeddings[index],
@@ -131,10 +218,45 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
       createdAt: new Date(),
     }))
 
-    // Step 7: Clear old embeddings and store new ones
+    // Step 9: Store new embeddings
     console.log('💾 Storing embeddings in MongoDB...')
-    await clearEmbeddings()
     await storeEmbeddings(vectorDocuments)
+
+    // Step 10: Update file metadata for processed files
+    console.log('📝 Updating file metadata...')
+    const documentsPath = path.join(process.cwd(), 'documents')
+
+    for (const doc of pdfDocuments) {
+      const filePath = path.join(documentsPath, doc.filename)
+      const hash = await getFileHash(filePath)
+      const fileSize = getFileSize(filePath)
+      const chunkCount = fileChunkCounts.get(doc.filename) || 0
+
+      await updateFileMetadata(doc.filename, hash, chunkCount, fileSize, 'pdf')
+    }
+
+    for (const repo of githubRepos) {
+      const chunkCount = fileChunkCounts.get(repo.name) || 0
+      // For GitHub repos, we use updatedAt as the "hash" equivalent
+      // Create a simple hash from the repo name + updatedAt for consistency
+      const hash = crypto
+        .createHash('sha256')
+        .update(`${repo.name}:${repo.updatedAt}`)
+        .digest('hex')
+
+      await updateFileMetadata(
+        repo.name,
+        hash,
+        chunkCount,
+        0, // GitHub repos don't have a file size
+        'github',
+        repo.updatedAt
+      )
+    }
+
+    const filesUpdated = forceRebuild
+      ? undefined
+      : [...changedPDFs, ...changedGitHubRepos]
 
     console.log('✅ Memory index built successfully!')
 
@@ -142,6 +264,7 @@ export async function buildMemoryIndex(forceRebuild: boolean = false): Promise<{
       success: true,
       chunksCreated: allChunks.length,
       documentsProcessed: pdfDocuments.length + githubRepos.length,
+      filesUpdated,
     }
   } catch (error) {
     console.error('❌ Error building memory index:', error)

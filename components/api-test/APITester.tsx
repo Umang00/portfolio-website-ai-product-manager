@@ -186,7 +186,13 @@ export function APITester({ endpoints, adminSecret }: APITesterProps) {
                 </span>
                 <code className="text-lg font-mono">{selectedEndpoint.path}</code>
               </div>
-              <p className="text-gray-300 mb-4">{selectedEndpoint.description}</p>
+              <div className="text-gray-300 mb-4 whitespace-pre-line">
+                {selectedEndpoint.description.split('\n').map((line, idx) => (
+                  <div key={idx} className={line.startsWith('•') ? 'ml-2' : ''}>
+                    {line}
+                  </div>
+                ))}
+              </div>
               {selectedEndpoint.requiresAuth && (
                 <div className="flex items-center gap-2 text-yellow-400 text-sm">
                   <span>🔒</span>

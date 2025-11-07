@@ -51,13 +51,20 @@ export async function POST(req: NextRequest) {
     const result = await buildMemoryIndex(forceRebuild)
 
     if (result.success) {
-      return NextResponse.json({
+      const response: any = {
         success: true,
         message: result.skipped ? 'No changes detected, skipped rebuild' : 'Memory index built successfully',
         chunksCreated: result.chunksCreated,
         documentsProcessed: result.documentsProcessed,
         skipped: result.skipped || false,
-      })
+      }
+
+      // Include filesUpdated array if present (incremental updates)
+      if (result.filesUpdated && result.filesUpdated.length > 0) {
+        response.filesUpdated = result.filesUpdated
+      }
+
+      return NextResponse.json(response)
     } else {
       return NextResponse.json(
         {

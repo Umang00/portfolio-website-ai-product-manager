@@ -215,16 +215,20 @@ queryAI():
 
 **Collections:**
 - `memoryIndex` - Stores chunks with embeddings (NOTE: Collection name is `memoryIndex`, not `embeddings`)
-- `file_metadata` - Tracks file hashes and update times (NOT YET IMPLEMENTED - Phase 3)
+- `file_metadata` - Tracks file hashes and update times (✅ IMPLEMENTED)
 - `conversations` - Optional: store chat histories
 
-#### `file-watcher.ts` (NOT YET IMPLEMENTED - Phase 3)
+#### `file-watcher.ts` (✅ IMPLEMENTED)
 **Purpose:** Detect document changes
-**Status:** ⚠️ **NOT IMPLEMENTED** - Currently `buildMemoryIndex()` always does full rebuild
-**Key Functions (Planned):**
+**Status:** ✅ **IMPLEMENTED** - Change detection reduces API costs by only processing modified files
+**Key Functions:**
 - `getFileHash(filepath)` - SHA-256 hash of file
-- `checkForChanges()` - Compare current vs stored hashes
-- `updateFileMetadata(filename, hash)` - Store new hash
+- `checkForPDFChanges()` - Compare current vs stored hashes for PDFs
+- `checkForGitHubChanges()` - Compare updatedAt timestamps for GitHub repos
+- `checkForChanges()` - Combined change detection for all sources
+- `updateFileMetadata()` - Store/update file metadata (hash, chunkCount, fileSize, lastProcessed)
+- `getFileMetadata()` - Retrieve stored metadata
+- `deleteFileMetadata()` - Remove metadata for deleted files
 
 #### Smart Retrieval Pipeline
 
@@ -410,17 +414,19 @@ Query: "What did Umang work on recently?"
 ### Indexing Flow (Startup/Daily Rebuild)
 ```
 1. Cron job triggers /api/ai/refresh (⚠️ vercel.json not yet configured)
-2. checkForChanges() compares file hashes (⚠️ NOT IMPLEMENTED - Phase 3)
-   - Currently: buildMemoryIndex() always does full rebuild
-   - Future: Will detect changes and only rebuild modified files
+2. checkForChanges() compares file hashes (✅ IMPLEMENTED)
+   - Checks PDF files using SHA-256 hashes
+   - Checks GitHub repos using updatedAt timestamps
+   - Returns list of changed files/repos
 3. If changes detected (or forceRebuild=true):
-   a. Load all PDFs (loaders) - Currently loads all, not just changed
-   b. Chunk based on document type (chunkers)
-   c. Generate embeddings (OpenAI API)
-   d. Clear all embeddings (clearEmbeddings())
-   e. Insert new chunks
-   f. Update file hashes in metadata collection (⚠️ NOT IMPLEMENTED)
-4. Return success
+   a. Load only changed PDFs (loaders) - ✅ Only loads changed files
+   b. Filter GitHub repos to only changed ones - ✅ Only processes changed repos
+   c. Chunk based on document type (chunkers)
+   d. Delete old embeddings for changed files (deleteBySource)
+   e. Generate embeddings (OpenAI API) - Only for changed files
+   f. Insert new chunks
+   g. Update file hashes in metadata collection (✅ IMPLEMENTED)
+4. Return success with filesUpdated array
 ```
 
 ### Query Flow (User Asks Question)

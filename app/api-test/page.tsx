@@ -6,10 +6,10 @@ import { APIEndpoint, APITester } from '@/components/api-test/APITester'
 // Define all API endpoints
 const endpoints: APIEndpoint[] = [
   {
-    name: 'Query AI',
+    name: 'Query AI (Chat)',
     method: 'POST',
     path: '/api/ai/query',
-    description: 'Query the AI companion with a question',
+    description: 'Query the AI companion with a question.\n• Returns AI response based on retrieved context\n• Supports conversation history for context\n• Includes suggested follow-up questions',
     requiresAuth: false,
     body: {
       query: 'string (required)',
@@ -21,23 +21,23 @@ const endpoints: APIEndpoint[] = [
     }
   },
   {
-    name: 'Create Index',
+    name: 'Create Index (Change Detection)',
     method: 'POST',
     path: '/api/ai/create-index',
-    description: 'Create or rebuild the memory index',
+    description: 'Create or rebuild the memory index with change detection.\n• Use forceRebuild=false to test change detection (skips if no files changed)\n• Use forceRebuild=true to force a full rebuild\n• Response includes filesUpdated array for incremental updates',
     requiresAuth: false,
     body: {
-      forceRebuild: 'boolean (optional)'
+      forceRebuild: 'boolean (optional, default: true)'
     },
     example: {
       forceRebuild: false
     }
   },
   {
-    name: 'Rebuild Index',
+    name: 'Rebuild Index (Admin)',
     method: 'POST',
     path: '/api/ai/rebuild',
-    description: 'Force rebuild the memory index (admin only)',
+    description: 'Force rebuild the memory index (admin only).\n• Always performs full rebuild\n• Requires admin secret authentication\n• Returns system statistics after rebuild',
     requiresAuth: true,
     body: {
       secret: 'string (required)'
@@ -47,20 +47,20 @@ const endpoints: APIEndpoint[] = [
     }
   },
   {
-    name: 'Get Rebuild Stats',
+    name: 'Get Index Stats (Admin)',
     method: 'GET',
     path: '/api/ai/rebuild',
-    description: 'Get current index statistics (admin only)',
+    description: 'Get current index statistics (admin only).\n• Returns total documents count\n• Shows category breakdown\n• Requires admin secret authentication',
     requiresAuth: true,
     queryParams: {
       secret: 'string (required)'
     }
   },
   {
-    name: 'Test PDF Parsing',
+    name: 'Test PDF Parsing (Testing)',
     method: 'POST',
     path: '/api/ai/test-pdf-parsing',
-    description: 'Test PDF parsing and section detection without generating embeddings',
+    description: 'Test PDF parsing and section detection without generating embeddings.\n• No API costs (does not call OpenAI)\n• Returns parsed text and detected sections\n• Useful for debugging PDF loading issues',
     requiresAuth: true,
     body: {
       filename: 'string (required)',
@@ -72,10 +72,10 @@ const endpoints: APIEndpoint[] = [
     }
   },
   {
-    name: 'Test Chunking',
+    name: 'Test Chunking (Testing)',
     method: 'POST',
     path: '/api/ai/test-chunking',
-    description: 'Test document chunking without generating embeddings',
+    description: 'Test document chunking strategies without generating embeddings.\n• No API costs (does not call OpenAI)\n• Tests chunking for different document types\n• Returns chunk statistics and quality metrics',
     requiresAuth: true,
     body: {
       filename: 'string (required)',
@@ -91,10 +91,10 @@ const endpoints: APIEndpoint[] = [
     }
   },
   {
-    name: 'Test Chunking (GET)',
+    name: 'Test Chunking GET (Testing)',
     method: 'GET',
     path: '/api/ai/test-chunking',
-    description: 'Test chunking via GET request (admin only)',
+    description: 'Test chunking via GET request (admin only).\n• Convenient GET endpoint for quick testing\n• No API costs\n• Requires admin secret',
     requiresAuth: true,
     queryParams: {
       secret: 'string (required)',
@@ -102,20 +102,20 @@ const endpoints: APIEndpoint[] = [
     }
   },
   {
-    name: 'Test PDFs',
+    name: 'List PDFs (Testing)',
     method: 'GET',
     path: '/api/ai/test-pdfs',
-    description: 'List and test all PDFs without triggering embeddings',
+    description: 'List and test all PDFs without triggering embeddings.\n• Returns list of all PDF files\n• Shows document types and text lengths\n• No API costs',
     requiresAuth: true,
     queryParams: {
       secret: 'string (required)'
     }
   },
   {
-    name: 'Optimize Query',
+    name: 'Optimize Query (Query Enhancement)',
     method: 'POST',
     path: '/api/ai/optimize-query',
-    description: 'Optimize a query for better retrieval',
+    description: 'Optimize a query for better retrieval.\n• Rewrites queries to improve search results\n• Enhances query intent detection\n• Returns optimized query string',
     requiresAuth: false,
     body: {
       query: 'string (required)'
@@ -125,10 +125,10 @@ const endpoints: APIEndpoint[] = [
     }
   },
   {
-    name: 'Compress Memory',
+    name: 'Compress Memory (Conversation)',
     method: 'POST',
     path: '/api/ai/compress-memory',
-    description: 'Compress conversation history',
+    description: 'Compress conversation history to reduce token usage.\n• Summarizes old messages\n• Preserves important context\n• Reduces LLM token consumption',
     requiresAuth: false,
     body: {
       history: 'array (required)'
