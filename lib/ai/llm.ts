@@ -215,24 +215,137 @@ Format: Return only the 3 questions, one per line, without numbering or bullets.
     })
 
     if (!response.ok) {
-      return []
+      const errorData = await response.json().catch(() => ({}))
+      console.error(`[Follow-up Questions] API error: ${response.status} ${response.statusText}`, errorData)
+      // Return fallback questions instead of empty array
+      return generateFallbackQuestions(query, answer)
     }
 
     const data = await response.json()
+
+    if (!data.choices || data.choices.length === 0) {
+      console.warn('[Follow-up Questions] No response from LLM, using fallback')
+      return generateFallbackQuestions(query, answer)
+    }
+
     const questionsText = data.choices[0].message.content.trim()
+    
+    // Log the raw response for debugging
+    console.log(`[Follow-up Questions] Raw LLM response: "${questionsText.substring(0, 200)}..."`)
 
-    // Parse questions (split by newline, filter empty, take first 3)
-    const questions = questionsText
-      .split('\n')
-      .map((q: string) => q.trim().replace(/^\d+\.?\s*/, '').replace(/^[-•]\s*/, ''))
-      .filter((q: string) => q.length > 0)
-      .slice(0, 3)
+    // Parse questions - handle multiple formats
+    let questions: string[] = []
+    
+    // Try splitting by newline first
+    const lines = questionsText.split('\n').map((q: string) => q.trim()).filter((q: string) => q.length > 0)
+    
+    for (const line of lines) {
+      // Remove numbering (1., 2., 3., etc.)
+      let cleaned = line.replace(/^\d+[\.\)]\s*/, '')
+      // Remove bullets (-, •, *, etc.)
+      cleaned = cleaned.replace(/^[-•*]\s*/, '')
+      // Remove quotes if present
+      cleaned = cleaned.replace(/^["']|["']$/g, '')
+      // Remove common prefixes
+      cleaned = cleaned.replace(/^(question|q|follow-up|followup):\s*/i, '')
+      
+      // Only add if it looks like a question (ends with ? or is substantial)
+      if (cleaned.length > 10 && (cleaned.endsWith('?') || cleaned.length > 20)) {
+        questions.push(cleaned)
+      }
+    }
+    
+    // If we still don't have questions, try splitting by other delimiters
+    if (questions.length === 0) {
+      // Try splitting by periods followed by space (for questions that might be on one line)
+      const periodSplit = questionsText.split(/\.\s+/).map((q: string) => q.trim()).filter((q: string) => q.length > 10 && q.endsWith('?'))
+      questions = periodSplit.slice(0, 3)
+    }
+    
+    // If still no questions, try extracting questions from the text using regex
+    if (questions.length === 0) {
+      const questionRegex = /[^.!?]*\?/g
+      const matches = questionsText.match(questionRegex)
+      if (matches) {
+        questions = matches
+          .map((q: string) => q.trim().replace(/^\d+[\.\)]\s*/, '').replace(/^[-•*]\s*/, ''))
+          .filter((q: string) => q.length > 10)
+          .slice(0, 3)
+      }
+    }
 
+    // Take first 3 questions
+    questions = questions.slice(0, 3)
+
+    console.log(`[Follow-up Questions] Parsed ${questions.length} questions:`, questions)
+
+    // If we got fewer than 3 questions, use fallback
+    if (questions.length < 3) {
+      console.warn(`[Follow-up Questions] Only got ${questions.length} questions, using fallback for missing ones`)
+      const fallback = generateFallbackQuestions(query, answer)
+      return [...questions, ...fallback].slice(0, 3)
+    }
+
+    console.log(`[Follow-up Questions] Generated ${questions.length} questions successfully`)
     return questions
   } catch (error) {
-    console.error('Error generating follow-up questions:', error)
-    return []
+    console.error('[Follow-up Questions] Error generating follow-up questions:', error)
+    // Return fallback questions instead of empty array
+    return generateFallbackQuestions(query, answer)
   }
+}
+
+/**
+ * Generate fallback follow-up questions when LLM fails
+ * @param query The user's query
+ * @param answer The AI's answer
+ * @returns Array of 3 fallback questions
+ */
+function generateFallbackQuestions(query: string, answer: string): string[] {
+  // Extract key topics from the answer to generate relevant follow-ups
+  const lowerAnswer = answer.toLowerCase()
+  const lowerQuery = query.toLowerCase()
+
+  const fallbackQuestions = [
+    "Can you tell me more about that?",
+    "What other projects or experiences relate to this?",
+    "How did this impact your career or skills?"
+  ]
+
+  // Try to make questions more specific based on query/answer content
+  if (lowerQuery.includes('hunch') || lowerAnswer.includes('hunch')) {
+    return [
+      "What were the biggest challenges you faced at Hunch?",
+      "How did your role evolve during your time at Hunch?",
+      "What skills did you develop from your experience at Hunch?"
+    ]
+  }
+
+  if (lowerQuery.includes('project') || lowerAnswer.includes('project')) {
+    return [
+      "What technologies did you use in this project?",
+      "What was the outcome or impact of this project?",
+      "What did you learn from building this project?"
+    ]
+  }
+
+  if (lowerQuery.includes('skill') || lowerAnswer.includes('skill')) {
+    return [
+      "How did you develop these skills?",
+      "Which projects helped you practice these skills?",
+      "What advice would you give to someone learning these skills?"
+    ]
+  }
+
+  if (lowerQuery.includes('journey') || lowerAnswer.includes('journey') || lowerAnswer.includes('career')) {
+    return [
+      "What were the key turning points in your career?",
+      "How did you decide to transition between roles?",
+      "What advice would you give to someone starting a similar journey?"
+    ]
+  }
+
+  return fallbackQuestions
 }
 
 /**

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageBubble } from "./message-bubble"
 import { SuggestedQuestions } from "./suggested-questions"
-import { Send, Loader2, Bot, X } from "lucide-react"
+import { Send, Loader2, Bot, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface Message {
@@ -209,6 +209,14 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
       <header className="border-b px-6 py-4 flex-shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-9 w-9 -ml-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
               <Bot className="w-5 h-5 text-primary" />
             </div>
@@ -230,14 +238,6 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                 Reset
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-9 w-9"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </header>
