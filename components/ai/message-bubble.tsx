@@ -3,14 +3,17 @@
 import { cn } from "@/lib/utils"
 import { Bot, User } from "lucide-react"
 import ReactMarkdown from "react-markdown"
+import { MessageActions } from "./message-actions"
 
 interface MessageBubbleProps {
   role: "user" | "assistant"
   content: string
   sources?: string[]
+  messageId?: number
+  onRegenerate?: (messageId: number) => void
 }
 
-export function MessageBubble({ role, content, sources }: MessageBubbleProps) {
+export function MessageBubble({ role, content, sources, messageId, onRegenerate }: MessageBubbleProps) {
   const isUser = role === "user"
 
   return (
@@ -86,6 +89,15 @@ export function MessageBubble({ role, content, sources }: MessageBubbleProps) {
               </span>
             ))}
           </div>
+        )}
+
+        {/* Message Actions (only for assistant messages) */}
+        {!isUser && messageId !== undefined && (
+          <MessageActions
+            content={content}
+            messageId={messageId}
+            onRegenerate={onRegenerate}
+          />
         )}
       </div>
     </div>

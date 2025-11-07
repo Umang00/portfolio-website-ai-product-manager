@@ -15,8 +15,10 @@ export function Hero() {
   const [currentGreeting, setCurrentGreeting] = useState(0)
   const [query, setQuery] = useState("")
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    setIsMounted(true)
     const interval = setInterval(() => {
       setCurrentGreeting((prev) => (prev + 1) % greetings.length)
     }, 4000)
@@ -71,15 +73,19 @@ export function Hero() {
           <h1 className="text-4xl md:text-6xl font-bold text-balance min-h-[120px] md:min-h-[180px]">
             I'm Umang — building products that{" "}
             <span className="text-primary">
-              <Typewriter
-                words={["ship", "scale", "monetize"]}
-                loop={0}
-                cursor
-                cursorStyle="_"
-                typeSpeed={100}
-                deleteSpeed={50}
-                delaySpeed={2000}
-              />
+              {isMounted ? (
+                <Typewriter
+                  words={["ship", "scale", "monetize"]}
+                  loop={0}
+                  cursor
+                  cursorStyle="_"
+                  typeSpeed={100}
+                  deleteSpeed={50}
+                  delaySpeed={2000}
+                />
+              ) : (
+                "ship"
+              )}
             </span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance mt-4 mb-8 animate-in fade-in duration-1000 delay-500">

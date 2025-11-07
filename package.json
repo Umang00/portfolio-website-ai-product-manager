@@ -45,6 +45,7 @@
     "@sveltejs/kit": "latest",
     "@vercel/analytics": "latest",
     "autoprefixer": "^10.4.20",
+    "bottleneck": "^2.19.5",
     "canvas-confetti": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

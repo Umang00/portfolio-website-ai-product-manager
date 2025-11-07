@@ -16,7 +16,7 @@ import {
   getVectorStoreStats,
   VectorDocument,
 } from './vector-store'
-import { generateResponse, optimizeQuery, generateFollowUpQuestions, compressMemory } from './llm'
+import { generateResponse, optimizeQuery, generateFollowUpQuestions, compressMemory, generateFallbackQuestions } from './llm'
 import {
   checkForChanges,
   updateFileMetadata,
@@ -379,9 +379,38 @@ export async function queryAI(
     )
     const sources = rawSources.map(formatSourceName)
 
-    // Step 7: Generate follow-up questions
+    // Step 7: Generate follow-up questions (non-blocking - use fallback if fails)
+    // Note: Free models often return empty responses, so we rely on intelligent fallback
     console.log('❓ Generating follow-up questions...')
-    const suggestedQuestions = await generateFollowUpQuestions(trimmedContext, query, answer)
+    let suggestedQuestions: string[] = []
+    
+    // Try LLM generation with timeout (5 seconds max)
+    const followUpPromise = generateFollowUpQuestions(trimmedContext, query, answer)
+    const timeoutPromise = new Promise<string[]>((resolve) => {
+      setTimeout(() => resolve([]), 5000)
+    })
+    
+    try {
+      const result = await Promise.race([followUpPromise, timeoutPromise])
+      suggestedQuestions = result || []
+      
+      // Ensure we always have 3 questions
+      if (suggestedQuestions.length < 3) {
+        console.log(`[Service] Got ${suggestedQuestions.length} questions from LLM, using fallback for remaining`)
+        const fallback = generateFallbackQuestions(query, answer)
+        // Merge intelligently: use LLM questions first, then fill with fallback
+        suggestedQuestions = [...suggestedQuestions, ...fallback].slice(0, 3)
+      }
+    } catch (error) {
+      console.error('[Service] Error generating follow-up questions, using fallback:', error)
+      suggestedQuestions = generateFallbackQuestions(query, answer)
+    }
+    
+    // Final safety check - always return 3 questions
+    if (suggestedQuestions.length < 3) {
+      console.warn(`[Service] Still only have ${suggestedQuestions.length} questions, using full fallback`)
+      suggestedQuestions = generateFallbackQuestions(query, answer)
+    }
 
     console.log('✅ Query processed successfully')
 

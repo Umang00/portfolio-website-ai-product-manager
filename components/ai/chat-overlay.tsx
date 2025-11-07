@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageBubble } from "./message-bubble"
 import { SuggestedQuestions } from "./suggested-questions"
-import { Send, Loader2, Bot, ArrowLeft } from "lucide-react"
+import { Send, Loader2, Bot, ArrowLeft, Mic } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useSpeechInput } from "@/hooks/use-speech-input"
 
 interface Message {
   role: "user" | "assistant"
   content: string
   sources?: string[]
+  id?: number
 }
 
 interface ChatOverlayProps {
@@ -35,9 +37,44 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   const [conversationHistory, setConversationHistory] = useState<
     Array<{ role: "user" | "assistant"; content: string }>
   >([])
+  const [messageIdCounter, setMessageIdCounter] = useState(0)
+  const messageIdCounterRef = useRef(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const hasSentInitialQuery = useRef(false)
+
+  // Helper function to get next message ID
+  const getNextMessageId = () => {
+    messageIdCounterRef.current += 1
+    setMessageIdCounter(messageIdCounterRef.current)
+    return messageIdCounterRef.current
+  }
+
+  // Voice input hook
+  const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError } = useSpeechInput({
+    onResult: (text, isFinal) => {
+      if (isFinal) {
+        // Final result - set the complete text
+        setInput(text)
+        stopListening()
+      } else {
+        // Interim result - show what's being transcribed
+        setInput(text)
+      }
+    },
+  })
+
+  // Log speech recognition errors (non-blocking)
+  useEffect(() => {
+    if (speechError) {
+      // Network errors are common with Speech Recognition API and shouldn't crash the app
+      if (speechError === "network") {
+        console.warn("[Voice Input] Network error - Speech Recognition service unavailable. This is normal if offline or service is down.")
+      } else {
+        console.warn("[Voice Input] Error:", speechError)
+      }
+    }
+  }, [speechError])
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -52,13 +89,14 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
       // Trigger send after a brief delay to ensure overlay is rendered
       const timer = setTimeout(() => {
         // Call handleSendMessage logic directly here to avoid dependency issues
-        const queryText = initialQuery.trim()
-        if (queryText) {
-          const userMessage: Message = { role: "user", content: queryText }
-          setMessages((prev) => [...prev, userMessage])
-          setInput("")
-          setIsLoading(true)
-          setSuggestedQuestions([])
+          const queryText = initialQuery.trim()
+          if (queryText) {
+            const userMessageId = getNextMessageId()
+            const userMessage: Message = { role: "user", content: queryText, id: userMessageId }
+            setMessages((prev) => [...prev, userMessage])
+            setInput("")
+            setIsLoading(true)
+            setSuggestedQuestions([])
 
           fetch("/api/ai/query", {
             method: "POST",
@@ -75,10 +113,12 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
               return response.json()
             })
             .then((data) => {
+              const assistantMessageId = getNextMessageId()
               const assistantMessage: Message = {
                 role: "assistant",
                 content: data.answer,
                 sources: data.sources,
+                id: assistantMessageId,
               }
               setMessages((prev) => [...prev, assistantMessage])
               setConversationHistory((prev) => [
@@ -92,9 +132,11 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
             })
             .catch((error) => {
               console.error("Error sending message:", error)
+              const errorMessageId = getNextMessageId()
               const errorMessage: Message = {
                 role: "assistant",
                 content: "Sorry, I encountered an error. Please try again.",
+                id: errorMessageId,
               }
               setMessages((prev) => [...prev, errorMessage])
             })
@@ -121,12 +163,90 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
     }
   }, [open])
 
+  const handleRegenerate = async (messageId: number) => {
+    // Find the user message that preceded this assistant message
+    const assistantIndex = messages.findIndex((m) => m.id === messageId)
+    if (assistantIndex > 0) {
+      const userMessage = messages[assistantIndex - 1]
+      if (userMessage.role === "user") {
+        // Remove the assistant message and regenerate
+        const newMessages = messages.slice(0, assistantIndex)
+        setMessages(newMessages)
+        // Remove from conversation history
+        const newHistory = conversationHistory.slice(0, -2)
+        setConversationHistory(newHistory)
+        
+        // Resend the query
+        const queryText = userMessage.content
+        setIsLoading(true)
+        setSuggestedQuestions([])
+
+        try {
+          const response = await fetch("/api/ai/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: queryText,
+              conversationHistory: newHistory,
+            }),
+          })
+
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`)
+          }
+
+          const data = await response.json()
+
+          // Add AI response to UI
+          const assistantMessageId = getNextMessageId()
+          const assistantMessage: Message = {
+            role: "assistant",
+            content: data.answer,
+            sources: data.sources,
+            id: assistantMessageId,
+          }
+          setMessages((prev) => [...prev, assistantMessage])
+
+          // Update conversation history
+          const updatedHistory = [
+            ...newHistory,
+            { role: "user" as const, content: queryText },
+            { role: "assistant" as const, content: data.answer },
+          ]
+          setConversationHistory(updatedHistory)
+
+          // Update suggested questions
+          if (data.suggestedQuestions && data.suggestedQuestions.length > 0) {
+            setSuggestedQuestions(data.suggestedQuestions)
+          }
+        } catch (error) {
+          console.error("Error regenerating message:", error)
+          const errorMessageId = getNextMessageId()
+          const errorMessage: Message = {
+            role: "assistant",
+            content: "Sorry, I encountered an error. Please try again.",
+            id: errorMessageId,
+          }
+          setMessages((prev) => [...prev, errorMessage])
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    }
+  }
+
   const handleSendMessage = async (query?: string) => {
     const queryText = query || input.trim()
     if (!queryText || isLoading) return
 
+    // Stop voice input if active
+    if (listening) {
+      stopListening()
+    }
+
     // Add user message to UI immediately
-    const userMessage: Message = { role: "user", content: queryText }
+    const userMessageId = getNextMessageId()
+    const userMessage: Message = { role: "user", content: queryText, id: userMessageId }
     setMessages((prev) => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
@@ -150,10 +270,12 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
       const data = await response.json()
 
       // Add AI response to UI
+      const assistantMessageId = getNextMessageId()
       const assistantMessage: Message = {
         role: "assistant",
         content: data.answer,
         sources: data.sources,
+        id: assistantMessageId,
       }
       setMessages((prev) => [...prev, assistantMessage])
 
@@ -171,9 +293,11 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
       }
     } catch (error) {
       console.error("Error sending message:", error)
+      const errorMessageId = getNextMessageId()
       const errorMessage: Message = {
         role: "assistant",
         content: "Sorry, I encountered an error. Please try again.",
+        id: errorMessageId,
       }
       setMessages((prev) => [...prev, errorMessage])
     } finally {
@@ -281,10 +405,12 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
             <div className="space-y-4">
               {messages.map((message, idx) => (
                 <MessageBubble
-                  key={idx}
+                  key={message.id ?? idx}
                   role={message.role}
                   content={message.content}
                   sources={message.sources}
+                  messageId={message.id}
+                  onRegenerate={handleRegenerate}
                 />
               ))}
 
@@ -326,6 +452,28 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
             }}
             className="flex gap-2"
           >
+            {speechSupported && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (listening) {
+                    stopListening()
+                  } else {
+                    startListening()
+                  }
+                }}
+                disabled={isLoading}
+                className={cn(
+                  "shrink-0 h-[60px] w-[60px]",
+                  listening && "text-primary animate-pulse"
+                )}
+                title={listening ? "Stop recording" : "Start voice input"}
+              >
+                <Mic className={cn("w-5 h-5", listening && "fill-current")} />
+              </Button>
+            )}
             <Textarea
               ref={textareaRef}
               value={input}
@@ -334,16 +482,18 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
               placeholder={
                 isLoading
                   ? "Generating response..."
+                  : listening
+                  ? "Listening..."
                   : "Ask a question about Umang..."
               }
-              disabled={isLoading}
+              disabled={isLoading || listening}
               className="min-h-[60px] max-h-[120px] resize-none"
               rows={2}
             />
             <Button
               type="submit"
               size="icon"
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || isLoading || listening}
               className="shrink-0 h-[60px] w-[60px]"
             >
               {isLoading ? (

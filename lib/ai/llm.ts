@@ -1,4 +1,6 @@
 // lib/ai/llm.ts
+import { followUpQuestionsLimiter } from './rate-limiter'
+
 if (!process.env.OPENROUTER_API_KEY) {
   throw new Error('Please define the OPENROUTER_API_KEY environment variable inside .env.local')
 }
@@ -184,112 +186,129 @@ export async function generateFollowUpQuestions(
   answer: string
 ): Promise<string[]> {
   try {
-    const prompt = `Based on this Q&A about Umang Thakkar:
+    // Truncate answer if too long (some free models have strict token limits)
+    const truncatedAnswer = answer.length > 500 ? answer.substring(0, 500) + '...' : answer
+    
+    // Use a more direct prompt that works better with free models
+    const prompt = `User asked: "${query}"
+You answered: "${truncatedAnswer}"
 
-QUESTION: ${query}
-ANSWER: ${answer}
-
-Suggest 3 natural follow-up questions that would help the user learn more. Make them specific and engaging.
-
-Format: Return only the 3 questions, one per line, without numbering or bullets.`
+Generate 3 follow-up questions. Return only the questions, one per line.`
 
     const messages: Message[] = [
-      { role: 'system', content: 'You generate relevant follow-up questions to help users explore topics in depth.' },
+      { role: 'system', content: 'You are a helpful assistant that generates follow-up questions.' },
       { role: 'user', content: prompt }
     ]
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-        'X-Title': 'Umang Thakkar Portfolio AI'
-      },
-      body: JSON.stringify({
-        model: LLM_MODEL,
-        messages: messages,
-        max_tokens: 300,
-        temperature: 0.8,
+    console.log(`[Follow-up Questions] Calling API with model: ${LLM_MODEL}`)
+    console.log(`[Follow-up Questions] Prompt preview:`, prompt.substring(0, 200))
+    
+    // Use rate limiter to queue and throttle API calls
+    const status = followUpQuestionsLimiter.getStatus()
+    console.log(`[Follow-up Questions] Queue status:`, status)
+    
+    // Schedule the API call through the rate limiter
+    // This will automatically retry on 429 errors with exponential backoff
+    const data = await followUpQuestionsLimiter.schedule(async () => {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+          'X-Title': 'Umang Thakkar Portfolio AI'
+        },
+        body: JSON.stringify({
+          model: LLM_MODEL,
+          messages: messages,
+          max_tokens: 300, // Restored from working version
+          temperature: 0.8, // Restored from working version
+        })
       })
-    })
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      console.error(`[Follow-up Questions] API error: ${response.status} ${response.statusText}`, errorData)
-      // Return fallback questions instead of empty array
-      return generateFallbackQuestions(query, answer)
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const status = response.status
+        
+        // Create an error object that Bottleneck can handle
+        const error: any = new Error(`API error: ${status} ${response.statusText}`)
+        error.status = status
+        error.response = { status }
+        error.data = errorData
+        
+        // Handle rate limiting (429) - will be retried automatically by rate limiter
+        if (status === 429) {
+          console.warn(`[Follow-up Questions] Rate limited (429). Will retry automatically.`)
+          throw error // Throw to trigger retry logic
+        }
+        
+        // For other errors, throw to fall through to catch block
+        console.error(`[Follow-up Questions] API error: ${status} ${response.statusText}`, errorData)
+        throw error
+      }
 
-    const data = await response.json()
+      return await response.json()
+    }, 1) // Priority 1 for follow-up questions (higher priority than default)
+    
+    // Log the full response structure for debugging
+    console.log(`[Follow-up Questions] Full API response:`, JSON.stringify(data, null, 2))
 
     if (!data.choices || data.choices.length === 0) {
       console.warn('[Follow-up Questions] No response from LLM, using fallback')
       return generateFallbackQuestions(query, answer)
     }
 
-    const questionsText = data.choices[0].message.content.trim()
+    // Check finish_reason to understand why it might be empty
+    const finishReason = data.choices[0]?.finish_reason
+    const content = data.choices[0]?.message?.content
     
-    // Log the raw response for debugging
-    console.log(`[Follow-up Questions] Raw LLM response: "${questionsText.substring(0, 200)}..."`)
-
-    // Parse questions - handle multiple formats
-    let questions: string[] = []
+    console.log(`[Follow-up Questions] Finish reason: ${finishReason}`)
+    console.log(`[Follow-up Questions] Content type: ${typeof content}`)
+    console.log(`[Follow-up Questions] Content value:`, content)
     
-    // Try splitting by newline first
-    const lines = questionsText.split('\n').map((q: string) => q.trim()).filter((q: string) => q.length > 0)
+    // Use direct access like the working version (no optional chaining that might hide issues)
+    const questionsText = content ? content.trim() : ''
     
-    for (const line of lines) {
-      // Remove numbering (1., 2., 3., etc.)
-      let cleaned = line.replace(/^\d+[\.\)]\s*/, '')
-      // Remove bullets (-, •, *, etc.)
-      cleaned = cleaned.replace(/^[-•*]\s*/, '')
-      // Remove quotes if present
-      cleaned = cleaned.replace(/^["']|["']$/g, '')
-      // Remove common prefixes
-      cleaned = cleaned.replace(/^(question|q|follow-up|followup):\s*/i, '')
-      
-      // Only add if it looks like a question (ends with ? or is substantial)
-      if (cleaned.length > 10 && (cleaned.endsWith('?') || cleaned.length > 20)) {
-        questions.push(cleaned)
-      }
-    }
+    // Log for debugging
+    console.log(`[Follow-up Questions] Raw LLM response: "${questionsText}"`)
+    console.log(`[Follow-up Questions] Response length: ${questionsText.length}`)
     
-    // If we still don't have questions, try splitting by other delimiters
-    if (questions.length === 0) {
-      // Try splitting by periods followed by space (for questions that might be on one line)
-      const periodSplit = questionsText.split(/\.\s+/).map((q: string) => q.trim()).filter((q: string) => q.length > 10 && q.endsWith('?'))
-      questions = periodSplit.slice(0, 3)
-    }
-    
-    // If still no questions, try extracting questions from the text using regex
-    if (questions.length === 0) {
-      const questionRegex = /[^.!?]*\?/g
-      const matches = questionsText.match(questionRegex)
-      if (matches) {
-        questions = matches
-          .map((q: string) => q.trim().replace(/^\d+[\.\)]\s*/, '').replace(/^[-•*]\s*/, ''))
-          .filter((q: string) => q.length > 10)
-          .slice(0, 3)
-      }
+    if (!questionsText || questionsText.length === 0) {
+      console.warn('[Follow-up Questions] Empty response from LLM, using fallback')
+      console.warn(`[Follow-up Questions] This might indicate the model refused to generate or was cut off. Finish reason: ${finishReason}`)
+      return generateFallbackQuestions(query, answer)
     }
 
-    // Take first 3 questions
-    questions = questions.slice(0, 3)
+    // Use simple parsing from working version
+    const questions = questionsText
+      .split('\n')
+      .map((q: string) => q.trim().replace(/^\d+\.?\s*/, '').replace(/^[-•]\s*/, ''))
+      .filter((q: string) => q.length > 0)
+      .slice(0, 3)
 
-    console.log(`[Follow-up Questions] Parsed ${questions.length} questions:`, questions)
-
-    // If we got fewer than 3 questions, use fallback
+    // Ensure we have 3 questions using fallback if needed
     if (questions.length < 3) {
       console.warn(`[Follow-up Questions] Only got ${questions.length} questions, using fallback for missing ones`)
       const fallback = generateFallbackQuestions(query, answer)
       return [...questions, ...fallback].slice(0, 3)
     }
 
-    console.log(`[Follow-up Questions] Generated ${questions.length} questions successfully`)
-    return questions
-  } catch (error) {
-    console.error('[Follow-up Questions] Error generating follow-up questions:', error)
+      console.log(`[Follow-up Questions] Generated ${questions.length} questions successfully`)
+      return questions
+  } catch (error: any) {
+    // Check if it's a rate limit error that couldn't be retried
+    const isRateLimit = error?.status === 429 || 
+                       error?.response?.status === 429 ||
+                       error?.message?.includes('429') ||
+                       error?.message?.includes('rate limit')
+    
+    if (isRateLimit) {
+      console.warn(`[Follow-up Questions] Rate limited after retries. Free model "${LLM_MODEL}" is temporarily unavailable. Using fallback questions.`)
+      console.warn(`[Follow-up Questions] Tip: Consider using a paid model or adding your own API key to avoid rate limits.`)
+    } else {
+      console.error('[Follow-up Questions] Error generating follow-up questions:', error)
+    }
+    
     // Return fallback questions instead of empty array
     return generateFallbackQuestions(query, answer)
   }
@@ -301,7 +320,7 @@ Format: Return only the 3 questions, one per line, without numbering or bullets.
  * @param answer The AI's answer
  * @returns Array of 3 fallback questions
  */
-function generateFallbackQuestions(query: string, answer: string): string[] {
+export function generateFallbackQuestions(query: string, answer: string): string[] {
   // Extract key topics from the answer to generate relevant follow-ups
   const lowerAnswer = answer.toLowerCase()
   const lowerQuery = query.toLowerCase()
