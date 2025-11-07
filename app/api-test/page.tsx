@@ -136,6 +136,28 @@ const endpoints: APIEndpoint[] = [
     example: {
       history: []
     }
+  },
+  {
+    name: 'Check Index Status (Diagnostics)',
+    method: 'GET',
+    path: '/api/ai/check-index',
+    description: 'Check MongoDB index status and diagnose vector search issues.\n• Verifies vector search index exists\n• Checks document count and embeddings\n• Shows index status and configuration',
+    requiresAuth: false,
+  },
+  {
+    name: 'Test Vector Search (Debugging)',
+    method: 'POST',
+    path: '/api/ai/test-vector-search',
+    description: 'Test vector search directly to debug "No relevant context" issues.\n• Runs vector search without category filters\n• Shows raw search results and scores\n• Displays sample documents and category distribution',
+    requiresAuth: false,
+    body: {
+      query: 'string (required)',
+      testWithoutCategories: 'boolean (optional)'
+    },
+    example: {
+      query: 'What did Umang work on at Hunch?',
+      testWithoutCategories: true
+    }
   }
 ]
 

@@ -25,7 +25,30 @@ export async function POST(req: NextRequest) {
     // Process query
     console.log(`[Query API] Processing query: "${query.substring(0, 100)}..."`)
 
-    const result = await queryAI(query, conversationHistory || '')
+    // Convert conversationHistory array to string format if provided
+    let conversationHistoryStr = ''
+    if (conversationHistory) {
+      if (Array.isArray(conversationHistory)) {
+        // Convert array of messages to string format
+        conversationHistoryStr = conversationHistory
+          .map((msg: any) => {
+            if (typeof msg === 'string') {
+              return msg
+            }
+            if (msg && typeof msg === 'object') {
+              const role = msg.role || msg.type || 'user'
+              const content = msg.content || msg.text || msg.message || JSON.stringify(msg)
+              return `${role === 'assistant' || role === 'ai' ? 'AI' : 'User'}: ${content}`
+            }
+            return String(msg)
+          })
+          .join('\n')
+      } else if (typeof conversationHistory === 'string') {
+        conversationHistoryStr = conversationHistory
+      }
+    }
+
+    const result = await queryAI(query, conversationHistoryStr)
 
     return NextResponse.json(result)
   } catch (error) {

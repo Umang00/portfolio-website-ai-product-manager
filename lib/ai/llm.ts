@@ -60,8 +60,12 @@ export async function generateResponse(
     // Construct the user prompt with context and query
     let userPrompt = ''
 
-    if (conversationHistory && conversationHistory.trim().length > 0) {
-      userPrompt = `CONVERSATION MEMORY:\n${conversationHistory}\n\nCONTEXT:\n${context}\n\nQUESTION: ${query}`
+    // Ensure conversationHistory is a string
+    const conversationHistoryStr =
+      typeof conversationHistory === 'string' ? conversationHistory : String(conversationHistory || '')
+
+    if (conversationHistoryStr && conversationHistoryStr.trim().length > 0) {
+      userPrompt = `CONVERSATION MEMORY:\n${conversationHistoryStr}\n\nCONTEXT:\n${context}\n\nQUESTION: ${query}`
     } else {
       userPrompt = `CONTEXT:\n${context}\n\nQUESTION: ${query}`
     }

@@ -372,21 +372,18 @@ Query: "What did Umang work on recently?"
 **Configuration:**
 ```json
 {
-  "mappings": {
-    "dynamic": false,
-    "fields": {
-      "embedding": {
-        "type": "knnVector",
-        "dimensions": 1536,
-        "similarity": "cosine"
-      },
-      "category": { "type": "string" },
-      "text": { "type": "string" },
-      "metadata": { "type": "document" }
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 1536,
+      "similarity": "cosine"
     }
-  }
+  ]
 }
 ```
+
+**Note:** Vector Search indexes use a simpler structure with `fields` as an array. Only the `embedding` field needs to be indexed for vector search.
 
 **Note:** ⚠️ **VERIFICATION NEEDED** - Ensure the vector search index named `vector_index` exists in MongoDB Atlas for the `memoryIndex` collection. The index must be created manually in the Atlas dashboard before vector search will work.
 

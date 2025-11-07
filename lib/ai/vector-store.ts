@@ -130,6 +130,19 @@ export async function searchSimilar(
     return results as SearchResult[]
   } catch (error) {
     console.error('Error in vector search:', error)
+    
+    // Provide helpful error message if vector index doesn't exist
+    if (error instanceof Error) {
+      const errorMsg = error.message.toLowerCase()
+      if (errorMsg.includes('index') || errorMsg.includes('vector') || errorMsg.includes('search')) {
+        throw new Error(
+          `Vector search index "${VECTOR_INDEX_NAME}" not found. ` +
+          `Please create it in MongoDB Atlas Search & Vector Search section. ` +
+          `See build docs/MONGODB_VECTOR_INDEX_SETUP.md for instructions.`
+        )
+      }
+    }
+    
     throw error
   }
 }
@@ -208,6 +221,19 @@ export async function smartSearch(
     return results.slice(0, limit)
   } catch (error) {
     console.error('Error in smart search:', error)
+    
+    // Provide helpful error message if vector index doesn't exist
+    if (error instanceof Error) {
+      const errorMsg = error.message.toLowerCase()
+      if (errorMsg.includes('index') || errorMsg.includes('vector') || errorMsg.includes('search')) {
+        throw new Error(
+          `Vector search index "${VECTOR_INDEX_NAME}" not found. ` +
+          `Please create it in MongoDB Atlas Search & Vector Search section. ` +
+          `See build docs/MONGODB_VECTOR_INDEX_SETUP.md for instructions.`
+        )
+      }
+    }
+    
     throw error
   }
 }
@@ -225,11 +251,12 @@ function reRankResults(results: SearchResult[], limit: number): SearchResult[] {
     let finalScore = result.score
 
     // Category boost (prefer certain categories)
+    // Note: Categories in DB are 'resume', 'linkedin', 'journey', 'github'
     const categoryBoosts: Record<string, number> = {
-      resume_experience: 1.3,
-      linkedin_experience: 1.25,
-      journey_narrative: 1.2,
-      resume_skills: 1.15,
+      resume: 1.3,
+      linkedin: 1.25,
+      journey: 1.2,
+      github: 1.15,
     }
 
     if (categoryBoosts[result.category]) {
@@ -275,36 +302,38 @@ export function analyzeQueryForCategories(query: string): string[] {
   const categories: string[] = []
 
   // Work/Experience related
+  // Note: Categories in DB are 'resume', 'linkedin', 'journey', 'github' (not 'resume_experience')
   if (/work|job|experience|role|position|company|employment|career/.test(ql)) {
-    categories.push('resume_experience', 'linkedin_experience')
+    categories.push('resume', 'linkedin')
   }
 
   // Journey/Story related
   if (/decision|learn|journey|why|story|approach|process|challenge/.test(ql)) {
-    categories.push('journey_narrative', 'journey_section')
+    categories.push('journey')
   }
 
   // Skills related
   if (/skill|technology|tool|tech stack|expertise|proficient/.test(ql)) {
-    categories.push('resume_skills', 'linkedin_skills')
+    categories.push('resume', 'linkedin')
   }
 
   // Projects related
   if (/project|build|built|created|developed|code|github/.test(ql)) {
-    categories.push('github', 'resume_experience', 'linkedin_experience')
+    categories.push('github', 'resume', 'linkedin')
   }
 
   // Education related
   if (/education|school|university|degree|study|learn/.test(ql)) {
-    categories.push('resume_education', 'linkedin_education')
+    categories.push('resume', 'linkedin')
   }
 
-  // If no specific categories found, search all
+  // If no specific categories found, search all (return empty array)
   if (categories.length === 0) {
     return []
   }
 
-  return categories
+  // Remove duplicates
+  return [...new Set(categories)]
 }
 
 /**
