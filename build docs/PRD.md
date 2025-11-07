@@ -19,8 +19,11 @@ Add an intelligent AI companion to the portfolio website that can answer questio
 ### 1. Conversational Q&A
 - Natural language queries about experience, projects, skills
 - Context-aware responses based on retrieved documents
-- Conversation history maintained across multiple turns
+- Conversation history maintained automatically across multiple turns (frontend manages state)
 - Personalized responses reflecting Umang's voice and tone
+  - First-person, natural conversational style
+  - No mention of technical implementation details (files, documents, context)
+  - User-friendly source names displayed (e.g., "Resume", "LinkedIn Profile", "Journey (2025-2026)")
 
 ### 2. Multi-Source Knowledge Base
 **Data Sources:**

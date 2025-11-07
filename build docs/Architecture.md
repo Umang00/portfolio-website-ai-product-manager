@@ -202,7 +202,10 @@ queryAI():
 - Model: `meta-llama/llama-3.1-8b-instruct:free` (configurable via env)
 - Max tokens: 2000
 - Temperature: 0.7
-- System prompt: Defines AI persona as "Umang's companion"
+- System prompt: Defines AI persona as "Umang's companion" speaking in first person
+  - Natural, conversational tone (no mention of "context" or technical details)
+  - First-person responses ("I did this", not "Umang did this")
+  - Avoids mentioning files, documents, or implementation details
 
 #### `vector-store.js`
 **Purpose:** MongoDB Atlas operations
@@ -442,9 +445,16 @@ Query: "What did Umang work on recently?"
       - Re-rank by multiple signals
       - Select top 5
    d. Construct context from retrieved chunks (✅ IMPLEMENTED)
+      - Context formatted without exposing technical source details to LLM
+      - Source labels removed to prevent LLM from mentioning files/documents
    e. Call LLM (OpenRouter) with context + history + query (✅ IMPLEMENTED)
-   f. Generate suggested follow-ups (✅ IMPLEMENTED)
-5. Return response + sources + suggestions (✅ IMPLEMENTED)
+      - Conversation history handled automatically in production (frontend maintains state)
+      - History passed as array, normalized to string format for LLM
+   f. Format source names for user-friendly display (✅ IMPLEMENTED)
+      - Technical filenames converted to friendly names (e.g., "Resume", "LinkedIn Profile")
+   g. Generate suggested follow-ups (✅ IMPLEMENTED)
+5. Return response + formatted sources + suggestions (✅ IMPLEMENTED)
+   - Sources returned as user-friendly names, not technical filenames
 6. Frontend displays with relevance scores (⚠️ NOT IMPLEMENTED - Phase 5)
 ```
 

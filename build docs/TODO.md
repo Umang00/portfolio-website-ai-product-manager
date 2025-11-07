@@ -682,11 +682,14 @@ Root:
     - Returns: AI response text
   - [✅] System prompt defined - **IMPLEMENTED**
     - Comprehensive prompt defining Umang's AI companion persona
-    - First-person speaking style
-    - Context-aware responses
+    - Natural, conversational tone (no mention of "context" or technical details)
+    - First-person responses ("I did this", not "Umang did this")
+    - Explicitly avoids mentioning files, documents, or implementation details
   - [✅] Conversation history handling - **IMPLEMENTED**
-    - Supports conversationHistory parameter
-    - Formats as string in prompt (not array format)
+    - API accepts conversationHistory as array or string
+    - Normalized to string format for LLM compatibility
+    - In production: Frontend maintains conversation state and passes with each request
+    - API returns updated conversationHistory in standardized array format for client
   - [✅] Additional functions - **IMPLEMENTED**
     - `optimizeQuery()` - Query rewriting for better retrieval
     - `generateFollowUpQuestions()` - Context-aware follow-up suggestions
@@ -715,6 +718,8 @@ Root:
   
 - [✅] Updated `/app/api/ai/query/route.ts` - **COMPLETED**
   - [✅] Returns `sources` array - **IMPLEMENTED**
+    - Sources formatted as user-friendly names (not technical filenames)
+    - Format: `["Resume", "LinkedIn Profile", "Journey (2025-2026)"]`
   - [✅] Returns `suggestedQuestions` array - **IMPLEMENTED**
   
 - [ ] Update `/components/ai/chat-modal.tsx` - **NOT IMPLEMENTED** (Phase 5 - Frontend)
@@ -1084,8 +1089,14 @@ Root:
 - [✅] Users can ask questions in natural language - **API works** (via /api-test or direct API calls)
 - [✅] AI responds with relevant, contextual answers - **IMPLEMENTED**
 - [✅] Responses cite sources (LinkedIn, Resume, Journey, GitHub) - **IMPLEMENTED**
+  - Sources displayed as user-friendly names (e.g., "Resume", "LinkedIn Profile", "Journey (2025-2026)")
+  - Technical filenames formatted via `formatSourceName()` function
 - [✅] Conversation history maintained within session - **IMPLEMENTED** (API supports it)
+  - Frontend maintains conversation state automatically in production
+  - API handles normalization and returns updated history in standardized format
 - [✅] Responses are in Umang's voice (first person) - **IMPLEMENTED** (system prompt configured)
+  - Natural, conversational tone (no mention of "context" or technical details)
+  - Context formatted without source labels to prevent LLM from mentioning files/documents
 
 ### Technical Requirements
 - [✅] All PDFs loading correctly - **IMPLEMENTED**

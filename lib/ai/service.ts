@@ -29,6 +29,40 @@ import crypto from 'crypto'
 type Chunk = ProfessionalChunk | NarrativeChunk | GenericChunk | MarkdownChunk
 
 /**
+ * Format source filename to user-friendly display name
+ * @param filename The source filename from metadata
+ * @returns User-friendly display name
+ */
+function formatSourceName(filename: string): string {
+  // Map of known filenames to friendly names
+  const sourceMap: Record<string, string> = {
+    'Umang_Thakkar_PM_Master_Resume.pdf': 'Resume',
+    'LinkedIn.pdf': 'LinkedIn Profile',
+    'journey_fy-2023-2024.pdf': 'Journey (2023-2024)',
+    'journey_fy-2024-2025.pdf': 'Journey (2024-2025)',
+    'journey_fy-2025-2026.pdf': 'Journey (2025-2026)',
+  }
+
+  // Handle GitHub repos (no .pdf extension)
+  if (!filename.includes('.pdf')) {
+    // Format GitHub repo names nicely
+    return `GitHub: ${filename.replace(/-/g, ' ').replace(/_/g, ' ')}`
+  }
+
+  // Return mapped name or format the filename nicely
+  if (sourceMap[filename]) {
+    return sourceMap[filename]
+  }
+
+  // Fallback: format filename nicely
+  return filename
+    .replace(/_/g, ' ')
+    .replace(/-/g, ' ')
+    .replace('.pdf', '')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
+}
+
+/**
  * Build or rebuild the memory index from all sources
  * @param forceRebuild If true, rebuild even if no changes detected
  * @returns Build result with statistics
@@ -322,26 +356,28 @@ export async function queryAI(
     console.log(`Found ${searchResults.length} relevant chunks`)
 
     // Step 4: Construct context from search results
+    // Format context without exposing technical source details to LLM
     const context = searchResults
-      .map((result, index) => {
-        return `[Source ${index + 1}: ${result.metadata.source || 'Unknown'}]\n${result.text}`
+      .map((result) => {
+        return result.text
       })
       .join('\n\n---\n\n')
 
     // Limit context size (max 8000 characters)
     const maxContextLength = 8000
     const trimmedContext = context.length > maxContextLength
-      ? context.slice(0, maxContextLength) + '\n\n[Context truncated...]'
+      ? context.slice(0, maxContextLength) + '\n\n[...]'
       : context
 
     // Step 5: Generate response with LLM
     console.log('💬 Generating response...')
     const answer = await generateResponse(trimmedContext, query, conversationHistory)
 
-    // Step 6: Extract unique sources
-    const sources = Array.from(
+    // Step 6: Extract unique sources and format them for display
+    const rawSources = Array.from(
       new Set(searchResults.map(r => r.metadata.source).filter(Boolean))
     )
+    const sources = rawSources.map(formatSourceName)
 
     // Step 7: Generate follow-up questions
     console.log('❓ Generating follow-up questions...')
