@@ -658,11 +658,12 @@ Root:
   - [✅] Verified "No changes detected" message and skipped response
   - [✅] Verified 0 chunks created when skipped
   
-- [ ] Test change detection (manual testing)
-  - [ ] Modify a PDF file (add content)
-  - [ ] Call create-index without forceRebuild
-  - [ ] Verify only changed file re-processed
-  - **Note:** Automated tests passed. Manual file modification test is optional.
+- [✅] Test change detection (manual testing) - **TESTED & PASSED**
+  - [✅] Modified a PDF file (added content)
+  - [✅] Called create-index without forceRebuild
+  - [✅] Verified only changed file re-processed
+  - [✅] Verified filesUpdated array contains correct filename
+  - **Result:** Change detection working correctly - only changed files are reprocessed
 
 **Checkpoint:** ✅ Change detection fully implemented, tested, and working. All automated tests passed.
 
