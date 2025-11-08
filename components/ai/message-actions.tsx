@@ -43,7 +43,7 @@ export function MessageActions({ content, messageId, onRegenerate }: MessageActi
     }
   }
 
-  // Handle text-to-speech with OpenAI TTS (better quality) or fallback to browser TTS
+  // Handle text-to-speech with Google Cloud TTS (better quality) or fallback to browser TTS
   const handleReadAloud = async () => {
     if (isSpeaking) {
       // Stop speaking
@@ -55,7 +55,7 @@ export function MessageActions({ content, messageId, onRegenerate }: MessageActi
       setIsSpeaking(false)
       utteranceRef.current = null
     } else {
-      // Try OpenAI TTS first (better quality)
+      // Try Google Cloud TTS first (better quality)
       try {
         const response = await fetch('/api/ai/tts', {
           method: 'POST',
@@ -63,34 +63,55 @@ export function MessageActions({ content, messageId, onRegenerate }: MessageActi
           body: JSON.stringify({ text: content }),
         })
 
-        if (response.ok) {
-          // Use OpenAI TTS audio
-          const audioBlob = await response.blob()
-          const audioUrl = URL.createObjectURL(audioBlob)
-          const audio = new Audio(audioUrl)
+        // Check for quota errors or API failures
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}))
+          const isQuotaError = 
+            response.status === 429 || // Too Many Requests
+            response.status === 503 || // Service Unavailable
+            response.status === 402 || // Payment Required
+            errorData.error?.toLowerCase().includes('quota') ||
+            errorData.message?.toLowerCase().includes('quota') ||
+            errorData.error?.toLowerCase().includes('exceeded') ||
+            errorData.message?.toLowerCase().includes('exceeded')
           
-          audio.onended = () => {
-            URL.revokeObjectURL(audioUrl)
-            setIsSpeaking(false)
-            audioRef.current = null
+          if (isQuotaError) {
+            console.warn('[TTS] API quota exceeded, falling back to browser TTS')
+          } else {
+            console.warn('[TTS] Google Cloud TTS failed, falling back to browser TTS:', errorData)
           }
-
-          audio.onerror = () => {
-            URL.revokeObjectURL(audioUrl)
-            setIsSpeaking(false)
-            audioRef.current = null
-            // Fallback to browser TTS
-            useBrowserTTS()
-          }
-
-          audioRef.current = audio
-          audio.play()
-          setIsSpeaking(true)
-          console.log('[TTS] Using OpenAI TTS (high quality)')
+          // Fallback to browser TTS
+          useBrowserTTS()
           return
         }
+
+        // Use Google Cloud TTS audio
+        const audioBlob = await response.blob()
+        const audioUrl = URL.createObjectURL(audioBlob)
+        const audio = new Audio(audioUrl)
+        
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl)
+          setIsSpeaking(false)
+          audioRef.current = null
+        }
+
+        audio.onerror = () => {
+          URL.revokeObjectURL(audioUrl)
+          setIsSpeaking(false)
+          audioRef.current = null
+          // Fallback to browser TTS
+          console.warn('[TTS] Audio playback failed, falling back to browser TTS')
+          useBrowserTTS()
+        }
+
+        audioRef.current = audio
+        audio.play()
+        setIsSpeaking(true)
+        console.log('[TTS] Using Google Cloud TTS (high quality)')
+        return
       } catch (error) {
-        console.warn('[TTS] OpenAI TTS failed, falling back to browser TTS:', error)
+        console.warn('[TTS] Google Cloud TTS failed, falling back to browser TTS:', error)
       }
 
       // Fallback to browser TTS
@@ -98,72 +119,113 @@ export function MessageActions({ content, messageId, onRegenerate }: MessageActi
     }
   }
 
-  // Browser TTS fallback
+  // Browser TTS fallback - improved voice selection for natural sound (non-robotic)
   const useBrowserTTS = () => {
-    // Get available voices
+    // Select best voice for natural, non-robotic sound
+    const selectBestVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+      if (voices.length === 0) return null
+
+      // Priority order for most natural-sounding voices (non-robotic)
+      const voicePriorities = [
+        // 1. Google Neural voices (best quality, most natural)
+        (v: SpeechSynthesisVoice) => v.name.includes('Google') && v.name.includes('Neural'),
+        // 2. Microsoft Neural voices
+        (v: SpeechSynthesisVoice) => v.name.includes('Microsoft') && v.name.includes('Neural'),
+        // 3. Any Neural voices
+        (v: SpeechSynthesisVoice) => v.name.includes('Neural'),
+        // 4. Google voices (usually good quality)
+        (v: SpeechSynthesisVoice) => v.name.includes('Google'),
+        // 5. Microsoft voices (usually good quality)
+        (v: SpeechSynthesisVoice) => v.name.includes('Microsoft'),
+        // 6. Premium voices
+        (v: SpeechSynthesisVoice) => v.name.includes('Premium'),
+        // 7. Natural voices
+        (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('natural'),
+        // 8. Avoid robotic-sounding voices (common robotic voice names)
+        (v: SpeechSynthesisVoice) => 
+          !v.name.toLowerCase().includes('robotic') && 
+          !v.name.toLowerCase().includes('samantha') && // Often robotic
+          !v.name.toLowerCase().includes('alex') && // Often robotic
+          !v.name.toLowerCase().includes('daniel') && // Often robotic
+          !v.name.toLowerCase().includes('zira') && // Often robotic
+          v.lang.startsWith('en'),
+        // 9. Any English voice as last resort
+        (v: SpeechSynthesisVoice) => v.lang.startsWith('en'),
+      ]
+
+      // Try each priority level
+      for (const priority of voicePriorities) {
+        const voice = voices.find(priority)
+        if (voice) {
+          return voice
+        }
+      }
+
+      // Fallback to first available voice
+      return voices[0]
+    }
+
+    const speakWithVoice = (voices: SpeechSynthesisVoice[]) => {
+      const selectedVoice = selectBestVoice(voices)
+      
+      // Start speaking
+      const utterance = new SpeechSynthesisUtterance(content)
+      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice
+        console.log(`[TTS] Using browser voice: ${selectedVoice.name} (${selectedVoice.lang})`)
+      } else {
+        console.warn('[TTS] No suitable voice found, using default')
+      }
+      
+      // Optimize parameters for natural speech (non-robotic)
+      utterance.rate = 0.9 // Slightly slower for more natural pace (0.1-10, default 1)
+      utterance.pitch = 1.0 // Normal pitch (0-2, default 1)
+      utterance.volume = 1.0 // Full volume (0-1, default 1)
+      
+      // Event handlers
+      utterance.onend = () => {
+        setIsSpeaking(false)
+        utteranceRef.current = null
+      }
+      
+      utterance.onerror = (error) => {
+        console.error('[TTS] Browser TTS error:', error)
+        setIsSpeaking(false)
+        utteranceRef.current = null
+      }
+      
+      utteranceRef.current = utterance
+      window.speechSynthesis.speak(utterance)
+      setIsSpeaking(true)
+    }
+
+    // Get voices
     const voices = window.speechSynthesis.getVoices()
     
-    // Try to find a more natural-sounding voice
-    // Prefer: Google voices, Microsoft voices, or any "neural" voices
-    let selectedVoice = voices.find(
-      (voice) =>
-        voice.name.includes("Google") ||
-        voice.name.includes("Microsoft") ||
-        voice.name.includes("Neural") ||
-        voice.name.includes("Premium") ||
-        (voice.lang.startsWith("en") && voice.name.toLowerCase().includes("natural"))
-    )
-    
-    // Fallback to first English voice if no preferred voice found
-    if (!selectedVoice) {
-      selectedVoice = voices.find((voice) => voice.lang.startsWith("en"))
-    }
-    
-    // Start speaking
-    const utterance = new SpeechSynthesisUtterance(content)
-    
-    if (selectedVoice) {
-      utterance.voice = selectedVoice
-      console.log(`[TTS] Using browser voice: ${selectedVoice.name} (${selectedVoice.lang})`)
-    }
-    
-    // Adjust parameters for more natural speech
-    utterance.rate = 0.95 // Slightly slower for more natural pace
-    utterance.pitch = 1.0
-    utterance.volume = 1.0
-
-    utterance.onend = () => {
-      setIsSpeaking(false)
-      utteranceRef.current = null
-    }
-
-    utterance.onerror = (error) => {
-      console.error("[TTS] Error:", error)
-      setIsSpeaking(false)
-      utteranceRef.current = null
-    }
-
-    // Load voices if not already loaded (some browsers need this)
-    if (voices.length === 0) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        const updatedVoices = window.speechSynthesis.getVoices()
-        const betterVoice = updatedVoices.find(
-          (voice) =>
-            voice.name.includes("Google") ||
-            voice.name.includes("Microsoft") ||
-            voice.name.includes("Neural")
-        )
-        if (betterVoice) {
-          utterance.voice = betterVoice
-        }
-        window.speechSynthesis.speak(utterance)
-      }
+    if (voices.length > 0) {
+      speakWithVoice(voices)
     } else {
-      window.speechSynthesis.speak(utterance)
+      // Wait for voices to load (some browsers need this)
+      const onVoicesChanged = () => {
+        const loadedVoices = window.speechSynthesis.getVoices()
+        if (loadedVoices.length > 0) {
+          window.speechSynthesis.onvoiceschanged = null // Remove listener
+          speakWithVoice(loadedVoices)
+        }
+      }
+      
+      window.speechSynthesis.onvoiceschanged = onVoicesChanged
+      
+      // Fallback timeout (some browsers may not fire onvoiceschanged)
+      setTimeout(() => {
+        const loadedVoices = window.speechSynthesis.getVoices()
+        if (loadedVoices.length > 0 && !isSpeaking) {
+          window.speechSynthesis.onvoiceschanged = null
+          speakWithVoice(loadedVoices)
+        }
+      }, 100)
     }
-    
-    utteranceRef.current = utterance
-    setIsSpeaking(true)
   }
 
   // Handle regenerate

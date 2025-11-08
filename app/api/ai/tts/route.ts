@@ -1,14 +1,30 @@
 // app/api/ai/tts/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
+import { TextToSpeechClient } from '@google-cloud/text-to-speech'
 
-if (!process.env.OPENAI_API_KEY) {
-  console.warn('[TTS] OpenAI API key not found, TTS API will not be available')
+// Initialize client with service account credentials
+let ttsClient: TextToSpeechClient | null = null
+
+// TTS configuration from environment variables
+const TTS_VOICE_NAME = process.env.TTS_VOICE_NAME || 'en-US-Chirp3-HD-Achird' // Default: Achird (male)
+const TTS_LANGUAGE_CODE = process.env.TTS_LANGUAGE_CODE || 'en-US'
+const TTS_SPEAKING_RATE = parseFloat(process.env.TTS_SPEAKING_RATE || '1.0')
+const TTS_PITCH = parseFloat(process.env.TTS_PITCH || '0')
+const TTS_VOLUME_GAIN_DB = parseFloat(process.env.TTS_VOLUME_GAIN_DB || '0')
+
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+  try {
+    // Parse JSON credentials from environment variable (service account JSON string)
+    const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
+    ttsClient = new TextToSpeechClient({ credentials })
+    console.log('[TTS] Google Cloud TTS client initialized successfully')
+    console.log(`[TTS] Voice: ${TTS_VOICE_NAME}, Language: ${TTS_LANGUAGE_CODE}`)
+  } catch (error) {
+    console.error('[TTS] Failed to parse Google credentials:', error)
+  }
+} else {
+  console.warn('[TTS] GOOGLE_APPLICATION_CREDENTIALS_JSON not found, TTS API will not be available')
 }
-
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,31 +38,45 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (!openai) {
+    if (!ttsClient) {
       return NextResponse.json(
-        { error: 'OpenAI TTS not configured. Please set OPENAI_API_KEY environment variable.' },
+        { error: 'Google Cloud TTS not configured. Please set GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable.' },
         { status: 503 }
       )
     }
 
     // Limit text length to prevent abuse
-    if (text.length > 4000) {
+    if (text.length > 5000) {
       return NextResponse.json(
-        { error: 'Text is too long (max 4000 characters)' },
+        { error: 'Text is too long (max 5000 characters)' },
         { status: 400 }
       )
     }
 
-    // Use OpenAI TTS API with a natural-sounding voice
-    const mp3 = await openai.audio.speech.create({
-      model: 'tts-1', // or 'tts-1-hd' for higher quality (more expensive)
-      voice: 'nova', // Options: alloy, echo, fable, onyx, nova, shimmer (nova is most natural)
-      input: text,
-      speed: 1.0, // Slightly slower for more natural pace
+    // Use Google Cloud Chirp 3: HD voices
+    // Chirp 3: HD provides high-quality, natural-sounding speech
+    // Voice name format: <locale>-Chirp3-HD-<voice>
+    // Configuration can be changed via environment variables in .env.local
+    const [response] = await ttsClient.synthesizeSpeech({
+      input: { text },
+      voice: {
+        languageCode: TTS_LANGUAGE_CODE,
+        name: TTS_VOICE_NAME, // Configurable via TTS_VOICE_NAME env var
+      },
+      audioConfig: {
+        audioEncoding: 'MP3' as const,
+        speakingRate: TTS_SPEAKING_RATE,
+        pitch: TTS_PITCH,
+        volumeGainDb: TTS_VOLUME_GAIN_DB,
+      },
     })
 
-    // Convert response to buffer
-    const buffer = Buffer.from(await mp3.arrayBuffer())
+    if (!response.audioContent) {
+      throw new Error('No audio content received from Google Cloud TTS')
+    }
+
+    // Convert audio content to buffer
+    const buffer = Buffer.from(response.audioContent as Uint8Array)
 
     // Return audio file
     return new NextResponse(buffer, {
