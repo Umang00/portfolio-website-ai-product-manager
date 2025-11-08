@@ -381,13 +381,17 @@ export async function queryAI(
 
     // Step 7: Generate follow-up questions (non-blocking - use fallback if fails)
     // Note: Free models often return empty responses, so we rely on intelligent fallback
+    // Note: Rate limiting may queue requests, so we use a longer timeout (30 seconds)
     console.log('❓ Generating follow-up questions...')
     let suggestedQuestions: string[] = []
     
-    // Try LLM generation with timeout (5 seconds max)
+    // Try LLM generation with timeout (30 seconds to account for rate limiting delays)
     const followUpPromise = generateFollowUpQuestions(trimmedContext, query, answer)
     const timeoutPromise = new Promise<string[]>((resolve) => {
-      setTimeout(() => resolve([]), 5000)
+      setTimeout(() => {
+        console.log('[Service] Follow-up questions timeout after 30s (rate limiter may still be processing)')
+        resolve([])
+      }, 30000) // 30 seconds to allow rate limiter to process queued requests
     })
     
     try {
