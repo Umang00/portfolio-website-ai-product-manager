@@ -507,8 +507,8 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                 }}
                 disabled={isLoading || speechError === "service-unavailable"}
                 className={cn(
-                  "shrink-0 h-[60px] w-[60px]",
-                  listening && "text-primary animate-pulse",
+                  "shrink-0 h-[60px] w-[60px] bg-background border border-border",
+                  listening && "text-primary animate-pulse bg-primary/10 border-primary/50",
                   speechError === "service-unavailable" && "opacity-50"
                 )}
                 title={
@@ -541,7 +541,7 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                     : "Ask a question about Umang..."
                 }
                 disabled={isLoading || listening}
-                className="min-h-[60px] max-h-[120px] resize-none pr-4"
+                className="min-h-[60px] max-h-[120px] resize-none pr-4 py-4"
                 rows={2}
               />
               {/* Show interim transcription as overlay hint */}
@@ -554,13 +554,14 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
             <Button
               type="submit"
               size="icon"
+              variant="ghost"
               disabled={!input.trim() || isLoading || listening}
-              className="shrink-0 h-[60px] w-[60px]"
+              className="shrink-0 h-[60px] w-[60px] bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50"
             >
               {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin text-foreground" />
               ) : (
-                <Send className="w-5 h-5" />
+                <Send className="w-5 h-5 text-foreground" />
               )}
             </Button>
           </form>

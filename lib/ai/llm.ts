@@ -237,8 +237,8 @@ Generate 3 follow-up questions. Return only the questions, one per line.`
         body: JSON.stringify({
           model: LLM_MODEL,
           messages: messages,
-          max_tokens: 300, // Restored from working version
-          temperature: 0.8, // Restored from working version
+          max_tokens: LLM_MAX_TOKENS, // Use LLM_MAX_TOKENS from .env.local
+          temperature: LLM_TEMPERATURE, // Use LLM_TEMPERATURE from .env.local
         })
       })
 

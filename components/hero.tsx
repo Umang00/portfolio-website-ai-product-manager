@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, ArrowUp } from "lucide-react"
+import { Maximize, Mic, ArrowUp } from "lucide-react"
 import { Typewriter } from "react-simple-typewriter"
 import { LinkedInButton, GitHubButton, ResumeButton } from "@/components/ui/social-buttons"
 import { ChatOverlay } from "@/components/ai/chat-overlay"
+import { useSpeechInput } from "@/hooks/use-speech-input"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
@@ -16,6 +17,26 @@ export function Hero() {
   const [query, setQuery] = useState("")
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [interimInput, setInterimInput] = useState("") // For interim speech recognition results
+  const pendingQueryRef = useRef<string | undefined>(undefined) // Track query to send when opening chat
+
+  // Voice input hook
+  const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError, permission: micPermission } = useSpeechInput({
+    onResult: (text, isFinal) => {
+      if (isFinal) {
+        // Final result - append to existing input (like ChatOverlay)
+        setQuery((prev) => {
+          const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
+          return baseText ? baseText + " " + text : text
+        })
+        setInterimInput("") // Clear interim
+        stopListening()
+      } else {
+        // Interim result - show what's being transcribed
+        setInterimInput(text)
+      }
+    },
+  })
 
   useEffect(() => {
     setIsMounted(true)
@@ -25,10 +46,36 @@ export function Hero() {
     return () => clearInterval(interval)
   }, [])
 
+  // Handle speech recognition errors
+  useEffect(() => {
+    if (speechError) {
+      console.warn("[Voice Input] Error:", speechError)
+    }
+  }, [speechError])
+
+  const handleOpenChat = () => {
+    // Stop listening if active
+    if (listening) {
+      stopListening()
+      setInterimInput("")
+    }
+    setIsChatOpen(true)
+    // Open without initialQuery to show welcome screen (query will be empty or undefined)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const trimmedQuery = query.trim()
-    if (trimmedQuery) {
+    // Use query value, or if interimInput exists, combine them
+    const finalQuery = interimInput ? `${query} ${interimInput}`.trim() : query.trim()
+    if (finalQuery) {
+      // Clear interim input and update query with final value
+      if (interimInput) {
+        setQuery(finalQuery)
+        setInterimInput("")
+        pendingQueryRef.current = finalQuery
+      } else {
+        pendingQueryRef.current = finalQuery
+      }
       setIsChatOpen(true)
       // The ChatOverlay will handle sending the query via initialQuery prop
     }
@@ -38,6 +85,15 @@ export function Hero() {
     if (e.key === "Enter") {
       e.preventDefault()
       handleSubmit(e)
+    }
+  }
+
+  const handleMicClick = () => {
+    if (listening) {
+      stopListening()
+      setInterimInput("") // Clear interim when stopping
+    } else {
+      startListening()
     }
   }
 
@@ -94,24 +150,62 @@ export function Hero() {
 
         </div>
 
-        <form onSubmit={handleSubmit} className="relative w-full max-w-3xl mx-auto">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask me anything..."
-            className="pl-12 pr-16 h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300"
-          />
+        <form onSubmit={handleSubmit} className="relative w-full max-w-3xl mx-auto flex items-center gap-2">
+          {/* Maximize Icon Button - Opens AI Companion page */}
           <Button
-            type="submit"
-            size="icon"
+            type="button"
             variant="ghost"
-            disabled={!query.trim()}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 disabled:opacity-50"
+            size="icon"
+            onClick={handleOpenChat}
+            className="h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0"
+            title="Open AI Companion"
           >
-            <ArrowUp className="h-5 w-5" />
+            <Maximize className="h-5 w-5 text-foreground" />
           </Button>
+
+          {/* Microphone Icon Button - Voice Input */}
+          {speechSupported && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleMicClick}
+              disabled={micPermission === "denied"}
+              className={`h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0 ${
+                listening ? "bg-primary/10 text-primary border-primary/50" : ""
+              } ${micPermission === "denied" ? "opacity-50 cursor-not-allowed" : ""}`}
+              title={listening ? "Stop listening" : micPermission === "denied" ? "Microphone permission denied" : "Start voice input"}
+            >
+              <Mic className={`h-5 w-5 ${listening ? "text-primary" : "text-foreground"}`} />
+            </Button>
+          )}
+
+          {/* Input Field */}
+          <div className="relative flex-1">
+            <Input
+              value={interimInput ? (query ? `${query} ${interimInput}` : interimInput) : query}
+              onChange={(e) => {
+                // Only update query if not showing interim input
+                if (!interimInput) {
+                  setQuery(e.target.value)
+                }
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder={listening ? "Listening..." : "Ask me anything..."}
+              className="h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300 pr-16"
+              readOnly={!!interimInput}
+            />
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              size="icon"
+              variant="ghost"
+              disabled={!query.trim() && !interimInput}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50"
+            >
+              <ArrowUp className="h-5 w-5 text-foreground" />
+            </Button>
+          </div>
         </form>
 
         <div className="flex justify-center gap-4">
@@ -127,8 +221,13 @@ export function Hero() {
         onClose={() => {
           setIsChatOpen(false)
           setQuery("")
+          setInterimInput("")
+          pendingQueryRef.current = undefined
+          if (listening) {
+            stopListening()
+          }
         }}
-        initialQuery={query}
+        initialQuery={pendingQueryRef.current || (query.trim() || undefined)}
       />
     </section>
   )
