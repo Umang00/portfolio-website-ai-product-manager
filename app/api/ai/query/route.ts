@@ -74,12 +74,19 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('[Query API] Error:', error)
 
+    // Handle moderation errors with a more user-friendly response
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const isModerationError = errorMessage.includes('moderation') || errorMessage.includes('flagged')
+    
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        error: isModerationError ? 'Content moderation' : 'Error processing query',
+        message: errorMessage,
+        ...(isModerationError && {
+          suggestion: 'Please try rephrasing your question. This appears to be a false positive from the AI model\'s content moderation.',
+        }),
       },
-      { status: 500 }
+      { status: isModerationError ? 403 : 500 }
     )
   }
 }

@@ -32,6 +32,7 @@ const STARTER_QUESTIONS = [
 export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState(initialQuery || "")
+  const [interimInput, setInterimInput] = useState("") // For interim speech recognition results
   const [isLoading, setIsLoading] = useState(false)
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([])
   const [conversationHistory, setConversationHistory] = useState<
@@ -51,28 +52,29 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   }
 
   // Voice input hook
-  const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError } = useSpeechInput({
+  const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError, permission: micPermission } = useSpeechInput({
     onResult: (text, isFinal) => {
       if (isFinal) {
-        // Final result - set the complete text
-        setInput(text)
+        // Final result - append to existing input (like boilerplate)
+        setInput((prev) => {
+          const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
+          return baseText ? baseText + " " + text : text
+        })
+        setInterimInput("") // Clear interim
         stopListening()
       } else {
         // Interim result - show what's being transcribed
-        setInput(text)
+        setInterimInput(text)
       }
     },
   })
 
-  // Log speech recognition errors (non-blocking)
+  // Handle speech recognition errors and show user feedback
   useEffect(() => {
     if (speechError) {
-      // Network errors are common with Speech Recognition API and shouldn't crash the app
-      if (speechError === "network") {
-        console.warn("[Voice Input] Network error - Speech Recognition service unavailable. This is normal if offline or service is down.")
-      } else {
-        console.warn("[Voice Input] Error:", speechError)
-      }
+      console.warn("[Voice Input] Error:", speechError)
+      // Errors are now handled by the Gladia integration
+      // User can see error state through the button's disabled state and tooltip
     }
   }, [speechError])
 
@@ -106,9 +108,14 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
               conversationHistory: conversationHistory,
             }),
           })
-            .then((response) => {
+            .then(async (response) => {
               if (!response.ok) {
-                throw new Error(`API error: ${response.status}`)
+                // Try to get error details from response
+                const errorData = await response.json().catch(() => ({}))
+                const error = new Error(errorData.message || `API error: ${response.status}`) as Error & { response?: Response, errorData?: any }
+                error.response = response
+                error.errorData = errorData
+                throw error
               }
               return response.json()
             })
@@ -133,9 +140,35 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
             .catch((error) => {
               console.error("Error sending message:", error)
               const errorMessageId = getNextMessageId()
+              
+              // Extract error details
+              let errorContent = "Sorry, I encountered an error. Please try again."
+              let errorSuggestion = ""
+              
+              // Check if error has errorData attached (from our custom error)
+              if (error && typeof error === 'object' && 'errorData' in error) {
+                const errorData = (error as any).errorData
+                if (errorData.message) {
+                  errorContent = errorData.message
+                }
+                if (errorData.suggestion) {
+                  errorSuggestion = errorData.suggestion
+                }
+              } else if (error instanceof Error) {
+                // Check if error message contains moderation info
+                if (error.message.includes('moderation') || error.message.includes('flagged')) {
+                  errorContent = error.message
+                  errorSuggestion = "Please try rephrasing your question. This appears to be a false positive from the AI model's content moderation."
+                } else {
+                  errorContent = error.message
+                }
+              }
+              
               const errorMessage: Message = {
                 role: "assistant",
-                content: "Sorry, I encountered an error. Please try again.",
+                content: errorSuggestion 
+                  ? `${errorContent}\n\n💡 ${errorSuggestion}`
+                  : errorContent,
                 id: errorMessageId,
               }
               setMessages((prev) => [...prev, errorMessage])
@@ -242,6 +275,7 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
     // Stop voice input if active
     if (listening) {
       stopListening()
+      setInterimInput("") // Clear interim input
     }
 
     // Add user message to UI immediately
@@ -460,36 +494,63 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                 onClick={() => {
                   if (listening) {
                     stopListening()
+                    setInterimInput("") // Clear interim when stopping
                   } else {
+                    // Check if service is unavailable
+                    if (speechError === "service-unavailable") {
+                      // Don't try to start if service is unavailable
+                      return
+                    }
+                    setInterimInput("") // Clear any previous interim
                     startListening()
                   }
                 }}
-                disabled={isLoading}
+                disabled={isLoading || speechError === "service-unavailable"}
                 className={cn(
                   "shrink-0 h-[60px] w-[60px]",
-                  listening && "text-primary animate-pulse"
+                  listening && "text-primary animate-pulse",
+                  speechError === "service-unavailable" && "opacity-50"
                 )}
-                title={listening ? "Stop recording" : "Start voice input"}
+                title={
+                  listening
+                    ? "Stop recording"
+                    : speechError === "service-unavailable"
+                    ? "Voice input service unavailable. Please use text input."
+                    : speechError && speechError !== "network"
+                    ? "Voice input unavailable"
+                    : "Start voice input"
+                }
               >
                 <Mic className={cn("w-5 h-5", listening && "fill-current")} />
               </Button>
             )}
-            <Textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={
-                isLoading
-                  ? "Generating response..."
-                  : listening
-                  ? "Listening..."
-                  : "Ask a question about Umang..."
-              }
-              disabled={isLoading || listening}
-              className="min-h-[60px] max-h-[120px] resize-none"
-              rows={2}
-            />
+            <div className="relative flex-1">
+              <Textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value)
+                  setInterimInput("") // Clear interim when user types
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  isLoading
+                    ? "Generating response..."
+                    : listening
+                    ? "Listening..."
+                    : "Ask a question about Umang..."
+                }
+                disabled={isLoading || listening}
+                className="min-h-[60px] max-h-[120px] resize-none pr-4"
+                rows={2}
+              />
+              {/* Show interim transcription as overlay hint */}
+              {interimInput && listening && (
+                <div className="absolute bottom-2 left-4 text-sm text-muted-foreground pointer-events-none italic">
+                  {interimInput}
+                </div>
+              )}
+            </div>
             <Button
               type="submit"
               size="icon"

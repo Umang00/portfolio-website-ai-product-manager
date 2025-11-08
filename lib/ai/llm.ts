@@ -105,6 +105,22 @@ export async function generateResponse(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
+      
+      // Handle moderation errors (403) gracefully
+      if (response.status === 403 && errorData.error?.message?.includes('moderation')) {
+        const moderationError = errorData.error
+        console.warn('[LLM] Moderation error:', moderationError.message)
+        console.warn('[LLM] Flagged input:', moderationError.metadata?.flagged_input?.substring(0, 200))
+        console.warn('[LLM] Reasons:', moderationError.metadata?.reasons)
+        
+        // Return a user-friendly error message
+        throw new Error(
+          `The AI model's content moderation flagged this query. ` +
+          `This is likely a false positive. Please try rephrasing your question or contact support if this persists. ` +
+          `(Model: ${errorData.error?.metadata?.model_slug || LLM_MODEL})`
+        )
+      }
+      
       throw new Error(`OpenRouter API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`)
     }
 
