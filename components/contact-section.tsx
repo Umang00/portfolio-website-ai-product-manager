@@ -6,9 +6,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Mail, MessageCircle, Calendar, CheckCircle2, XCircle } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 import { CalendlyModal } from "./calendly-modal"
 import { toast } from "sonner"
+
+// Dynamically import Supabase to avoid build issues when not configured
+const getSupabaseClient = async () => {
+  if (typeof window === 'undefined') return null
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return null
+  }
+  const { createClient } = await import("@/lib/supabase/client")
+  return createClient()
+}
 
 // ---------- Helpers ----------
 interface FormData {
@@ -126,14 +135,16 @@ export function ContactSection() {
       // Optionally insert into Supabase if configured
       try {
         if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-          const supabase = createClient()
-          await supabase.from("leads").insert({
-            name: formData.name,
-            email: formData.email,
-            website_social: formData.websiteSocial || null,
-            subject: formData.subject || null,
-            message: formData.message,
-          })
+          const supabase = await getSupabaseClient()
+          if (supabase) {
+            await supabase.from("leads").insert({
+              name: formData.name,
+              email: formData.email,
+              website_social: formData.websiteSocial || null,
+              subject: formData.subject || null,
+              message: formData.message,
+            })
+          }
         }
       } catch (dbError) {
         console.warn("Failed to save to database (non-critical):", dbError)
