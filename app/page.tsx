@@ -2,7 +2,6 @@ import { StickyHeader } from "@/components/sticky-header"
 import { Hero } from "@/components/hero"
 import { KpiSection } from "@/components/kpi-section"
 import { ProcessWheel } from "@/components/process-wheel"
-import { ShippedHighlights } from "@/components/shipped-highlights"
 import { ProjectsSlider } from "@/components/projects-slider"
 import { ClientLogos } from "@/components/client-logos"
 import { WallOfLove } from "@/components/wall-of-love"
@@ -21,7 +20,6 @@ export default function Home() {
       <Hero />
       <KpiSection />
       <ProcessWheel />
-      <ShippedHighlights />
       <ProjectsSlider />
       <section id="social-proof">
         <ClientLogos />

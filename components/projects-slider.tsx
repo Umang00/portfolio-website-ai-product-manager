@@ -113,13 +113,13 @@ export function ProjectsSlider() {
     setIsOffscreen,
     handleInteraction,
   } = useAutoScroll(api, {
-    interval: prefersReducedMotion ? 0 : 3000, // Increased speed: 3 seconds (was 5)
+    interval: prefersReducedMotion ? 0 : 5000, // 5 seconds
     enabled: !prefersReducedMotion && projects.length > 1,
     pauseOnHover: true,
     pauseOnFocus: true,
     pauseWhenHidden: true,
     pauseWhenOffscreen: true,
-    resumeDelay: 10000,
+    resumeDelay: 0, // Resume immediately after interaction
   })
 
   // Update offscreen state

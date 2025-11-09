@@ -126,14 +126,20 @@ export function useAutoScroll(
   // Handle user interaction - pause and schedule resume
   const handleInteraction = useCallback(() => {
     lastInteractionRef.current = Date.now()
-    setIsPaused(true)
 
     // Clear any existing resume timeout
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current)
     }
 
-    // Schedule resume after delay
+    // If resumeDelay is 0, don't pause - let hover/focus handle pausing
+    // This allows immediate resume when hover/focus ends
+    if (resumeDelay === 0) {
+      return
+    }
+
+    // Otherwise, pause and schedule resume after delay
+    setIsPaused(true)
     resumeTimeoutRef.current = setTimeout(() => {
       const timeSinceInteraction = Date.now() - lastInteractionRef.current
       if (timeSinceInteraction >= resumeDelay) {
