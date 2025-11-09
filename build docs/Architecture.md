@@ -57,15 +57,36 @@
 
 ### 1. Frontend Layer
 
-**Location:** `/components/ai/` and `/components/api-test/`
+**Location:** `/components/ai/`, `/components/api-test/`, and `/components/projects/`
 
-**Components:** ⚠️ **NOT YET IMPLEMENTED** - Phase 5
-- `chat-modal.tsx` - Main chat interface (modal overlay) - **MISSING**
-- `message-bubble.tsx` - Individual message display - **MISSING**
-- `voice-input.tsx` - Speech-to-text input (optional) - **MISSING**
-- `suggested-questions.tsx` - Follow-up prompts - **MISSING**
+**AI Companion Components:** ✅ **IMPLEMENTED** - Phase 5
+- `chat-overlay.tsx` - Full-screen chat interface (uses createPortal for full-page rendering)
+- `message-bubble.tsx` - Individual message display
+- `suggested-questions.tsx` - Follow-up prompts
+- Voice input integrated via `use-speech-input.ts` hook
 
-**Note:** The `components/ai/` folder exists but is currently empty. The `components/chat-fab.tsx` file is a contact form, not the AI chat interface.
+**Projects Showcase Components:** ✅ **IMPLEMENTED**
+- `projects-slider.tsx` - Main carousel component with auto-scroll (3s interval)
+- `project-card.tsx` - Individual project card with action buttons
+- `project-details-modal.tsx` - Modal for detailed project information
+- `types.ts` - TypeScript interfaces for Project data structure
+
+**Custom Hooks for Projects Carousel:**
+- `use-reduced-motion.ts` - Detects user's motion preference for accessibility
+- `use-intersection-observer.ts` - Observes carousel visibility for pause/resume
+- `use-page-visibility.ts` - Detects tab visibility for pause/resume
+- `use-auto-scroll.ts` - Manages auto-scroll with pause on interaction
+
+**Project Card Features:**
+- Three action buttons: "View Details" (always), "View Demo" (optional), "View YouTube Video" (optional)
+- Each button takes 33% width, left-aligned with smart spacing
+- Status badges: Transparent with colored dots (green/yellow/grey) and pulsing animation
+- Technologies: Optional display (default hidden)
+- Card dimensions: Taller cards (h-80/h-96) with improved aspect ratio
+- Modal integration: Clicking "View Details" opens ProjectDetailsModal
+- AI Companion integration: Modal includes "Ask AI Companion" button that opens full-screen chat
+
+**Note:** The `components/chat-fab.tsx` file is a contact form, not the AI chat interface.
 
 **API Testing Interface:**
 - `/app/api-test/page.tsx` - Main API testing page
@@ -82,10 +103,34 @@
 - Loading states
 - Error states
 - Modal open/close state
+- Carousel auto-scroll state (pause/resume on interaction)
 
 **API Communication:**
 - POST to `/api/ai/query` with { query, conversationHistory }
 - Receive { answer, suggestedQuestions, sources }
+
+**Projects Data Structure:**
+```typescript
+interface Project {
+  // Required fields
+  id: string
+  slug: string
+  title: string
+  image: string
+  imageAlt: string
+  briefDescription: string
+  technologies: string[]
+  
+  // Optional fields
+  detailedDescription?: string
+  bullets?: string[] // Max 3 items
+  demoUrl?: string
+  youtubeUrl?: string
+  status?: "Active" | "In Progress" | "Inactive"
+  aiContext?: string // For AI Companion queries
+  // ... see components/projects/types.ts for full interface
+}
+```
 
 ### 2. API Routes Layer
 

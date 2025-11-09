@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageBubble } from "./message-bubble"
@@ -39,6 +40,7 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
     Array<{ role: "user" | "assistant"; content: string }>
   >([])
   const [messageIdCounter, setMessageIdCounter] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const messageIdCounterRef = useRef(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -357,12 +359,17 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
     setInput("")
   }
 
-  if (!open) return null
+  // Ensure component is mounted (for SSR)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!open || !mounted) return null
 
   const hasMessages = messages.length > 0
 
-  return (
-    <div className="fixed inset-0 z-50 bg-background flex flex-col">
+  const overlayContent = (
+    <div className="fixed inset-0 z-[100] bg-background flex flex-col">
       {/* Header */}
       <header className="border-b px-6 py-4 flex-shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between w-full">
@@ -569,5 +576,11 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
       </div>
     </div>
   )
+
+  // Render to document.body to escape any parent containers (full-screen)
+  if (typeof window === "undefined" || !document.body) {
+    return null
+  }
+  return createPortal(overlayContent, document.body)
 }
 

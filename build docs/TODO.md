@@ -47,6 +47,52 @@
 
 ---
 
+## 🎨 PROJECTS SHOWCASE FEATURE (December 2025)
+
+**Status:** ✅ **COMPLETED**
+
+### Overview
+Interactive carousel-based projects showcase with modal details view and AI Companion integration.
+
+### Components Created
+- [✅] `components/projects/types.ts` - TypeScript Project interface
+- [✅] `components/projects/project-card.tsx` - Project card component with action buttons
+- [✅] `components/projects/project-details-modal.tsx` - Details modal with AI Companion integration
+- [✅] `components/projects-slider.tsx` - Carousel component with auto-scroll
+- [✅] `hooks/use-reduced-motion.ts` - Accessibility hook for motion preferences
+- [✅] `hooks/use-intersection-observer.ts` - Visibility observer for pause/resume
+- [✅] `hooks/use-page-visibility.ts` - Tab visibility detection
+- [✅] `hooks/use-auto-scroll.ts` - Auto-scroll management with interaction handling
+- [✅] `lib/utils/sanitize-query.ts` - Query sanitization and project query builder
+
+### Features Implemented
+- [✅] Interactive carousel with auto-scroll (3-second interval)
+- [✅] Manual navigation (arrow buttons, keyboard, dots)
+- [✅] Pause on hover/focus/user interaction
+- [✅] Responsive design (2 cards desktop, 1 card mobile)
+- [✅] Three action buttons: "View Details" (always), "View Demo" (optional), "View YouTube Video" (optional)
+- [✅] Smart button distribution (33% width each, left-aligned)
+- [✅] Project details modal with close button
+- [✅] Status badges: Transparent with colored dots (green/yellow/grey) and pulsing animation
+- [✅] Technologies optional (default hidden)
+- [✅] Taller card dimensions (h-80/h-96) for better aspect ratio
+- [✅] AI Companion integration: Opens full-screen via createPortal
+- [✅] Accessibility: Reduced motion support, keyboard navigation, focus management
+- [✅] Removed KPI badges from cards and modal
+
+### Technical Details
+- **Carousel Library:** Embla Carousel (via shadcn/ui)
+- **Auto-scroll:** 3-second interval with pause on interaction
+- **Modal:** shadcn/ui Dialog component
+- **Full-screen Overlay:** React createPortal to document.body
+- **Image Optimization:** next/image with blur placeholders
+- **Accessibility:** ARIA labels, keyboard navigation, reduced motion support
+
+### Data Structure
+See `components/projects/types.ts` for complete Project interface. Required fields: id, slug, title, image, imageAlt, briefDescription, technologies. Optional fields include detailedDescription, bullets (max 3), demoUrl, youtubeUrl, status, aiContext, etc.
+
+---
+
 ## 🚀 PHASE 0: Pre-Setup & Planning
 
 **Objective:** Set up tools, accounts, and generate migration guide
