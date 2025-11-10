@@ -6,13 +6,12 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { ProjectCard } from "./projects/project-card"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer"
-import { useAutoScroll } from "@/hooks/use-auto-scroll"
 import { cn } from "@/lib/utils"
 import { projectsData } from "./projects/projects-data"
 
@@ -29,27 +28,40 @@ export function ProjectsSlider() {
     threshold: 0.1,
   })
 
-  // Auto-scroll hook
-  const {
-    isPaused,
-    setIsHovered,
-    setIsFocused,
-    setIsOffscreen,
-    handleInteraction,
-  } = useAutoScroll(api, {
-    interval: prefersReducedMotion ? 0 : 3000, // 3 seconds
-    enabled: !prefersReducedMotion && projects.length > 1,
-    pauseOnHover: true,
-    pauseOnFocus: true,
-    pauseWhenHidden: true,
-    pauseWhenOffscreen: true,
-    resumeDelay: 0, // Resume immediately after interaction
-  })
+  // Auto-scroll state
+  const [isPaused, setIsPaused] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
-  // Update offscreen state
+  // Custom auto-scroll that scrolls 2 projects at a time
   useEffect(() => {
-    setIsOffscreen(!isCarouselVisible)
-  }, [isCarouselVisible, setIsOffscreen])
+    if (!api || prefersReducedMotion || projects.length <= 2) return
+
+    const shouldPause = isPaused || isHovered || isFocused || !isCarouselVisible
+
+    if (shouldPause) return
+
+    const totalScrollPositions = Math.ceil(projects.length / 2)
+    const intervalId = setInterval(() => {
+      const currentIndex = api.selectedScrollSnap()
+      const nextIndex = (Math.floor(currentIndex / 2) + 1) * 2
+
+      if (nextIndex < projects.length) {
+        api.scrollTo(nextIndex)
+      } else {
+        // Loop back to start
+        api.scrollTo(0)
+      }
+    }, 3000)
+
+    return () => clearInterval(intervalId)
+  }, [api, prefersReducedMotion, projects.length, isPaused, isHovered, isFocused, isCarouselVisible])
+
+  const handleInteraction = useCallback(() => {
+    setIsPaused(true)
+    setTimeout(() => setIsPaused(false), 100)
+  }, [])
+
 
   // Handle carousel API
   useEffect(() => {
@@ -73,18 +85,22 @@ export function ProjectsSlider() {
     }
   }, [api, handleInteraction])
 
-  // Handle keyboard navigation
+  // Handle keyboard navigation - scroll by 2 positions
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (!api) return
 
       if (e.key === "ArrowLeft") {
         e.preventDefault()
-        api.scrollPrev()
+        const currentIndex = api.selectedScrollSnap()
+        const prevIndex = Math.max(0, Math.floor(currentIndex / 2) - 1) * 2
+        api.scrollTo(prevIndex)
         handleInteraction()
       } else if (e.key === "ArrowRight") {
         e.preventDefault()
-        api.scrollNext()
+        const currentIndex = api.selectedScrollSnap()
+        const nextIndex = Math.min(projects.length - 1, (Math.floor(currentIndex / 2) + 1) * 2)
+        api.scrollTo(nextIndex)
         handleInteraction()
       } else if (e.key === "Home") {
         e.preventDefault()
@@ -92,7 +108,8 @@ export function ProjectsSlider() {
         handleInteraction()
       } else if (e.key === "End") {
         e.preventDefault()
-        api.scrollTo(projects.length - 1)
+        const lastIndex = Math.floor((projects.length - 1) / 2) * 2
+        api.scrollTo(lastIndex)
         handleInteraction()
       }
     },
@@ -174,7 +191,7 @@ export function ProjectsSlider() {
             opts={{
               align: "start",
               loop: true,
-              slidesToScroll: 2, // Scroll 2 projects at a time
+              slidesToScroll: 1, // Scroll 1 slide at a time (we'll handle 2-project scrolling manually)
             }}
             className="w-full"
           >
@@ -196,17 +213,49 @@ export function ProjectsSlider() {
               ))}
             </CarouselContent>
 
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows - Custom to scroll by 2 positions */}
             {projects.length > 2 && (
               <>
-                <CarouselPrevious
-                  className="left-0 md:-left-12"
-                  aria-label="Previous project"
-                />
-                <CarouselNext
-                  className="right-0 md:-right-12"
-                  aria-label="Next project"
-                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(
+                    "absolute top-1/2 -translate-y-1/2 size-8 rounded-full",
+                    "left-0 md:-left-12"
+                  )}
+                  disabled={!canScrollPrev}
+                  onClick={() => {
+                    if (!api) return
+                    const currentIndex = api.selectedScrollSnap()
+                    const prevIndex = Math.max(0, Math.floor(currentIndex / 2) - 1) * 2
+                    api.scrollTo(prevIndex)
+                    handleInteraction()
+                  }}
+                  aria-label="Previous 2 projects"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="sr-only">Previous 2 projects</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(
+                    "absolute top-1/2 -translate-y-1/2 size-8 rounded-full",
+                    "right-0 md:-right-12"
+                  )}
+                  disabled={!canScrollNext}
+                  onClick={() => {
+                    if (!api) return
+                    const currentIndex = api.selectedScrollSnap()
+                    const nextIndex = Math.min(projects.length - 1, (Math.floor(currentIndex / 2) + 1) * 2)
+                    api.scrollTo(nextIndex)
+                    handleInteraction()
+                  }}
+                  aria-label="Next 2 projects"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                  <span className="sr-only">Next 2 projects</span>
+                </Button>
               </>
             )}
           </Carousel>
@@ -217,6 +266,12 @@ export function ProjectsSlider() {
               {Array.from({ length: Math.ceil(projects.length / 2) }).map(
                 (_, index) => {
                   const scrollIndex = index * 2
+                  // Calculate which projects are visible at this scroll position
+                  const startProject = scrollIndex + 1
+                  const endProject = Math.min(scrollIndex + 2, projects.length)
+                  // Check if current position is within this scroll position's range
+                  const isActive = current >= scrollIndex && current < scrollIndex + 2
+
                   return (
                     <button
                       key={index}
@@ -226,17 +281,13 @@ export function ProjectsSlider() {
                       }}
                       className={cn(
                         "h-2 w-2 rounded-full transition-all",
-                        current >= scrollIndex && current < scrollIndex + 2
+                        isActive
                           ? "bg-primary w-8"
                           : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       )}
-                      aria-label={`Go to projects ${scrollIndex + 1}-${Math.min(scrollIndex + 2, projects.length)}`}
-                      aria-current={
-                        current >= scrollIndex && current < scrollIndex + 2
-                          ? "true"
-                          : undefined
-                      }
+                      aria-label={`Go to projects ${startProject}-${endProject}`}
+                      aria-current={isActive ? "true" : undefined}
                     />
                   )
                 }
