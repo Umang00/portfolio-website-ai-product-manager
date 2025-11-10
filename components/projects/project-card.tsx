@@ -105,7 +105,7 @@ export function ProjectCard({
             )}
 
           {/* Brief Description */}
-          <p className="text-muted-foreground mb-6 line-clamp-2 flex-1">
+          <p className="text-muted-foreground mb-6 flex-1">
             {project.briefDescription}
           </p>
 
@@ -177,7 +177,7 @@ export function ProjectCard({
                   rel="noopener noreferrer"
                 >
                   <Youtube className="h-4 w-4 mr-2" />
-                  View YouTube Video
+                  Watch Video
                 </a>
               </Button>
             )}

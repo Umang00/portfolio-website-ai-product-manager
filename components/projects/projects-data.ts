@@ -267,8 +267,8 @@ export const projectsData: Project[] = [
     status: "Active",
     statusColor: "green",
     isFeatured: true,
-    demoUrl: "",
-    youtubeUrl: "",
+    demoUrl: "https://newsletter-self-zeta.vercel.app/",
+    youtubeUrl: "https://youtu.be/e7ut-PZs7Hs?si=v3CcnciT0U_7BnWp",
   },
   {
     id: "foggy-rainwater-text-generator",
@@ -301,7 +301,7 @@ export const projectsData: Project[] = [
     statusColor: "green",
     isFeatured: true,
     demoUrl: "",
-    youtubeUrl: "",
+    youtubeUrl: "https://youtu.be/VIGsmIW2Gu0?si=nnnKdpaITykyG0Xt",
   },
   {
     id: "lecture-lens",
