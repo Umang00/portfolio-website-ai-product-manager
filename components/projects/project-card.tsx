@@ -23,8 +23,8 @@ export function ProjectCard({
   const cardRef = useRef<HTMLElement | null>(null)
 
   // Determine which action buttons to show
-  const hasDemo = project.hasDemo ?? !!project.demoUrl
-  const hasYoutube = project.hasYoutube ?? !!project.youtubeUrl
+  const hasDemo = project.hasDemo ?? (!!project.demoUrl && project.demoUrl.trim() !== "")
+  const hasYoutube = project.hasYoutube ?? (!!project.youtubeUrl && project.youtubeUrl.trim() !== "")
 
 
   return (
@@ -125,7 +125,7 @@ export function ProjectCard({
               aria-label={`View details for ${project.title}`}
             >
               <FileText className="h-4 w-4 mr-2" />
-              Details
+              View Details
             </Button>
 
             {/* View Demo - Optional */}
@@ -152,7 +152,7 @@ export function ProjectCard({
                   }
                 >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Demo
+                  View Demo
                 </a>
               </Button>
             )}
@@ -177,7 +177,7 @@ export function ProjectCard({
                   rel="noopener noreferrer"
                 >
                   <Youtube className="h-4 w-4 mr-2" />
-                  Video
+                  View YouTube Video
                 </a>
               </Button>
             )}

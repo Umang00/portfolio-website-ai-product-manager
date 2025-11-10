@@ -1,16 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { ChatOverlay } from "@/components/ai/chat-overlay"
-import { Bot, X } from "lucide-react"
+import { Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Project } from "./types"
 
@@ -43,67 +41,83 @@ export function ProjectDetailsModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">{project.title}</DialogTitle>
-          </DialogHeader>
+          {/* Visually hidden title for accessibility */}
+          <DialogTitle className="sr-only">
+            {project.title} - Project Details
+          </DialogTitle>
+          <div className="space-y-6">
+            {/* Problem Section */}
+            {project.problem && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Problem
+                </h3>
+                <p className="text-foreground leading-relaxed">
+                  {project.problem}
+                </p>
+              </div>
+            )}
 
-          {/* Project Image */}
-          {project.image && (
-            <div className="relative w-full h-64 rounded-lg overflow-hidden bg-muted mb-4">
-              <Image
-                src={project.image}
-                alt={project.imageAlt || project.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 672px"
-              />
-            </div>
-          )}
+            {/* Solution/Approach Section */}
+            {(project.detailedDescription || project.briefDescription) && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Solution
+                </h3>
+                <p className="text-foreground leading-relaxed">
+                  {project.detailedDescription || project.briefDescription}
+                </p>
+              </div>
+            )}
 
-          {/* Detailed Description */}
-          {(project.detailedDescription || project.briefDescription) && (
-            <div className="space-y-4">
-              <p className="text-foreground leading-relaxed">
-                {project.detailedDescription || project.briefDescription}
-              </p>
-            </div>
-          )}
+            {/* Outcome Section */}
+            {project.outcomeBullets && project.outcomeBullets.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Outcomes
+                </h3>
+                <ul className="list-disc list-inside space-y-2 text-foreground">
+                  {project.outcomeBullets.map((bullet, index) => (
+                    <li key={index}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          {/* Bullets */}
-          {project.bullets && project.bullets.length > 0 && (
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-              {project.bullets.map((bullet, index) => (
-                <li key={index}>{bullet}</li>
-              ))}
-            </ul>
-          )}
+            {/* Hover Details */}
+            {project.hoverDetails && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Additional Details
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {project.hoverDetails}
+                </p>
+              </div>
+            )}
 
-          {/* Hover Details */}
-          {project.hoverDetails && (
-            <p className="text-sm text-muted-foreground">
-              {project.hoverDetails}
-            </p>
-          )}
-
-          {/* Technologies (if present) */}
-          {project.technologies && project.technologies.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-4 border-t">
-              <span className="text-sm font-medium text-muted-foreground w-full">
-                Technologies:
-              </span>
-              {project.technologies.map((tech, index) => (
-                <span
-                  key={index}
-                  className={cn(
-                    "px-3 py-1 rounded-md text-sm font-medium",
-                    "bg-muted text-foreground"
-                  )}
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          )}
+            {/* Technologies Section */}
+            {project.technologies && project.technologies.length > 0 && (
+              <div className="space-y-2 pt-4 border-t">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Technologies
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map((tech, index) => (
+                    <span
+                      key={index}
+                      className={cn(
+                        "px-3 py-1 rounded-md text-sm font-medium",
+                        "bg-muted text-foreground"
+                      )}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Ask AI Companion Button */}
           <div className="pt-6 border-t">

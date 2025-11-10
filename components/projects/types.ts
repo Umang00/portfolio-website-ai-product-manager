@@ -9,9 +9,10 @@ export interface Project {
 
   // Descriptions
   briefDescription: string
-  detailedDescription?: string
+  detailedDescription?: string // Solution/Action/Approach
+  problem?: string // Problem/Context/Issue
   hoverDetails?: string
-  bullets?: string[] // Max 3 items
+  outcomeBullets?: string[] // Results/Outcomes/Impacts as bullet points
 
   // Content
   technologies: string[] // Array for button labels
