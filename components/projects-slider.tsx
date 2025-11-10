@@ -174,7 +174,7 @@ export function ProjectsSlider() {
             opts={{
               align: "start",
               loop: true,
-              slidesToScroll: 1,
+              slidesToScroll: 2, // Scroll 2 projects at a time
             }}
             className="w-full"
           >
@@ -211,27 +211,36 @@ export function ProjectsSlider() {
             )}
           </Carousel>
 
-          {/* Pagination Dots */}
+          {/* Pagination Dots - One dot per scroll position (every 2 projects) */}
           {projects.length > 2 && (
             <div className="flex justify-center gap-2 mt-8">
-              {projects.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    api?.scrollTo(index)
-                    handleInteraction()
-                  }}
-                  className={cn(
-                    "h-2 w-2 rounded-full transition-all",
-                    current === index
-                      ? "bg-primary w-8"
-                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  )}
-                  aria-label={`Go to slide ${index + 1}`}
-                  aria-current={current === index ? "true" : undefined}
-                />
-              ))}
+              {Array.from({ length: Math.ceil(projects.length / 2) }).map(
+                (_, index) => {
+                  const scrollIndex = index * 2
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        api?.scrollTo(scrollIndex)
+                        handleInteraction()
+                      }}
+                      className={cn(
+                        "h-2 w-2 rounded-full transition-all",
+                        current >= scrollIndex && current < scrollIndex + 2
+                          ? "bg-primary w-8"
+                          : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      )}
+                      aria-label={`Go to projects ${scrollIndex + 1}-${Math.min(scrollIndex + 2, projects.length)}`}
+                      aria-current={
+                        current >= scrollIndex && current < scrollIndex + 2
+                          ? "true"
+                          : undefined
+                      }
+                    />
+                  )
+                }
+              )}
             </div>
           )}
         </div>
