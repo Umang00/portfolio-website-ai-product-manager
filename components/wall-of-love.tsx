@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Linkedin } from "lucide-react"
 import { useState, useEffect } from "react"
 import { AnimatedCard } from "@/components/animations/animated-card"
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 const testimonials = [
   {
@@ -54,10 +55,12 @@ export function WallOfLove() {
   return (
     <section id="testimonials" className="py-20 px-4 bg-muted/30">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Wall of Love</h2>
-          <p className="text-lg text-muted-foreground">Feedback from colleagues and collaborators</p>
-        </div>
+        <ScrollReveal variant="fadeInUp" delay={0.2}>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Wall of Love</h2>
+            <p className="text-lg text-muted-foreground">Feedback from colleagues and collaborators</p>
+          </div>
+        </ScrollReveal>
 
         <div className="hidden md:block">
           <div

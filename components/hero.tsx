@@ -10,6 +10,7 @@ import { LinkedInButton, GitHubButton, ResumeButton } from "@/components/ui/soci
 import { ChatOverlay } from "@/components/ai/chat-overlay"
 import { useSpeechInput } from "@/hooks/use-speech-input"
 import { HeroStickyNotes } from "@/components/hero-sticky-notes"
+import { ScrollReveal, ScrollRevealList, ScrollRevealItem } from "@/components/animations/scroll-reveal"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
@@ -112,111 +113,125 @@ export function Hero() {
       />
 
       <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
-        <Badge variant="secondary" className="text-sm px-4 py-2 transition-all duration-300 relative z-20">
-          {greetings[currentGreeting]}
-        </Badge>
+        <ScrollReveal variant="fadeInDown" delay={0.2}>
+          <Badge variant="secondary" className="text-sm px-4 py-2 transition-all duration-300 relative z-20">
+            {greetings[currentGreeting]}
+          </Badge>
+        </ScrollReveal>
 
-        <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 z-20 overflow-visible">
-          {/* Sticky Notes positioned relative to profile image */}
-          <HeroStickyNotes />
-          
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
-          <img
-            src="/umang-profile.png"
-            alt="Umang Thakkar"
-            className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
-          />
-        </div>
+        <ScrollReveal variant="scaleIn" delay={0.6} duration={0.8}>
+          <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 z-20 overflow-visible">
+            {/* Sticky Notes positioned relative to profile image */}
+            <HeroStickyNotes />
+            
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
+            <img
+              src="/umang-profile.png"
+              alt="Umang Thakkar"
+              className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
+            />
+          </div>
+        </ScrollReveal>
 
+        <ScrollReveal variant="fadeInUp" delay={0.4} duration={0.7}>
+          <div className="space-y-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-balance min-h-[120px] md:min-h-[180px]">
+              I'm Umang — building products that{" "}
+              <span className="text-primary">
+                {isMounted ? (
+                  <Typewriter
+                    words={["ship", "scale", "monetize"]}
+                    loop={0}
+                    cursor
+                    cursorStyle="_"
+                    typeSpeed={100}
+                    deleteSpeed={50}
+                    delaySpeed={2000}
+                  />
+                ) : (
+                  "ship"
+                )}
+              </span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance mt-4 mb-8">
+              AI Product Manager focused on data-driven growth and user delight.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="space-y-6">
-          <h1 className="text-4xl md:text-6xl font-bold text-balance min-h-[120px] md:min-h-[180px]">
-            I'm Umang — building products that{" "}
-            <span className="text-primary">
-              {isMounted ? (
-                <Typewriter
-                  words={["ship", "scale", "monetize"]}
-                  loop={0}
-                  cursor
-                  cursorStyle="_"
-                  typeSpeed={100}
-                  deleteSpeed={50}
-                  delaySpeed={2000}
-                />
-              ) : (
-                "ship"
-              )}
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance mt-4 mb-8 animate-in fade-in duration-1000 delay-500">
-  AI Product Manager focused on data-driven growth and user delight.
-</p>
-
-        </div>
-
-        <form onSubmit={handleSubmit} className="relative w-full max-w-3xl mx-auto flex items-center gap-2">
-          {/* Maximize Icon Button - Opens AI Companion page */}
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={handleOpenChat}
-            className="h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0"
-            title="Open AI Companion"
-          >
-            <Maximize className="h-5 w-5 text-foreground" />
-          </Button>
-
-          {/* Microphone Icon Button - Voice Input */}
-          {speechSupported && (
+        <ScrollReveal variant="fadeInUp" delay={0.8} duration={0.6}>
+          <form onSubmit={handleSubmit} className="relative w-full max-w-3xl mx-auto flex items-center gap-2">
+            {/* Maximize Icon Button - Opens AI Companion page */}
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={handleMicClick}
-              disabled={micPermission === "denied"}
-              className={`h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0 ${
-                listening ? "bg-primary/10 text-primary border-primary/50" : ""
-              } ${micPermission === "denied" ? "opacity-50 cursor-not-allowed" : ""}`}
-              title={listening ? "Stop listening" : micPermission === "denied" ? "Microphone permission denied" : "Start voice input"}
+              onClick={handleOpenChat}
+              className="h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0"
+              title="Open AI Companion"
             >
-              <Mic className={`h-5 w-5 ${listening ? "text-primary" : "text-foreground"}`} />
+              <Maximize className="h-5 w-5 text-foreground" />
             </Button>
-          )}
 
-          {/* Input Field */}
-          <div className="relative flex-1">
-            <Input
-              value={interimInput ? (query ? `${query} ${interimInput}` : interimInput) : query}
-              onChange={(e) => {
-                // Only update query if not showing interim input
-                if (!interimInput) {
-                  setQuery(e.target.value)
-                }
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder={listening ? "Listening..." : "Ask me anything..."}
-              className="h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300 pr-16"
-              readOnly={!!interimInput}
-            />
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              size="icon"
-              variant="ghost"
-              disabled={!query.trim() && !interimInput}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50"
-            >
-              <ArrowUp className="h-5 w-5 text-foreground" />
-            </Button>
+            {/* Microphone Icon Button - Voice Input */}
+            {speechSupported && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleMicClick}
+                disabled={micPermission === "denied"}
+                className={`h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0 ${
+                  listening ? "bg-primary/10 text-primary border-primary/50" : ""
+                } ${micPermission === "denied" ? "opacity-50 cursor-not-allowed" : ""}`}
+                title={listening ? "Stop listening" : micPermission === "denied" ? "Microphone permission denied" : "Start voice input"}
+              >
+                <Mic className={`h-5 w-5 ${listening ? "text-primary" : "text-foreground"}`} />
+              </Button>
+            )}
+
+            {/* Input Field */}
+            <div className="relative flex-1">
+              <Input
+                value={interimInput ? (query ? `${query} ${interimInput}` : interimInput) : query}
+                onChange={(e) => {
+                  // Only update query if not showing interim input
+                  if (!interimInput) {
+                    setQuery(e.target.value)
+                  }
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={listening ? "Listening..." : "Ask me anything..."}
+                className="h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300 pr-16"
+                readOnly={!!interimInput}
+              />
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                size="icon"
+                variant="ghost"
+                disabled={!query.trim() && !interimInput}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50"
+              >
+                <ArrowUp className="h-5 w-5 text-foreground" />
+              </Button>
+            </div>
+          </form>
+        </ScrollReveal>
+
+        <ScrollRevealList staggerDelay={0.1} delayChildren={1.0}>
+          <div className="flex justify-center gap-4">
+            <ScrollRevealItem>
+              <LinkedInButton />
+            </ScrollRevealItem>
+            <ScrollRevealItem>
+              <GitHubButton />
+            </ScrollRevealItem>
+            <ScrollRevealItem>
+              <ResumeButton />
+            </ScrollRevealItem>
           </div>
-        </form>
-
-        <div className="flex justify-center gap-4">
-          <LinkedInButton />
-          <GitHubButton />
-          <ResumeButton />
-        </div>
+        </ScrollRevealList>
       </div>
 
       {/* Full-page Chat Overlay */}

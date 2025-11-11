@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { Search, Target, Lightbulb, Rocket, RefreshCw } from "lucide-react"
 import { AnimatedCard } from "@/components/animations/animated-card"
+import { ScrollReveal, ScrollRevealList, ScrollRevealItem } from "@/components/animations/scroll-reveal"
 
 type Step = {
   title: string
@@ -43,18 +44,21 @@ export function ProcessWheel() {
   return (
     <section id="process" className="px-4 pt-24 pb-52 md:pt-28 md:pb-60">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">My Process</h2>
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            A proven framework for shipping products that users love
-          </p>
-          <p className="text-sm md:text-base text-muted-foreground/80 max-w-2xl mx-auto mt-2 italic">
-            "Great products emerge from ruthless iteration, not perfect planning"
-          </p>
-        </div>
+        <ScrollReveal variant="fadeInUp" delay={0.2}>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">My Process</h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+              A proven framework for shipping products that users love
+            </p>
+            <p className="text-sm md:text-base text-muted-foreground/80 max-w-2xl mx-auto mt-2 italic">
+              "Great products emerge from ruthless iteration, not perfect planning"
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Desktop / tablet wheel */}
-        <div className="relative hidden md:block">
+        <ScrollReveal variant="scaleIn" delay={0.4} duration={0.8}>
+          <div className="relative hidden md:block">
           <div
             className="relative mx-auto mt-2 mb-10"
             style={{ width: `${RADIUS * 2}px`, height: `${RADIUS * 2}px` }}
@@ -125,16 +129,19 @@ export function ProcessWheel() {
             })}
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Mobile list */}
-        <ol className="md:hidden space-y-4 max-w-2xl mx-auto">
+        <div className="md:hidden">
+          <ScrollRevealList staggerDelay={0.1} delayChildren={0.3}>
+            <ol className="space-y-4 max-w-2xl mx-auto">
           {STEPS.map(({ title, desc, Icon }, i) => (
-            <AnimatedCard
-              key={title}
-              as="li"
-              variant="all" // Full effects like other sections
-              className="p-4 rounded-xl border bg-card"
-            >
+            <ScrollRevealItem key={title}>
+              <AnimatedCard
+                as="li"
+                variant="all" // Full effects like other sections
+                className="p-4 rounded-xl border bg-card"
+              >
               <div className="flex items-start gap-3">
                 <div className="mt-1 w-10 h-10 rounded-full border border-muted-foreground/40 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
@@ -146,9 +153,12 @@ export function ProcessWheel() {
                   <div className="text-sm text-muted-foreground">{desc}</div>
                 </div>
               </div>
-            </AnimatedCard>
+              </AnimatedCard>
+            </ScrollRevealItem>
           ))}
-        </ol>
+            </ol>
+          </ScrollRevealList>
+        </div>
       </div>
     </section>
   )

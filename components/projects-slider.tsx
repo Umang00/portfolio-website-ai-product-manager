@@ -12,6 +12,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { ProjectCard } from "./projects/project-card"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer"
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { cn } from "@/lib/utils"
 import { projectsData } from "./projects/projects-data"
 
@@ -170,14 +171,16 @@ export function ProjectsSlider() {
       onKeyDown={handleKeyDown}
     >
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Featured Projects
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Deep dives into products I've shipped from 0 to 1
-          </p>
-        </div>
+        <ScrollReveal variant="fadeInUp" delay={0.2}>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Featured Projects
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Deep dives into products I've shipped from 0 to 1
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div
           className="relative overflow-visible pt-20 pb-6 pl-6 pr-8 md:pt-24 md:pb-8 md:pl-8 md:pr-12" // Increased padding: top for lift (80px/96px), right for scale (32px/48px)

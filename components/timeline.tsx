@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { AnimatedCard } from "@/components/animations/animated-card"
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 type TimelineItem = {
   title: string
@@ -90,24 +91,31 @@ export function Timeline() {
   return (
     <section id="journey" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">My Journey</h2>
-          <p className="text-lg text-muted-foreground">The path of building, scaling, and reimagining products</p>
-        </div>
+        <ScrollReveal variant="fadeInUp" delay={0.2}>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Journey</h2>
+            <p className="text-lg text-muted-foreground">The path of building, scaling, and reimagining products</p>
+          </div>
+        </ScrollReveal>
 
         <div className="space-y-8">
           {visibleItems.map((item, index) => (
-            <div key={index} className="flex gap-6 group">
-              <div className="flex flex-col items-center">
-                <div className="w-4 h-4 bg-primary rounded-full border-4 border-background ring-4 ring-primary/20"></div>
-                {index < visibleItems.length - 1 && <div className="w-0.5 flex-1 bg-border mt-4"></div>}
-              </div>
+            <ScrollReveal
+              key={index}
+              variant={index % 2 === 0 ? "fadeInLeft" : "fadeInRight"}
+              delay={index * 0.15}
+            >
+              <div className="flex gap-6 group">
+                <div className="flex flex-col items-center">
+                  <div className="w-4 h-4 bg-primary rounded-full border-4 border-background ring-4 ring-primary/20"></div>
+                  {index < visibleItems.length - 1 && <div className="w-0.5 flex-1 bg-border mt-4"></div>}
+                </div>
 
-              <div className="flex-1 pb-8">
-                <AnimatedCard
-                  variant="all"
-                  className="bg-card rounded-lg p-6 border"
-                >
+                <div className="flex-1 pb-8">
+                  <AnimatedCard
+                    variant="all"
+                    className="bg-card rounded-lg p-6 border"
+                  >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
                     <div>
                       <h3 className="text-xl font-semibold">{item.title}</h3>
@@ -126,18 +134,20 @@ export function Timeline() {
                       </li>
                     ))}
                   </ul>
-                </AnimatedCard>
+                  </AnimatedCard>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="flex justify-center mt-12">
-          <Button
-            onClick={() => setIsExpanded(!isExpanded)}
-            size="lg"
-            className="gap-2"
-          >
+        <ScrollReveal variant="fadeInUp" delay={0.4}>
+          <div className="flex justify-center mt-12">
+            <Button
+              onClick={() => setIsExpanded(!isExpanded)}
+              size="lg"
+              className="gap-2"
+            >
             {isExpanded ? (
               <>
                 Show Less
@@ -149,8 +159,9 @@ export function Timeline() {
                 <ChevronDown className="w-4 h-4" />
               </>
             )}
-          </Button>
-        </div>
+            </Button>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   )

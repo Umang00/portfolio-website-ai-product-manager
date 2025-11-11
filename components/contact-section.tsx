@@ -9,6 +9,7 @@ import { Mail, MessageCircle, Calendar, CheckCircle2, XCircle } from "lucide-rea
 import { CalendlyModal } from "./calendly-modal"
 import { toast } from "sonner"
 import { AnimatedCard } from "@/components/animations/animated-card"
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 
 // Dynamically import Supabase to avoid build issues when not configured
 const getSupabaseClient = async () => {
@@ -173,12 +174,14 @@ export function ContactSection() {
   return (
     <section id="contact" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Let's Connect</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Ready to discuss your next product idea or explore collaboration opportunities? I'd love to hear from you.
-          </p>
-        </div>
+        <ScrollReveal variant="fadeInUp" delay={0.2}>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Let's Connect</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Ready to discuss your next product idea or explore collaboration opportunities? I'd love to hear from you.
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Left: quick actions */}

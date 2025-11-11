@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import CountUp from "react-countup"
 import { TrendingUp, DollarSign, Scissors, Clock, BarChart3, Zap, Briefcase, Users, Target } from "lucide-react"
 import { AnimatedCardGrid, AnimatedCardGridItem } from "@/components/animations/animated-card"
+import { ScrollReveal, ScrollRevealList, ScrollRevealItem } from "@/components/animations/scroll-reveal"
 
 const quickStats = [
   { label: "Years Experience", value: 4, suffix: "+", icon: Briefcase },
@@ -82,38 +83,44 @@ export function KpiSection() {
   return (
     <section id="kpis" ref={sectionRef} className="py-16 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">Impact At A Glance</h2>
-          <p className="text-base md:text-lg text-muted-foreground mb-8">Key metrics from products I've shipped</p>
-          
-          {/* Quick Stats Bar */}
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm md:text-base text-muted-foreground/80">
-            {quickStats.map((stat, index) => {
-              const Icon = stat.icon
-              return (
-                <div key={stat.label} className="flex items-center gap-2">
-                  <Icon className="w-4 h-4" />
-                  <span className="font-semibold text-foreground">
-                    {isVisible && !prefersReducedMotion ? (
-                      <CountUp
-                        start={0}
-                        end={stat.value}
-                        duration={2}
-                        delay={0.2}
-                        suffix={stat.suffix}
-                        preserveValue
-                      />
-                    ) : (
-                      `${stat.value}${stat.suffix}`
-                    )}
-                  </span>
-                  <span>{stat.label}</span>
-                  {index < quickStats.length - 1 && <span className="hidden md:inline ml-2">•</span>}
-                </div>
-              )
-            })}
+        <ScrollReveal variant="fadeInUp" delay={0.2}>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">Impact At A Glance</h2>
+            <p className="text-base md:text-lg text-muted-foreground mb-8">Key metrics from products I've shipped</p>
+            
+            {/* Quick Stats Bar */}
+            <ScrollRevealList staggerDelay={0.1} delayChildren={0.3}>
+              <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm md:text-base text-muted-foreground/80">
+                {quickStats.map((stat, index) => {
+                  const Icon = stat.icon
+                  return (
+                    <ScrollRevealItem key={stat.label}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="w-4 h-4" />
+                        <span className="font-semibold text-foreground">
+                          {isVisible && !prefersReducedMotion ? (
+                            <CountUp
+                              start={0}
+                              end={stat.value}
+                              duration={2}
+                              delay={0.2}
+                              suffix={stat.suffix}
+                              preserveValue
+                            />
+                          ) : (
+                            `${stat.value}${stat.suffix}`
+                          )}
+                        </span>
+                        <span>{stat.label}</span>
+                        {index < quickStats.length - 1 && <span className="hidden md:inline ml-2">•</span>}
+                      </div>
+                    </ScrollRevealItem>
+                  )
+                })}
+              </div>
+            </ScrollRevealList>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Main Impact Metrics */}
         <div className="space-y-6">

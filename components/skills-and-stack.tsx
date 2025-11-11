@@ -2,6 +2,7 @@
 
 import { IconType } from "react-icons"
 import { AnimatedCard } from "@/components/animations/animated-card"
+import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { 
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiPython, SiNodedotjs,
   SiOpenai, SiAnthropic, SiGooglegemini, SiHuggingface, SiLangchain,
@@ -165,10 +166,12 @@ export function SkillsAndStack() {
       <div className="max-w-6xl mx-auto space-y-24">
         {/* SECTION A - Core Skills */}
         <div>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Core Skills</h2>
-            <p className="text-lg text-muted-foreground">Capabilities I bring to product building</p>
-          </div>
+          <ScrollReveal variant="fadeInUp" delay={0.2}>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Core Skills</h2>
+              <p className="text-lg text-muted-foreground">Capabilities I bring to product building</p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {coreSkills.map((category, index) => (
@@ -179,10 +182,12 @@ export function SkillsAndStack() {
 
         {/* SECTION B - Tech Stack */}
         <div>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
-            <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
-          </div>
+          <ScrollReveal variant="fadeInUp" delay={0.2}>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
+              <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
+            </div>
+          </ScrollReveal>
 
           <MarqueeLogos />
 
