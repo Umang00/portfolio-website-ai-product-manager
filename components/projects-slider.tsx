@@ -172,18 +172,18 @@ export function ProjectsSlider() {
     >
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Featured Projects
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Deep dives into products I've shipped from 0 to 1
-            </p>
-          </div>
+          <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Featured Projects
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Deep dives into products I've shipped from 0 to 1
+          </p>
+        </div>
         </ScrollReveal>
 
         <div
-          className="relative overflow-visible pt-20 pb-6 pl-6 pr-8 md:pt-24 md:pb-8 md:pl-8 md:pr-12" // Increased padding: top for lift (80px/96px), right for scale (32px/48px)
+          className="relative overflow-visible pt-8 pb-6 pl-6 pr-8 md:pt-12 md:pb-8 md:pl-8 md:pr-12" // Padding: top for hover lift, right for scale
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onFocus={() => setIsFocused(true)}
@@ -210,10 +210,10 @@ export function ProjectsSlider() {
                 >
                   {/* Padding wrapper to prevent hover overlap and clipping */}
                   <div className="pt-6 pb-2 pl-4 pr-4 md:pt-8 md:pb-3 md:pl-5 md:pr-6">
-                    <ProjectCard
-                      project={project}
-                      priority={index < 2} // Priority load first 2
-                    />
+                  <ProjectCard
+                    project={project}
+                    priority={index < 2} // Priority load first 2
+                  />
                   </div>
                 </CarouselItem>
               ))}

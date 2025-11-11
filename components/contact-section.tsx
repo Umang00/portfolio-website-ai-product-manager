@@ -5,11 +5,12 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Mail, MessageCircle, Calendar, CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, XCircle } from "lucide-react"
 import { CalendlyModal } from "./calendly-modal"
 import { toast } from "sonner"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { EmailButton, WhatsAppButton, CalendarButton } from "@/components/ui/social-buttons"
 
 // Dynamically import Supabase to avoid build issues when not configured
 const getSupabaseClient = async () => {
@@ -175,12 +176,12 @@ export function ContactSection() {
     <section id="contact" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Let's Connect</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Ready to discuss your next product idea or explore collaboration opportunities? I'd love to hear from you.
-            </p>
-          </div>
+          <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Let's Connect</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Ready to discuss your next product idea or explore collaboration opportunities? I'd love to hear from you.
+          </p>
+        </div>
         </ScrollReveal>
 
         <div className="grid md:grid-cols-2 gap-12">
@@ -189,55 +190,50 @@ export function ContactSection() {
             <div className="space-y-6">
               {/* Email */}
               <AnimatedCard variant="all" className="w-full">
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
-                  onClick={() => {
-                    const subject = encodeURIComponent("Hello from your portfolio")
-                    const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...")
-                    window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`
-                  }}
-                >
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Mail className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="font-semibold">Email</h3>
-                    <p className="text-muted-foreground">umangthakkar005@gmail.com</p>
-                  </div>
-                </Button>
+                <button
+                onClick={() => {
+                  const subject = encodeURIComponent("Hello from your portfolio")
+                  const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...")
+                  window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`
+                }}
+                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent border border-border rounded-lg hover:bg-accent transition-colors"
+              >
+                  <EmailButton />
+                <div className="text-left">
+                  <h3 className="font-semibold">Email</h3>
+                  <p className="text-muted-foreground">umangthakkar005@gmail.com</p>
+                </div>
+                </button>
               </AnimatedCard>
 
               {/* WhatsApp */}
               <AnimatedCard variant="all" className="w-full">
-                <Button variant="outline" className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent" asChild>
-                  <a href="https://wa.me/919426154668" target="_blank" rel="noopener noreferrer">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <MessageCircle className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="text-left">
-                      <h3 className="font-semibold">WhatsApp</h3>
-                      <p className="text-muted-foreground">Let's chat directly</p>
-                    </div>
-                  </a>
-                </Button>
+                <a
+                  href="https://wa.me/919426154668"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent border border-border rounded-lg hover:bg-accent transition-colors"
+                >
+                  <WhatsAppButton />
+                  <div className="text-left">
+                    <h3 className="font-semibold">WhatsApp</h3>
+                    <p className="text-muted-foreground">Let's chat directly</p>
+                  </div>
+                </a>
               </AnimatedCard>
 
               {/* Calendly */}
               <AnimatedCard variant="all" className="w-full">
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
-                  onClick={() => setIsCalendlyOpen(true)}
-                >
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="font-semibold">Book a Call</h3>
-                    <p className="text-muted-foreground">Schedule a 30-minute product strategy session</p>
-                  </div>
-                </Button>
+                <button
+                onClick={() => setIsCalendlyOpen(true)}
+                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent border border-border rounded-lg hover:bg-accent transition-colors"
+              >
+                  <CalendarButton onClick={() => setIsCalendlyOpen(true)} />
+                <div className="text-left">
+                  <h3 className="font-semibold">Book a Call</h3>
+                  <p className="text-muted-foreground">Schedule a 30-minute product strategy session</p>
+                </div>
+                </button>
               </AnimatedCard>
             </div>
           </div>

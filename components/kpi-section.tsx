@@ -81,12 +81,12 @@ export function KpiSection() {
   }
 
   return (
-    <section id="kpis" ref={sectionRef} className="py-16 px-4">
+    <section id="kpis" ref={sectionRef} className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">Impact At A Glance</h2>
-            <p className="text-base md:text-lg text-muted-foreground mb-8">Key metrics from products I've shipped</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Impact At A Glance</h2>
+            <p className="text-lg text-muted-foreground">Key metrics from products I've shipped</p>
             
             {/* Quick Stats Bar */}
             <ScrollRevealList staggerDelay={0.1} delayChildren={0.3}>

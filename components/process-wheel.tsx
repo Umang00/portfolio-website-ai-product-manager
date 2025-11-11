@@ -45,20 +45,17 @@ export function ProcessWheel() {
     <section id="process" className="px-4 pt-24 pb-52 md:pt-28 md:pb-60">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">My Process</h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              A proven framework for shipping products that users love
-            </p>
-            <p className="text-sm md:text-base text-muted-foreground/80 max-w-2xl mx-auto mt-2 italic">
-              "Great products emerge from ruthless iteration, not perfect planning"
-            </p>
-          </div>
+        <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Process</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            A proven framework for shipping products that users love
+          </p>
+        </div>
         </ScrollReveal>
 
         {/* Desktop / tablet wheel */}
         <ScrollReveal variant="scaleIn" delay={0.4} duration={0.8}>
-          <div className="relative hidden md:block">
+        <div className="relative hidden md:block">
           <div
             className="relative mx-auto mt-2 mb-10"
             style={{ width: `${RADIUS * 2}px`, height: `${RADIUS * 2}px` }}
@@ -156,7 +153,7 @@ export function ProcessWheel() {
               </AnimatedCard>
             </ScrollRevealItem>
           ))}
-            </ol>
+        </ol>
           </ScrollRevealList>
         </div>
       </div>

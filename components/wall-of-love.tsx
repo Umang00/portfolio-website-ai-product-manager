@@ -37,26 +37,40 @@ export function WallOfLove() {
   const [currentSet, setCurrentSet] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
 
+  // Calculate number of sets - ensure we always have at least 1 set
+  const totalSets = Math.max(1, Math.ceil(testimonials.length / 2))
+
   useEffect(() => {
-    if (isPaused) return
+    if (isPaused || testimonials.length === 0) return
 
     const interval = setInterval(() => {
-      setCurrentSet((prev) => (prev + 1) % Math.ceil(testimonials.length / 2))
+      setCurrentSet((prev) => (prev + 1) % totalSets)
     }, 6000)
 
     return () => clearInterval(interval)
-  }, [isPaused])
+  }, [isPaused, totalSets])
 
   const getCurrentTestimonials = () => {
+    if (testimonials.length === 0) return []
+    
     const startIndex = currentSet * 2
-    return testimonials.slice(startIndex, startIndex + 2)
+    const endIndex = startIndex + 2
+    
+    // Get testimonials for current set
+    const current = testimonials.slice(startIndex, endIndex)
+    
+    // If we have an odd number of testimonials and we're on the last set,
+    // we'll only have 1 testimonial. In this case, we'll show it centered
+    // by returning it as-is (the grid will handle spacing)
+    // This ensures we never show empty slots or duplicate testimonials
+    return current
   }
 
   return (
     <section id="testimonials" className="py-20 px-4 bg-muted/30">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Wall of Love</h2>
             <p className="text-lg text-muted-foreground">Feedback from colleagues and collaborators</p>
           </div>
@@ -64,16 +78,25 @@ export function WallOfLove() {
 
         <div className="hidden md:block">
           <div
-            className="grid grid-cols-2 gap-8 min-h-[320px]"
+            className={`grid gap-8 min-h-[320px] ${
+              getCurrentTestimonials().length === 1 
+                ? "grid-cols-1 max-w-2xl mx-auto" 
+                : "grid-cols-2"
+            }`}
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {getCurrentTestimonials().map((testimonial, index) => (
-              <AnimatedCard
-                key={`${currentSet}-${index}`}
-                variant="all"
-                className="bg-card rounded-xl p-8 border shadow-sm"
-              >
+            {getCurrentTestimonials().length > 0 ? (
+              getCurrentTestimonials().map((testimonial, index) => {
+                // Use stable key based on testimonial data and position
+                const actualIndex = (currentSet * 2) + index
+                const testimonialKey = `${testimonial.name}-${actualIndex}`
+                
+                return (
+                <div
+                  key={testimonialKey}
+                  className="bg-card rounded-xl p-8 border shadow-sm transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:shadow-[0_20px_40px_rgba(37,99,235,0.2)]"
+                >
                 <div className="flex items-start gap-4 mb-6">
                   <div className="relative flex-shrink-0">
                     <img
@@ -103,8 +126,48 @@ export function WallOfLove() {
                 <blockquote className="text-base leading-relaxed text-foreground/90">
                   "{testimonial.quote}"
                 </blockquote>
-              </AnimatedCard>
-            ))}
+              </div>
+                )
+              })
+            ) : (
+              // Fallback: show all testimonials if getCurrentTestimonials returns empty
+              testimonials.slice(0, 2).map((testimonial, index) => (
+                <div
+                  key={`fallback-${testimonial.name}-${index}`}
+                  className="bg-card rounded-xl p-8 border shadow-sm transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:shadow-[0_20px_40px_rgba(37,99,235,0.2)]"
+                >
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={testimonial.avatar || "/placeholder.svg"}
+                        alt={testimonial.name}
+                        className="w-16 h-16 rounded-full object-cover ring-2 ring-primary/20"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-semibold text-lg">{testimonial.name}</h4>
+                        {testimonial.linkedin && (
+                          <a
+                            href={testimonial.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${testimonial.name}'s LinkedIn`}
+                            className="group inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card hover:bg-[#0A66C2]/10 transition-colors flex-shrink-0"
+                          >
+                            <Linkedin className="h-4 w-4 transition-colors group-hover:text-[#0A66C2]" />
+                          </a>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                    </div>
+                  </div>
+                  <blockquote className="text-base leading-relaxed text-foreground/90">
+                    "{testimonial.quote}"
+                  </blockquote>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

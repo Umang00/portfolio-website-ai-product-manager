@@ -167,10 +167,10 @@ export function SkillsAndStack() {
         {/* SECTION A - Core Skills */}
         <div>
           <ScrollReveal variant="fadeInUp" delay={0.2}>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Core Skills</h2>
-              <p className="text-lg text-muted-foreground">Capabilities I bring to product building</p>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Core Skills</h2>
+            <p className="text-lg text-muted-foreground">Capabilities I bring to product building</p>
+          </div>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -183,10 +183,10 @@ export function SkillsAndStack() {
         {/* SECTION B - Tech Stack */}
         <div>
           <ScrollReveal variant="fadeInUp" delay={0.2}>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
-              <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
+            <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
+          </div>
           </ScrollReveal>
 
           <MarqueeLogos />
