@@ -21,7 +21,7 @@ export default function Home() {
       <KpiSection />
       <ProcessWheel />
       <ProjectsSlider />
-      <section id="social-proof">
+      <section id="social-proof" className="bg-background">
         <ClientLogos />
         <WallOfLove />
       </section>

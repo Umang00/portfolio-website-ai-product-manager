@@ -10,6 +10,8 @@ import { CalendlyModal } from "./calendly-modal"
 import { toast } from "sonner"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { useSound } from "@/hooks/use-sound"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { EmailButton, WhatsAppButton, CalendarButton } from "@/components/ui/social-buttons"
 
 // Dynamically import Supabase to avoid build issues when not configured
@@ -99,6 +101,8 @@ export function ContactSection() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false)
+  const { play } = useSound()
+  const shouldReduceMotion = useReducedMotion()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -110,10 +114,12 @@ export function ContactSection() {
     if (formData.honeypot) return
 
     if (!formData.name || !formData.email || !formData.message) {
+      if (!shouldReduceMotion) play("error")
       showErrorToast("Please fill in all required fields.")
       return
     }
     if (!isValidEmail(formData.email)) {
+      if (!shouldReduceMotion) play("error")
       showErrorToast("Please enter a valid email address.")
       return
     }
@@ -153,6 +159,7 @@ export function ContactSection() {
         console.warn("Failed to save to database (non-critical):", dbError)
       }
 
+      if (!shouldReduceMotion) play("success")
       showSuccessToast()
 
       // Reset form
@@ -166,6 +173,7 @@ export function ContactSection() {
       })
     } catch (err) {
       console.error("Contact form error:", err)
+      if (!shouldReduceMotion) play("error")
       showErrorToast("Please try again or email me directly at umangthakkar005@gmail.com.")
     } finally {
       setIsSubmitting(false)
@@ -173,8 +181,8 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-20 px-4">
-      <div className="max-w-4xl mx-auto">
+    <section id="contact" className="py-20 px-4 bg-muted/50 dark:bg-muted/20">
+      <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
           <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Let's Connect</h2>
@@ -184,20 +192,20 @@ export function ContactSection() {
         </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
           {/* Left: quick actions */}
-          <div className="space-y-8">
-            <div className="space-y-6">
+          <div className="space-y-6">
               {/* Email */}
               <AnimatedCard variant="all" className="w-full">
                 <button
                 onClick={() => {
+                  if (!shouldReduceMotion) play("click")
                   const subject = encodeURIComponent("Hello from your portfolio")
                   const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...")
                   window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`
                 }}
                   className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent border border-border rounded-lg hover:bg-accent transition-colors"
-              >
+                >
                   <EmailButton />
                 <div className="text-left">
                   <h3 className="font-semibold">Email</h3>
@@ -212,6 +220,9 @@ export function ContactSection() {
                   href="https://wa.me/919426154668"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => {
+                    if (!shouldReduceMotion) play("click")
+                  }}
                   className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent border border-border rounded-lg hover:bg-accent transition-colors"
                 >
                   <WhatsAppButton />
@@ -225,9 +236,12 @@ export function ContactSection() {
               {/* Calendly */}
               <AnimatedCard variant="all" className="w-full">
                 <button
-                onClick={() => setIsCalendlyOpen(true)}
+                onClick={() => {
+                  if (!shouldReduceMotion) play("click")
+                  setIsCalendlyOpen(true)
+                }}
                   className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent border border-border rounded-lg hover:bg-accent transition-colors"
-              >
+                >
                   <CalendarButton onClick={() => setIsCalendlyOpen(true)} />
                 <div className="text-left">
                   <h3 className="font-semibold">Book a Call</h3>
@@ -235,11 +249,10 @@ export function ContactSection() {
                 </div>
                 </button>
               </AnimatedCard>
-            </div>
           </div>
 
           {/* Right: form */}
-          <AnimatedCard variant="all" className="bg-card rounded-lg p-6 border">
+          <AnimatedCard variant="all" className="bg-card rounded-lg p-6 border h-fit">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Honeypot */}
               <input

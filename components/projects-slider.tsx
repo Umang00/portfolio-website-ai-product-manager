@@ -166,7 +166,7 @@ export function ProjectsSlider() {
   return (
     <section
       id="projects"
-      className="py-20 px-4 overflow-visible" // Add overflow-visible to section
+      className="py-20 px-4 overflow-visible bg-muted/50 dark:bg-muted/20" // Add overflow-visible to section
       ref={carouselRef}
       onKeyDown={handleKeyDown}
     >

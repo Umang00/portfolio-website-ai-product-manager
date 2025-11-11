@@ -407,7 +407,13 @@ export function useSpeechInput({ onResult, lang = "en-US" }: UseSpeechInputOptio
       }
 
       ws.onerror = (event) => {
-        console.error("[Voice Input] WebSocket error:", event)
+        // Only log if there's actual error information
+        if (event && Object.keys(event).length > 0) {
+          console.error("[Voice Input] WebSocket error:", event)
+        } else {
+          // Silently handle empty error events (common with WebSocket close/disconnect)
+          console.warn("[Voice Input] WebSocket connection issue")
+        }
         clearTimeout(connectionTimeout)
         setError("WebSocket connection error")
         isConnectingRef.current = false

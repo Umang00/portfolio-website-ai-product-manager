@@ -89,7 +89,7 @@ export function Timeline() {
   const visibleItems = isExpanded ? timelineItems : timelineItems.slice(0, 2)
 
   return (
-    <section id="journey" className="py-20 px-4">
+    <section id="journey" className="py-20 px-4 bg-muted/50 dark:bg-muted/20">
       <div className="max-w-4xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
           <div className="text-center mb-12">

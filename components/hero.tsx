@@ -12,6 +12,9 @@ import { useSpeechInput } from "@/hooks/use-speech-input"
 import { HeroStickyNotes } from "@/components/hero-sticky-notes"
 import { ScrollReveal, ScrollRevealList, ScrollRevealItem } from "@/components/animations/scroll-reveal"
 import { Parallax } from "@/components/animations/parallax"
+import { motion } from "framer-motion"
+import { useSound } from "@/hooks/use-sound"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
@@ -22,6 +25,8 @@ export function Hero() {
   const [isMounted, setIsMounted] = useState(false)
   const [interimInput, setInterimInput] = useState("") // For interim speech recognition results
   const pendingQueryRef = useRef<string | undefined>(undefined) // Track query to send when opening chat
+  const { play } = useSound()
+  const shouldReduceMotion = useReducedMotion()
 
   // Voice input hook
   const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError, permission: micPermission } = useSpeechInput({
@@ -169,32 +174,87 @@ export function Hero() {
         <ScrollReveal variant="fadeInUp" delay={0.8} duration={0.6}>
         <form onSubmit={handleSubmit} className="relative w-full max-w-3xl mx-auto flex items-center gap-2">
           {/* Maximize Icon Button - Opens AI Companion page */}
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={handleOpenChat}
-            className="h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0"
-            title="Open AI Companion"
-          >
-            <Maximize className="h-5 w-5 text-foreground" />
-          </Button>
-
-          {/* Microphone Icon Button - Voice Input */}
-          {speechSupported && (
+          {shouldReduceMotion ? (
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={handleMicClick}
-              disabled={micPermission === "denied"}
-              className={`h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0 ${
-                listening ? "bg-primary/10 text-primary border-primary/50" : ""
-              } ${micPermission === "denied" ? "opacity-50 cursor-not-allowed" : ""}`}
-              title={listening ? "Stop listening" : micPermission === "denied" ? "Microphone permission denied" : "Start voice input"}
+              onClick={handleOpenChat}
+              className="h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0"
+              title="Open AI Companion"
             >
-              <Mic className={`h-5 w-5 ${listening ? "text-primary" : "text-foreground"}`} />
+              <Maximize className="h-5 w-5 text-foreground" />
             </Button>
+          ) : (
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (!shouldReduceMotion) play("click")
+                  handleOpenChat()
+                }}
+                className="h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0"
+                title="Open AI Companion"
+              >
+                <Maximize className="h-5 w-5 text-foreground" />
+              </Button>
+            </motion.div>
+          )}
+
+          {/* Microphone Icon Button - Voice Input */}
+          {speechSupported && (
+            shouldReduceMotion ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleMicClick}
+                disabled={micPermission === "denied"}
+                className={`h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0 ${
+                  listening ? "bg-primary/10 text-primary border-primary/50" : ""
+                } ${micPermission === "denied" ? "opacity-50 cursor-not-allowed" : ""}`}
+                title={listening ? "Stop listening" : micPermission === "denied" ? "Microphone permission denied" : "Start voice input"}
+              >
+                <Mic className={`h-5 w-5 ${listening ? "text-primary" : "text-foreground"}`} />
+              </Button>
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                animate={listening ? {
+                  scale: [1, 1.15, 1],
+                  transition: {
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                } : {}}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (!shouldReduceMotion) play("click")
+                    handleMicClick()
+                  }}
+                  disabled={micPermission === "denied"}
+                  className={`h-12 w-12 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 flex-shrink-0 ${
+                    listening ? "bg-primary/10 text-primary border-primary/50" : ""
+                  } ${micPermission === "denied" ? "opacity-50 cursor-not-allowed" : ""}`}
+                  title={listening ? "Stop listening" : micPermission === "denied" ? "Microphone permission denied" : "Start voice input"}
+                >
+                  <Mic className={`h-5 w-5 ${listening ? "text-primary" : "text-foreground"}`} />
+                </Button>
+              </motion.div>
+            )
           )}
 
           {/* Input Field */}
@@ -209,19 +269,75 @@ export function Hero() {
               }}
               onKeyDown={handleKeyDown}
               placeholder={listening ? "Listening..." : "Ask me anything..."}
-              className="h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300 pr-16"
+              className={`h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300 pr-16 ${
+                listening ? "border-primary/50 shadow-[0_0_20px_rgba(37,99,235,0.3)]" : ""
+              }`}
               readOnly={!!interimInput}
             />
+            {listening && !shouldReduceMotion && (
+              <motion.div
+                className="absolute inset-0 rounded-2xl pointer-events-none"
+                style={{
+                  border: "2px solid rgba(37, 99, 235, 0.5)",
+                }}
+                animate={{
+                  opacity: [0.5, 1, 0.5],
+                  scale: [1, 1.02, 1],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            )}
             {/* Submit Button */}
-            <Button
-              type="submit"
-              size="icon"
-              variant="ghost"
-              disabled={!query.trim() && !interimInput}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50"
-            >
-              <ArrowUp className="h-5 w-5 text-foreground" />
-            </Button>
+            {shouldReduceMotion ? (
+              <Button
+                type="submit"
+                size="icon"
+                variant="ghost"
+                disabled={!query.trim() && !interimInput}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowUp className="h-5 w-5 text-foreground" />
+              </Button>
+            ) : (
+              <motion.div
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                style={{ pointerEvents: "auto" }}
+                whileHover={(!query.trim() && !interimInput) ? {} : { scale: 1.1, rotate: 180 }}
+                whileTap={(!query.trim() && !interimInput) ? {} : { scale: 0.95 }}
+                animate={query.trim() || interimInput ? {
+                  boxShadow: [
+                    "0 0 0 0 rgba(37, 99, 235, 0.4)",
+                    "0 0 0 8px rgba(37, 99, 235, 0)",
+                    "0 0 0 0 rgba(37, 99, 235, 0)",
+                  ],
+                  transition: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                } : {}}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Button
+                  type="submit"
+                  size="icon"
+                  variant="ghost"
+                  disabled={!query.trim() && !interimInput}
+                  onClick={(e) => {
+                    if (!shouldReduceMotion && (query.trim() || interimInput)) {
+                      play("click")
+                    }
+                  }}
+                  className="h-10 w-10 rounded-xl bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ArrowUp className="h-5 w-5 text-foreground" />
+                </Button>
+              </motion.div>
+            )}
           </div>
         </form>
         </ScrollReveal>

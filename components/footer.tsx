@@ -7,7 +7,7 @@ export function Footer() {
   const footerRef = useCelebrateOnView(0.3)
 
   return (
-    <footer ref={footerRef} id="footer" className="py-20 px-4 bg-muted/50">
+    <footer ref={footerRef} id="footer" className="py-20 px-4 bg-background">
       <div className="max-w-6xl mx-auto">
         <div className="text-center space-y-8">
           <div className="space-y-3">
