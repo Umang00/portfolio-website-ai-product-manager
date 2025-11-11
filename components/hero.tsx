@@ -11,6 +11,7 @@ import { ChatOverlay } from "@/components/ai/chat-overlay"
 import { useSpeechInput } from "@/hooks/use-speech-input"
 import { HeroStickyNotes } from "@/components/hero-sticky-notes"
 import { ScrollReveal, ScrollRevealList, ScrollRevealItem } from "@/components/animations/scroll-reveal"
+import { Parallax } from "@/components/animations/parallax"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
@@ -104,13 +105,17 @@ export function Hero() {
       id="hero"
       className="min-h-screen flex flex-col justify-center items-center px-4 py-20 relative overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
-      <div
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.05'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+      <Parallax speed={0.4} className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+      </Parallax>
+      <Parallax speed={0.3} className="absolute inset-0">
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23000000' fillOpacity='0.05'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+      </Parallax>
 
       <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
         <ScrollReveal variant="fadeInDown" delay={0.2}>
@@ -120,17 +125,19 @@ export function Hero() {
         </ScrollReveal>
 
         <ScrollReveal variant="scaleIn" delay={0.6} duration={0.8}>
-          <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 z-20 overflow-visible">
-            {/* Sticky Notes positioned relative to profile image */}
-            <HeroStickyNotes />
-            
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
-            <img
-              src="/umang-profile.png"
-              alt="Umang Thakkar"
-              className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
-            />
-          </div>
+          <Parallax speed={0.5} direction="up">
+            <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 z-20 overflow-visible">
+              {/* Sticky Notes positioned relative to profile image */}
+              <HeroStickyNotes />
+              
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
+              <img
+                src="/umang-profile.png"
+                alt="Umang Thakkar"
+                className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
+              />
+            </div>
+          </Parallax>
         </ScrollReveal>
 
         <ScrollReveal variant="fadeInUp" delay={0.4} duration={0.7}>

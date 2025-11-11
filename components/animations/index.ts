@@ -25,3 +25,10 @@ export {
   AnimatedUnderlineLink,
 } from "./animated-button"
 
+// Parallax Components
+export { Parallax, ParallaxSection } from "./parallax"
+
+// 3D Components
+export { ThreeDHighlight } from "./3d-highlight"
+export { ThreeDContainer } from "./3d-container"
+
