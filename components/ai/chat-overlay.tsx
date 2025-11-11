@@ -9,6 +9,9 @@ import { SuggestedQuestions } from "./suggested-questions"
 import { Send, Loader2, Bot, ArrowLeft, Mic } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSpeechInput } from "@/hooks/use-speech-input"
+import { motion, AnimatePresence } from "framer-motion"
+import { useSound } from "@/hooks/use-sound"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 interface Message {
   role: "user" | "assistant"
@@ -45,6 +48,8 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const hasSentInitialQuery = useRef(false)
+  const { play } = useSound()
+  const shouldReduceMotion = useReducedMotion()
 
   // Helper function to get next message ID
   const getNextMessageId = () => {
@@ -369,19 +374,45 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   const hasMessages = messages.length > 0
 
   const overlayContent = (
-    <div className="fixed inset-0 z-[100] bg-background flex flex-col">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[100] bg-background flex flex-col"
+    >
       {/* Header */}
       <header className="border-b px-6 py-4 flex-shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-9 w-9 -ml-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            {shouldReduceMotion ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="h-9 w-9 -ml-2"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.1, x: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (!shouldReduceMotion) play("click")
+                    onClose()
+                  }}
+                  className="h-9 w-9 -ml-2"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </motion.div>
+            )}
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
               <Bot className="w-5 h-5 text-primary" />
             </div>
@@ -394,14 +425,34 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
           </div>
           <div className="flex items-center gap-2">
             {hasMessages && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleReset}
-                className="text-xs"
-              >
-                Reset
-              </Button>
+              shouldReduceMotion ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  className="text-xs"
+                >
+                  Reset
+                </Button>
+              ) : (
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (!shouldReduceMotion) play("click")
+                      handleReset()
+                    }}
+                    className="text-xs"
+                  >
+                    Reset
+                  </Button>
+                </motion.div>
+              )
             )}
           </div>
         </div>
@@ -412,48 +463,95 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
         <div className="max-w-4xl mx-auto">
           {!hasMessages ? (
             // Starter Screen
-            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-              <div className="text-center space-y-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col items-center justify-center min-h-[60vh] gap-6"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+                className="text-center space-y-2"
+              >
                 <h2 className="text-2xl font-semibold">Welcome!</h2>
                 <p className="text-muted-foreground max-w-md">
                   I'm Umang's AI companion. I can answer questions about his
                   experience, projects, skills, and journey. Try asking me
                   something!
                 </p>
-              </div>
+              </motion.div>
 
               <div className="w-full max-w-lg space-y-3">
-                <p className="text-sm font-medium text-muted-foreground">
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.4 }}
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Suggested questions:
-                </p>
+                </motion.p>
                 <div className="grid gap-2">
                   {STARTER_QUESTIONS.map((question, idx) => (
-                    <Button
-                      key={idx}
-                      variant="outline"
-                      className="justify-start text-left h-auto py-3 px-4 whitespace-normal"
-                      onClick={() => handleStarterQuestion(question)}
-                      disabled={isLoading}
-                    >
-                      {question}
-                    </Button>
+                    shouldReduceMotion ? (
+                      <Button
+                        key={idx}
+                        variant="outline"
+                        className="justify-start text-left h-auto py-3 px-4 whitespace-normal"
+                        onClick={() => handleStarterQuestion(question)}
+                        disabled={isLoading}
+                      >
+                        {question}
+                      </Button>
+                    ) : (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + idx * 0.1, duration: 0.3 }}
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant="outline"
+                          className="justify-start text-left h-auto py-3 px-4 whitespace-normal w-full"
+                          onClick={() => {
+                            if (!shouldReduceMotion) play("click")
+                            handleStarterQuestion(question)
+                          }}
+                          disabled={isLoading}
+                        >
+                          {question}
+                        </Button>
+                      </motion.div>
+                    )
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           ) : (
             // Chat Messages
             <div className="space-y-4">
-              {messages.map((message, idx) => (
-                <MessageBubble
-                  key={message.id ?? idx}
-                  role={message.role}
-                  content={message.content}
-                  sources={message.sources}
-                  messageId={message.id}
-                  onRegenerate={handleRegenerate}
-                />
-              ))}
+              <AnimatePresence>
+                {messages.map((message, idx) => (
+                  <motion.div
+                    key={message.id ?? idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
+                  >
+                    <MessageBubble
+                      role={message.role}
+                      content={message.content}
+                      sources={message.sources}
+                      messageId={message.id}
+                      onRegenerate={handleRegenerate}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {/* Loading Indicator */}
               {isLoading && (
@@ -494,44 +592,108 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
             className="flex gap-2"
           >
             {speechSupported && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  if (listening) {
-                    stopListening()
-                    setInterimInput("") // Clear interim when stopping
-                  } else {
-                    // Check if service is unavailable
-                    if (speechError === "service-unavailable") {
-                      // Don't try to start if service is unavailable
-                      return
+              shouldReduceMotion ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (listening) {
+                      stopListening()
+                      setInterimInput("") // Clear interim when stopping
+                    } else {
+                      // Check if service is unavailable
+                      if (speechError === "service-unavailable") {
+                        // Don't try to start if service is unavailable
+                        return
+                      }
+                      setInterimInput("") // Clear any previous interim
+                      startListening()
                     }
-                    setInterimInput("") // Clear any previous interim
-                    startListening()
+                  }}
+                  disabled={isLoading || speechError === "service-unavailable"}
+                  className={cn(
+                    "shrink-0 h-[60px] w-[60px] bg-background border border-border",
+                    listening && "text-primary animate-pulse bg-primary/10 border-primary/50",
+                    speechError === "service-unavailable" && "opacity-50"
+                  )}
+                  title={
+                    listening
+                      ? "Stop recording"
+                      : speechError === "service-unavailable"
+                      ? "Voice input service unavailable. Please use text input."
+                      : speechError && speechError !== "network"
+                      ? "Voice input unavailable"
+                      : "Start voice input"
                   }
-                }}
-                disabled={isLoading || speechError === "service-unavailable"}
-                className={cn(
-                  "shrink-0 h-[60px] w-[60px] bg-background border border-border",
-                  listening && "text-primary animate-pulse bg-primary/10 border-primary/50",
-                  speechError === "service-unavailable" && "opacity-50"
-                )}
-                title={
-                  listening
-                    ? "Stop recording"
-                    : speechError === "service-unavailable"
-                    ? "Voice input service unavailable. Please use text input."
-                    : speechError && speechError !== "network"
-                    ? "Voice input unavailable"
-                    : "Start voice input"
-                }
-              >
-                <Mic className={cn("w-5 h-5", listening && "fill-current")} />
-              </Button>
+                >
+                  <Mic className={cn("w-5 h-5", listening && "fill-current")} />
+                </Button>
+              ) : (
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={listening ? {
+                    scale: [1, 1.1, 1],
+                    transition: {
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }
+                  } : {}}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (!shouldReduceMotion) play("click")
+                      if (listening) {
+                        stopListening()
+                        setInterimInput("") // Clear interim when stopping
+                      } else {
+                        // Check if service is unavailable
+                        if (speechError === "service-unavailable") {
+                          // Don't try to start if service is unavailable
+                          return
+                        }
+                        setInterimInput("") // Clear any previous interim
+                        startListening()
+                      }
+                    }}
+                    disabled={isLoading || speechError === "service-unavailable"}
+                    className={cn(
+                      "shrink-0 h-[60px] w-[60px] bg-background border border-border",
+                      listening && "text-primary bg-primary/10 border-primary/50",
+                      speechError === "service-unavailable" && "opacity-50"
+                    )}
+                    title={
+                      listening
+                        ? "Stop recording"
+                        : speechError === "service-unavailable"
+                        ? "Voice input service unavailable. Please use text input."
+                        : speechError && speechError !== "network"
+                        ? "Voice input unavailable"
+                        : "Start voice input"
+                    }
+                  >
+                    <Mic className={cn("w-5 h-5", listening && "fill-current")} />
+                  </Button>
+                </motion.div>
+              )
             )}
-            <div className="relative flex-1">
+            <motion.div
+              className="relative flex-1"
+              animate={listening ? {
+                scale: [1, 1.01, 1],
+                transition: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              } : {}}
+            >
               <Textarea
                 ref={textareaRef}
                 value={input}
@@ -548,33 +710,96 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                     : "Ask a question about Umang..."
                 }
                 disabled={isLoading || listening}
-                className="min-h-[60px] max-h-[120px] resize-none pr-4 py-4"
+                className={cn(
+                  "min-h-[60px] max-h-[120px] resize-none pr-4 py-4",
+                  listening && "border-primary/50 shadow-[0_0_20px_rgba(37,99,235,0.2)]"
+                )}
                 rows={2}
               />
               {/* Show interim transcription as overlay hint */}
               {interimInput && listening && (
-                <div className="absolute bottom-2 left-4 text-sm text-muted-foreground pointer-events-none italic">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute bottom-2 left-4 text-sm text-muted-foreground pointer-events-none italic"
+                >
                   {interimInput}
-                </div>
+                </motion.div>
               )}
-            </div>
-            <Button
-              type="submit"
-              size="icon"
-              variant="ghost"
-              disabled={!input.trim() || isLoading || listening}
-              className="shrink-0 h-[60px] w-[60px] bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50"
-            >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin text-foreground" />
-              ) : (
-                <Send className="w-5 h-5 text-foreground" />
+              {listening && !shouldReduceMotion && (
+                <motion.div
+                  className="absolute inset-0 rounded-lg pointer-events-none"
+                  style={{
+                    border: "2px solid rgba(37, 99, 235, 0.5)",
+                  }}
+                  animate={{
+                    opacity: [0.5, 1, 0.5],
+                    scale: [1, 1.01, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
               )}
-            </Button>
+            </motion.div>
+            {shouldReduceMotion ? (
+              <Button
+                type="submit"
+                size="icon"
+                variant="ghost"
+                disabled={!input.trim() || isLoading || listening}
+                className="shrink-0 h-[60px] w-[60px] bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin text-foreground" />
+                ) : (
+                  <Send className="w-5 h-5 text-foreground" />
+                )}
+              </Button>
+            ) : (
+              <motion.div
+                whileHover={(!input.trim() || isLoading || listening) ? {} : { scale: 1.1, rotate: 180 }}
+                whileTap={(!input.trim() || isLoading || listening) ? {} : { scale: 0.95 }}
+                animate={input.trim() && !isLoading && !listening ? {
+                  boxShadow: [
+                    "0 0 0 0 rgba(37, 99, 235, 0.4)",
+                    "0 0 0 8px rgba(37, 99, 235, 0)",
+                    "0 0 0 0 rgba(37, 99, 235, 0)",
+                  ],
+                  transition: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                } : {}}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Button
+                  type="submit"
+                  size="icon"
+                  variant="ghost"
+                  disabled={!input.trim() || isLoading || listening}
+                  onClick={() => {
+                    if (!shouldReduceMotion && input.trim() && !isLoading && !listening) {
+                      play("click")
+                    }
+                  }}
+                  className="shrink-0 h-[60px] w-[60px] bg-background border border-border hover:bg-muted transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-foreground" />
+                  ) : (
+                    <Send className="w-5 h-5 text-foreground" />
+                  )}
+                </Button>
+              </motion.div>
+            )}
           </form>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 
   // Render to document.body to escape any parent containers (full-screen)
