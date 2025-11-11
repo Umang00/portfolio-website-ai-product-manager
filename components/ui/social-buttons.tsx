@@ -49,12 +49,12 @@ export function LinkedInButton({ className = "", enableSound = true }: CommonPro
       className={[
         "group inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border",
         "bg-card text-foreground",
+        "hover:bg-[#0A66C2]/10 dark:hover:bg-[#0A66C2]/10",
         "focus-visible:ring-2 focus-visible:ring-[#0A66C2]/40",
         className,
       ].join(" ")}
       whileHover={{
         scale: 1.1,
-        backgroundColor: "rgba(10, 102, 194, 0.1)",
         transition: { duration: 0.2 },
       }}
       whileTap={{ scale: 0.95 }}
@@ -162,13 +162,12 @@ export function ResumeButton({ className = "", enableSound = true }: CommonProps
       className={[
         "group inline-flex h-12 items-center gap-2 rounded-xl border border-border px-5",
         "bg-card text-foreground",
+        "hover:bg-amber-400 hover:text-black dark:hover:bg-amber-400 dark:hover:text-black",
         "focus-visible:ring-2 focus-visible:ring-amber-500/40",
         className,
       ].join(" ")}
       whileHover={{
         scale: 1.05,
-        backgroundColor: "#fbbf24", // amber-400
-        color: "#000000",
         transition: { duration: 0.2 },
       }}
       whileTap={{ scale: 0.95 }}

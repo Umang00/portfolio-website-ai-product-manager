@@ -16,11 +16,13 @@ export type SoundType =
   | "whoosh"
   | "pop"
   | "tick"
+  | "celebrate"
 
 class SoundManager {
   private sounds: Map<SoundType, Howl> = new Map()
   private isMuted: boolean = false
   private volume: number = 0.3 // Default subtle volume
+  private audioContextUnlocked: boolean = false
 
   constructor() {
     // Only initialize on client side
@@ -35,6 +37,101 @@ class SoundManager {
 
     // Initialize sounds
     this.initializeSounds()
+    
+    // Set up automatic unlock on first user interaction (fallback)
+    this.setupAutoUnlock()
+  }
+
+  /**
+   * Unlock audio context - can be called manually or on user interaction
+   * This is required for browsers to allow audio playback
+   */
+  unlockAudioContext(): Promise<void> {
+    if (this.audioContextUnlocked || typeof window === "undefined") {
+      return Promise.resolve()
+    }
+
+    return new Promise((resolve) => {
+      const unlock = () => {
+        // Unlock Howler's audio context using its built-in method
+        if (typeof Howl !== "undefined" && Howl.ctx && Howl.ctx.state === "suspended") {
+          Howl.ctx.resume().then(() => {
+            this.audioContextUnlocked = true
+            resolve()
+          }).catch(() => {
+            // If resume fails, try playing a silent sound
+            try {
+              const silentSound = new Howl({
+                src: ["data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="],
+                volume: 0,
+                onplay: () => {
+                  silentSound.stop()
+                  this.audioContextUnlocked = true
+                  resolve()
+                },
+                onloaderror: () => {
+                  // If silent sound fails, mark as unlocked anyway and resolve
+                  this.audioContextUnlocked = true
+                  resolve()
+                },
+              })
+              silentSound.play()
+            } catch (error) {
+              console.debug("Failed to unlock audio context:", error)
+              this.audioContextUnlocked = true
+              resolve()
+            }
+          })
+        } else {
+          // If context doesn't exist yet, try playing a silent sound to create it
+          try {
+            const silentSound = new Howl({
+              src: ["data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="],
+              volume: 0,
+              onplay: () => {
+                silentSound.stop()
+                this.audioContextUnlocked = true
+                resolve()
+              },
+              onloaderror: () => {
+                // If silent sound fails, mark as unlocked anyway and resolve
+                this.audioContextUnlocked = true
+                resolve()
+              },
+            })
+            silentSound.play()
+          } catch (error) {
+            console.debug("Failed to unlock audio context:", error)
+            this.audioContextUnlocked = true
+            resolve()
+          }
+        }
+      }
+
+      // Try to unlock immediately (if called from user interaction context)
+      unlock()
+    })
+  }
+
+  /**
+   * Set up automatic unlock on first user interaction
+   */
+  private setupAutoUnlock() {
+    if (this.audioContextUnlocked || typeof window === "undefined") return
+
+    // Listen for first user interaction
+    const events = ["click", "touchstart", "keydown"]
+    const handleInteraction = () => {
+      this.unlockAudioContext()
+      // Remove listeners after first interaction
+      events.forEach((event) => {
+        document.removeEventListener(event, handleInteraction)
+      })
+    }
+
+    events.forEach((event) => {
+      document.addEventListener(event, handleInteraction, { once: true, passive: true })
+    })
   }
 
   private initializeSounds() {
@@ -104,6 +201,15 @@ class SoundManager {
           preload: false,
         })
       )
+
+      this.sounds.set(
+        "celebrate",
+        new Howl({
+          src: ["/sounds/crowd-hooray.mp3"],
+          volume: this.volume * 0.5, // Slightly louder for celebration
+          preload: false,
+        })
+      )
     } catch (error) {
       console.warn("Some sound files may not be loaded:", error)
     }
@@ -117,11 +223,32 @@ class SoundManager {
 
     const sound = this.sounds.get(soundType)
     if (sound) {
+      // Try to unlock audio context if not already unlocked
+      if (!this.audioContextUnlocked) {
+        this.unlockAudioContext()
+      }
+      
       // Load if not already loaded
       if (!sound.loaded) {
         sound.load()
       }
-      sound.play()
+      
+      // Play the sound
+      try {
+        sound.play()
+      } catch (error) {
+        // If play fails, try unlocking context and retry
+        console.debug("Sound play failed, attempting to unlock audio context:", error)
+        this.unlockAudioContext()
+        // Retry after a short delay
+        setTimeout(() => {
+          try {
+            sound.play()
+          } catch (retryError) {
+            console.debug("Sound play retry failed:", retryError)
+          }
+        }, 100)
+      }
     }
   }
 
@@ -198,6 +325,7 @@ export function getSoundManager(): SoundManager {
       getVolume: () => 0.3,
       preload: () => {},
       stopAll: () => {},
+      unlockAudioContext: () => Promise.resolve(),
     } as unknown as SoundManager
   }
 
