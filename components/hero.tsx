@@ -9,6 +9,7 @@ import { Typewriter } from "react-simple-typewriter"
 import { LinkedInButton, GitHubButton, ResumeButton } from "@/components/ui/social-buttons"
 import { ChatOverlay } from "@/components/ai/chat-overlay"
 import { useSpeechInput } from "@/hooks/use-speech-input"
+import { HeroStickyNotes } from "@/components/hero-sticky-notes"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
@@ -111,18 +112,21 @@ export function Hero() {
       />
 
       <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
-        <Badge variant="secondary" className="text-sm px-4 py-2 transition-all duration-300">
+        <Badge variant="secondary" className="text-sm px-4 py-2 transition-all duration-300 relative z-20">
           {greetings[currentGreeting]}
         </Badge>
 
-        <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80">
-  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
-  <img
-    src="/umang-profile.png"
-    alt="Umang Thakkar"
-    className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
-  />
-</div>
+        <div className="relative mx-auto mb-10 w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 z-20 overflow-visible">
+          {/* Sticky Notes positioned relative to profile image */}
+          <HeroStickyNotes />
+          
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
+          <img
+            src="/umang-profile.png"
+            alt="Umang Thakkar"
+            className="absolute inset-0 w-full h-full rounded-full object-cover border-4 border-white shadow-2xl transition-all duration-500 hover:scale-105"
+          />
+        </div>
 
 
         <div className="space-y-6">
