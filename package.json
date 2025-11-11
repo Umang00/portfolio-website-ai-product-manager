@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.4.0",
+    "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
@@ -56,6 +57,8 @@
     "embla-carousel-react": "8.5.1",
     "framer-motion": "^12.23.24",
     "geist": "latest",
+    "gsap": "^3.13.0",
+    "howler": "^2.2.4",
     "input-otp": "1.4.1",
     "keen-slider": "latest",
     "lucide-react": "^0.454.0",
