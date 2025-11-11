@@ -15,6 +15,7 @@ interface AnimatedCardProps extends Omit<HTMLMotionProps<"div">, "onAnimationSta
   enableMouseFollow?: boolean
   variant?: "lift" | "scale" | "glow" | "all"
   className?: string
+  as?: keyof JSX.IntrinsicElements
 }
 
 /**
@@ -28,6 +29,7 @@ export function AnimatedCard({
   enable3D = false,
   enableMouseFollow = false,
   variant = "lift",
+  as = "div",
   ...props
 }: AnimatedCardProps) {
   const shouldReduceMotion = useReducedMotion()
@@ -46,10 +48,11 @@ export function AnimatedCard({
 
   // If reduced motion is preferred, return basic card
   if (shouldReduceMotion) {
+    const Component = as as any
     return (
-      <div className={className} {...(props as any)}>
+      <Component className={className} {...(props as any)}>
         {children}
-      </div>
+      </Component>
     )
   }
 
@@ -89,8 +92,10 @@ export function AnimatedCard({
       }
     : undefined
 
+  const MotionComponent = motion[as as keyof typeof motion] as typeof motion.div
+
   return (
-    <motion.div
+    <MotionComponent
       ref={elementRef}
       className={cn(className)}
       initial={{ opacity: 0, y: 50 }}
@@ -110,7 +115,7 @@ export function AnimatedCard({
       {...props}
     >
       {children}
-    </motion.div>
+    </MotionComponent>
   )
 }
 

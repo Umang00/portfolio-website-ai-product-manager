@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { AnimatedCard } from "@/components/animations/animated-card"
 
 type TimelineItem = {
   title: string
@@ -103,7 +104,10 @@ export function Timeline() {
               </div>
 
               <div className="flex-1 pb-8">
-                <div className="bg-card rounded-lg p-6 border hover:border-primary/50 transition-colors">
+                <AnimatedCard
+                  variant="all"
+                  className="bg-card rounded-lg p-6 border"
+                >
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
                     <div>
                       <h3 className="text-xl font-semibold">{item.title}</h3>
@@ -122,7 +126,7 @@ export function Timeline() {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </AnimatedCard>
               </div>
             </div>
           ))}

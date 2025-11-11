@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Linkedin } from "lucide-react"
 import { useState, useEffect } from "react"
+import { AnimatedCard } from "@/components/animations/animated-card"
 
 const testimonials = [
   {
@@ -65,9 +66,10 @@ export function WallOfLove() {
             onMouseLeave={() => setIsPaused(false)}
           >
             {getCurrentTestimonials().map((testimonial, index) => (
-              <div
+              <AnimatedCard
                 key={`${currentSet}-${index}`}
-                className="bg-card rounded-xl p-8 border shadow-sm hover:shadow-md transition-shadow animate-in slide-in-from-right-5 duration-500"
+                variant="all"
+                className="bg-card rounded-xl p-8 border shadow-sm"
               >
                 <div className="flex items-start gap-4 mb-6">
                   <div className="relative flex-shrink-0">
@@ -98,14 +100,18 @@ export function WallOfLove() {
                 <blockquote className="text-base leading-relaxed text-foreground/90">
                   "{testimonial.quote}"
                 </blockquote>
-              </div>
+              </AnimatedCard>
             ))}
           </div>
         </div>
 
         <div className="md:hidden flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="flex-none w-[85vw] snap-start bg-card rounded-xl p-6 border shadow-sm">
+            <AnimatedCard
+              key={index}
+              variant="all"
+              className="flex-none w-[85vw] snap-start bg-card rounded-xl p-6 border shadow-sm"
+            >
               <div className="flex items-start gap-4 mb-6">
                 <div className="relative flex-shrink-0">
                   <img
@@ -135,7 +141,7 @@ export function WallOfLove() {
               <blockquote className="text-sm leading-relaxed text-foreground/90">
                 "{testimonial.quote}"
               </blockquote>
-            </div>
+            </AnimatedCard>
           ))}
         </div>
       </div>

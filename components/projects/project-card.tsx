@@ -5,6 +5,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Youtube, FileText } from "lucide-react"
 import { ProjectDetailsModal } from "./project-details-modal"
+import { AnimatedCard } from "@/components/animations/animated-card"
 import { cn } from "@/lib/utils"
 import type { Project } from "./types"
 
@@ -29,11 +30,13 @@ export function ProjectCard({
 
   return (
     <>
-      <article
+      <AnimatedCard
+        as="article"
         ref={cardRef}
+        variant="all"
+        enableMouseFollow={true}
         className={cn(
           "group relative bg-card rounded-lg border overflow-hidden",
-          "transition-all duration-300",
           "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
           "flex flex-col" // Use flex column for better height control
         )}
@@ -183,7 +186,7 @@ export function ProjectCard({
             )}
           </div>
         </div>
-      </article>
+      </AnimatedCard>
 
       {/* Project Details Modal */}
       <ProjectDetailsModal

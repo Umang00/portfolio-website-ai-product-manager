@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { IconType } from "react-icons"
+import { AnimatedCard } from "@/components/animations/animated-card"
 import { 
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiPython, SiNodedotjs,
   SiOpenai, SiAnthropic, SiGooglegemini, SiHuggingface, SiLangchain,
@@ -96,33 +96,10 @@ function Capsule({ children }: { children: string }) {
 }
 
 function CategoryCard({ header, items }: { header: string; items: string[] }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    if (ref.current) {
-      observer.observe(ref.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
-
   return (
-    <div
-      ref={ref}
-      className={`bg-card rounded-lg p-6 border transition-all duration-500 motion-reduce:transition-none ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
+    <AnimatedCard
+      variant="all"
+      className="bg-card rounded-lg p-6 border"
     >
       <h3 className="font-semibold text-lg mb-4 text-primary">{header}</h3>
       <div className="flex flex-wrap gap-2">
@@ -130,20 +107,23 @@ function CategoryCard({ header, items }: { header: string; items: string[] }) {
           <Capsule key={index}>{item}</Capsule>
         ))}
       </div>
-    </div>
+    </AnimatedCard>
   )
 }
 
 function TechCard({ name, Icon, color }: { name: string; Icon: IconType; color?: string }) {
   const IconComponent = Icon as React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg px-6 py-4 min-w-[140px] bg-card border border-border hover:bg-accent hover:scale-105 hover:shadow-lg transition-all duration-300 flex-shrink-0">
+    <AnimatedCard
+      variant="all"
+      className="flex flex-col items-center justify-center gap-3 rounded-lg px-6 py-4 min-w-[140px] bg-card border border-border flex-shrink-0"
+    >
       <IconComponent 
         className="w-8 h-8" 
         style={color ? { color } : undefined}
       />
       <span className="text-sm font-medium whitespace-nowrap">{name}</span>
-    </div>
+    </AnimatedCard>
   )
 }
 
@@ -153,21 +133,25 @@ function MarqueeLogos() {
   const row2Logos = techLogos.slice(midpoint)
 
   return (
-    <div className="mb-12 space-y-4 overflow-hidden">
-      {/* Row 1: Left to Right */}
-      <div className="relative group">
-        <div className="flex gap-3 animate-marquee-ltr group-hover:pause group-focus-within:pause motion-reduce:animate-none">
+    <div className="mb-6 space-y-2 py-2"> {/* Reduced spacing: mb-6 (24px), space-y-2 (8px), py-2 (8px) */}
+      {/* Row 1: Left to Right - Continuous loop */}
+      <div className="relative group overflow-hidden pt-2 pb-2"> {/* Reduced padding: pt-2 pb-2 (8px top/bottom) */}
+        <div className="flex gap-3 animate-marquee-ltr group-hover:pause group-focus-within:pause motion-reduce:animate-none w-max">
           {[...row1Logos, ...row1Logos].map((tool, index) => (
-            <TechCard key={index} name={tool.name} Icon={tool.Icon} color={tool.color} />
+            <div key={index} className="flex-shrink-0 pt-2 pb-2"> {/* Padding to each card wrapper */}
+              <TechCard name={tool.name} Icon={tool.Icon} color={tool.color} />
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Row 2: Right to Left */}
-      <div className="relative group">
-        <div className="flex gap-3 animate-marquee-rtl group-hover:pause group-focus-within:pause motion-reduce:animate-none">
+      {/* Row 2: Right to Left - Continuous loop */}
+      <div className="relative group overflow-hidden pt-2 pb-2"> {/* Reduced padding: pt-2 pb-2 (8px top/bottom) */}
+        <div className="flex gap-3 animate-marquee-rtl group-hover:pause group-focus-within:pause motion-reduce:animate-none w-max">
           {[...row2Logos, ...row2Logos].map((tool, index) => (
-            <TechCard key={index} name={tool.name} Icon={tool.Icon} color={tool.color} />
+            <div key={index} className="flex-shrink-0 pt-2 pb-2"> {/* Padding to each card wrapper */}
+              <TechCard name={tool.name} Icon={tool.Icon} color={tool.color} />
+            </div>
           ))}
         </div>
       </div>

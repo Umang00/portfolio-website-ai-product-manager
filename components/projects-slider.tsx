@@ -165,7 +165,7 @@ export function ProjectsSlider() {
   return (
     <section
       id="projects"
-      className="py-20 px-4"
+      className="py-20 px-4 overflow-visible" // Add overflow-visible to section
       ref={carouselRef}
       onKeyDown={handleKeyDown}
     >
@@ -180,7 +180,7 @@ export function ProjectsSlider() {
         </div>
 
         <div
-          className="relative"
+          className="relative overflow-visible pt-20 pb-6 pl-6 pr-8 md:pt-24 md:pb-8 md:pl-8 md:pr-12" // Increased padding: top for lift (80px/96px), right for scale (32px/48px)
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onFocus={() => setIsFocused(true)}
@@ -193,9 +193,9 @@ export function ProjectsSlider() {
               loop: true,
               slidesToScroll: 1, // Scroll 1 slide at a time (we'll handle 2-project scrolling manually)
             }}
-            className="w-full"
+            className="w-full overflow-visible"
           >
-            <CarouselContent className="-ml-2 md:-ml-4">
+            <CarouselContent className="-ml-2 md:-ml-4 overflow-visible">
               {projects.map((project, index) => (
                 <CarouselItem
                   key={project.id}
@@ -205,10 +205,13 @@ export function ProjectsSlider() {
                     "basis-full md:basis-1/2"
                   )}
                 >
-                  <ProjectCard
-                    project={project}
-                    priority={index < 2} // Priority load first 2
-                  />
+                  {/* Padding wrapper to prevent hover overlap and clipping */}
+                  <div className="pt-6 pb-2 pl-4 pr-4 md:pt-8 md:pb-3 md:pl-5 md:pr-6">
+                    <ProjectCard
+                      project={project}
+                      priority={index < 2} // Priority load first 2
+                    />
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>

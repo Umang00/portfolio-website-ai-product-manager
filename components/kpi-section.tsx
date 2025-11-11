@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react"
 import CountUp from "react-countup"
 import { TrendingUp, DollarSign, Scissors, Clock, BarChart3, Zap, Briefcase, Users, Target } from "lucide-react"
+import { AnimatedCardGrid, AnimatedCardGridItem } from "@/components/animations/animated-card"
 
 const quickStats = [
   { label: "Years Experience", value: 4, suffix: "+", icon: Briefcase },
@@ -49,11 +50,9 @@ export function KpiSection() {
     return (
       <div key={`${metric.label}-${index}`}>
         <dt className="sr-only">{metric.label}</dt>
-        <dd
-          className="bg-card border rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 h-full flex flex-col justify-center"
-          style={{
-            animationDelay: `${index * 80}ms`,
-          }}
+        <AnimatedCardGridItem
+          variant="all"
+          className="bg-card border rounded-xl p-6 text-center h-full flex flex-col justify-center"
         >
           <Icon className="w-6 h-6 mx-auto mb-4 text-muted-foreground/60" />
 
@@ -75,7 +74,7 @@ export function KpiSection() {
           </div>
 
           <div className="text-sm text-muted-foreground font-medium leading-tight">{metric.label}</div>
-        </dd>
+        </AnimatedCardGridItem>
       </div>
     )
   }
@@ -119,14 +118,18 @@ export function KpiSection() {
         {/* Main Impact Metrics */}
         <div className="space-y-6">
           {/* Top Row - Primary Impact */}
-          <dl className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {impactKpis.slice(0, 3).map((metric, index) => renderMetricCard(metric, index))}
-          </dl>
+          <AnimatedCardGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={0.08}>
+            <dl className="contents">
+              {impactKpis.slice(0, 3).map((metric, index) => renderMetricCard(metric, index))}
+            </dl>
+          </AnimatedCardGrid>
 
           {/* Bottom Row - Supporting Impact */}
-          <dl className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {impactKpis.slice(3, 6).map((metric, index) => renderMetricCard(metric, index + 3))}
-          </dl>
+          <AnimatedCardGrid className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={0.08}>
+            <dl className="contents">
+              {impactKpis.slice(3, 6).map((metric, index) => renderMetricCard(metric, index + 3))}
+            </dl>
+          </AnimatedCardGrid>
         </div>
       </div>
     </section>

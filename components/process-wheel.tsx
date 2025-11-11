@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 import { Search, Target, Lightbulb, Rocket, RefreshCw } from "lucide-react"
+import { AnimatedCard } from "@/components/animations/animated-card"
 
 type Step = {
   title: string
@@ -105,13 +106,19 @@ export function ProcessWheel() {
                       top: `calc(50% + ${iconY}px)`,
                     }}
                   >
-                    <div className="flex flex-col items-center text-center -translate-x-1/2 -translate-y-1/2" style={{ width: NODE_WIDTH }}>
+                    <AnimatedCard
+                      variant="all" // Full effects like other sections
+                      enable3D={false} // Disable 3D effects for circular layout
+                      enableMouseFollow={false} // Disable mouse follow for circular layout
+                      className="flex flex-col items-center text-center -translate-x-1/2 -translate-y-1/2 bg-transparent border-0 shadow-none"
+                      style={{ width: NODE_WIDTH }}
+                    >
                       <div className="w-14 h-14 rounded-full border border-muted-foreground/40 bg-card flex items-center justify-center shadow-sm">
                         <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
                       </div>
                       <div className="mt-3 font-semibold">{title}</div>
                       <div className="mt-1 text-sm text-muted-foreground leading-snug">{desc}</div>
-                    </div>
+                    </AnimatedCard>
                   </div>
                 </div>
               )
@@ -122,7 +129,12 @@ export function ProcessWheel() {
         {/* Mobile list */}
         <ol className="md:hidden space-y-4 max-w-2xl mx-auto">
           {STEPS.map(({ title, desc, Icon }, i) => (
-            <li key={title} className="p-4 rounded-xl border bg-card">
+            <AnimatedCard
+              key={title}
+              as="li"
+              variant="all" // Full effects like other sections
+              className="p-4 rounded-xl border bg-card"
+            >
               <div className="flex items-start gap-3">
                 <div className="mt-1 w-10 h-10 rounded-full border border-muted-foreground/40 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
@@ -134,7 +146,7 @@ export function ProcessWheel() {
                   <div className="text-sm text-muted-foreground">{desc}</div>
                 </div>
               </div>
-            </li>
+            </AnimatedCard>
           ))}
         </ol>
       </div>

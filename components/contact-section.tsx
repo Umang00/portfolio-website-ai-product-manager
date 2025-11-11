@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Mail, MessageCircle, Calendar, CheckCircle2, XCircle } from "lucide-react"
 import { CalendlyModal } from "./calendly-modal"
 import { toast } from "sonner"
+import { AnimatedCard } from "@/components/animations/animated-card"
 
 // Dynamically import Supabase to avoid build issues when not configured
 const getSupabaseClient = async () => {
@@ -184,56 +185,62 @@ export function ContactSection() {
           <div className="space-y-8">
             <div className="space-y-6">
               {/* Email */}
-              <Button
-                variant="outline"
-                className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
-                onClick={() => {
-                  const subject = encodeURIComponent("Hello from your portfolio")
-                  const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...")
-                  window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`
-                }}
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Mail className="h-6 w-6 text-primary" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">Email</h3>
-                  <p className="text-muted-foreground">umangthakkar005@gmail.com</p>
-                </div>
-              </Button>
-
-              {/* WhatsApp */}
-              <Button variant="outline" className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent" asChild>
-                <a href="https://wa.me/919426154668" target="_blank" rel="noopener noreferrer">
+              <AnimatedCard variant="all" className="w-full">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
+                  onClick={() => {
+                    const subject = encodeURIComponent("Hello from your portfolio")
+                    const body = encodeURIComponent("Hi Umang,\n\nI'd like to discuss...")
+                    window.location.href = `mailto:umangthakkar005@gmail.com?subject=${subject}&body=${body}`
+                  }}
+                >
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <MessageCircle className="h-6 w-6 text-primary" />
+                    <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-semibold">WhatsApp</h3>
-                    <p className="text-muted-foreground">Let's chat directly</p>
+                    <h3 className="font-semibold">Email</h3>
+                    <p className="text-muted-foreground">umangthakkar005@gmail.com</p>
                   </div>
-                </a>
-              </Button>
+                </Button>
+              </AnimatedCard>
+
+              {/* WhatsApp */}
+              <AnimatedCard variant="all" className="w-full">
+                <Button variant="outline" className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent" asChild>
+                  <a href="https://wa.me/919426154668" target="_blank" rel="noopener noreferrer">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <MessageCircle className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">WhatsApp</h3>
+                      <p className="text-muted-foreground">Let's chat directly</p>
+                    </div>
+                  </a>
+                </Button>
+              </AnimatedCard>
 
               {/* Calendly */}
-              <Button
-                variant="outline"
-                className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
-                onClick={() => setIsCalendlyOpen(true)}
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Calendar className="h-6 w-6 text-primary" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold">Book a Call</h3>
-                  <p className="text-muted-foreground">Schedule a 30-minute product strategy session</p>
-                </div>
-              </Button>
+              <AnimatedCard variant="all" className="w-full">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-4 w-full justify-start p-6 h-auto bg-transparent"
+                  onClick={() => setIsCalendlyOpen(true)}
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-semibold">Book a Call</h3>
+                    <p className="text-muted-foreground">Schedule a 30-minute product strategy session</p>
+                  </div>
+                </Button>
+              </AnimatedCard>
             </div>
           </div>
 
           {/* Right: form */}
-          <div className="bg-card rounded-lg p-6 border">
+          <AnimatedCard variant="all" className="bg-card rounded-lg p-6 border">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Honeypot */}
               <input
@@ -290,7 +297,7 @@ export function ContactSection() {
                 {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
-          </div>
+          </AnimatedCard>
         </div>
       </div>
 
