@@ -296,7 +296,12 @@ export function ContactSection() {
                 required
               />
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting}
+                animationVariant="pulse"
+              >
                 {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>

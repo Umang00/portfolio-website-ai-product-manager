@@ -1,6 +1,10 @@
+"use client"
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { motion, HTMLMotionProps } from "framer-motion"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -35,23 +39,100 @@ const buttonVariants = cva(
   }
 )
 
+interface ButtonProps extends React.ComponentProps<"button">, VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+  enableAnimation?: boolean
+  animationVariant?: "scale" | "bounce" | "pulse" | "glow"
+}
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  enableAnimation = true,
+  animationVariant = "scale",
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
+}: ButtonProps) {
+  const shouldReduceMotion = useReducedMotion()
   const Comp = asChild ? Slot : "button"
+  const baseClassName = cn(buttonVariants({ variant, size, className }))
+
+  // If reduced motion or animation disabled, return regular button
+  if (shouldReduceMotion || !enableAnimation) {
+    return (
+      <Comp
+        data-slot="button"
+        className={baseClassName}
+        {...(props as any)}
+      />
+    )
+  }
+
+  // Animation variants
+  const getHoverAnimation = () => {
+    switch (animationVariant) {
+      case "scale":
+        return { scale: 1.05 }
+      case "bounce":
+        return { scale: 1.1, transition: { type: "spring", stiffness: 400, damping: 10 } }
+      case "pulse":
+        return { scale: 1.05 }
+      case "glow":
+        return {
+          scale: 1.02,
+          boxShadow: "0 0 20px rgba(37, 99, 235, 0.5)",
+        }
+      default:
+        return { scale: 1.05 }
+    }
+  }
+
+  const getTapAnimation = () => {
+    if (animationVariant === "bounce") {
+      return { scale: 0.9, transition: { type: "spring", stiffness: 400, damping: 10 } }
+    }
+    return { scale: 0.95 }
+  }
+
+  const getPulseAnimation = () => {
+    if (animationVariant === "pulse") {
+      return {
+        boxShadow: [
+          "0 0 0 0 rgba(37, 99, 235, 0.7)",
+          "0 0 0 10px rgba(37, 99, 235, 0)",
+          "0 0 0 0 rgba(37, 99, 235, 0)",
+        ],
+        transition: {
+          duration: 1.5,
+          repeat: Infinity,
+          repeatDelay: 0.5,
+        },
+      }
+    }
+    return {}
+  }
+
+  // If asChild, we can't use motion.button, so return regular button
+  if (asChild) {
+    return (
+      <Comp
+        data-slot="button"
+        className={baseClassName}
+        {...(props as any)}
+      />
+    )
+  }
 
   return (
-    <Comp
+    <motion.button
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
+      className={baseClassName}
+      whileHover={getHoverAnimation()}
+      whileTap={getTapAnimation()}
+      animate={getPulseAnimation()}
+      transition={{ duration: 0.2 }}
+      {...(props as HTMLMotionProps<"button">)}
     />
   )
 }

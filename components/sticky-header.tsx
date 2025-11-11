@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Menu, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 const navItems = [
   { name: "Home", href: "#hero" },
@@ -18,6 +20,7 @@ const navItems = [
 export function StickyHeader() {
   const [activeSection, setActiveSection] = useState("hero")
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   // Scroll spy
   useEffect(() => {
@@ -69,79 +72,137 @@ export function StickyHeader() {
 
           {/* Center (desktop nav) */}
           <div className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Button
-                key={item.name}
-                variant={activeSection === item.href.slice(1) ? "default" : "ghost"}
-                size="default"
-                onClick={() => scrollTo(item.href)}
-                className="text-sm px-3 py-2 font-medium"
-              >
-                {item.name}
-              </Button>
-            ))}
+            {navItems.map((item) => {
+              const isActive = activeSection === item.href.slice(1)
+              return (
+                <motion.div
+                  key={item.name}
+                  className="relative"
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    size="default"
+                    onClick={() => scrollTo(item.href)}
+                    className="text-sm px-3 py-2 font-medium relative"
+                    enableAnimation={false}
+                  >
+                    {item.name}
+                    {isActive && !shouldReduceMotion && (
+                      <motion.div
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                        layoutId="activeIndicator"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </Button>
+                </motion.div>
+              )
+            })}
           </div>
 
           {/* Right */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button
+            <motion.button
               aria-label="Open menu"
               className="p-2 lg:hidden hover:bg-accent rounded-md transition-colors"
               onClick={() => setDrawerOpen(true)}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.1 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
+              transition={{ duration: 0.2 }}
             >
               <Menu className="h-6 w-6" />
-            </button>
+            </motion.button>
           </div>
         </div>
       </nav>
 
 
       {/* Drawer & overlay for < lg */}
-      <div
-        className={`lg:hidden fixed inset-0 z-50 transition ${drawerOpen ? "pointer-events-auto" : "pointer-events-none"}`}
-        aria-hidden={!drawerOpen}
-      >
-        {/* Overlay */}
-        <div
-          className={`absolute inset-0 bg-black/40 transition-opacity ${drawerOpen ? "opacity-100" : "opacity-0"}`}
-          onClick={() => setDrawerOpen(false)}
-        />
+      <AnimatePresence>
+        {drawerOpen && (
+          <div
+            className="lg:hidden fixed inset-0 z-50"
+            aria-hidden={!drawerOpen}
+          >
+            {/* Overlay */}
+            <motion.div
+              className="absolute inset-0 bg-black/40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setDrawerOpen(false)}
+            />
 
-        {/* Panel */}
-        <aside
-          className={`absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl
-                      transition-transform duration-300 ${drawerOpen ? "translate-x-0" : "translate-x-full"}`}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b">
-            <div className="font-semibold">Menu</div>
-            <button aria-label="Close menu" className="p-2" onClick={() => setDrawerOpen(false)}>
-              <X className="h-6 w-6" />
-            </button>
-          </div>
+            {/* Panel */}
+            <motion.aside
+              className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl"
+              role="dialog"
+              aria-modal="true"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="flex items-center justify-between px-5 py-4 border-b">
+                <div className="font-semibold">Menu</div>
+                <motion.button
+                  aria-label="Close menu"
+                  className="p-2"
+                  onClick={() => setDrawerOpen(false)}
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.1, rotate: 90 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X className="h-6 w-6" />
+                </motion.button>
+              </div>
 
-          <div className="p-4 flex flex-col gap-2">
-            {navItems.map((item) => (
-              <Button
-                key={item.name}
-                variant={activeSection === item.href.slice(1) ? "default" : "ghost"}
-                size="sm"
-                className="justify-start text-base px-4 py-2"
-                onClick={() => scrollTo(item.href)}
+              <motion.div
+                className="p-4 flex flex-col gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
               >
-                {item.name}
-              </Button>
-            ))}
+                {navItems.map((item, index) => {
+                  const isActive = activeSection === item.href.slice(1)
+                  return (
+                    <motion.div
+                      key={item.name}
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 + index * 0.05 }}
+                    >
+                      <Button
+                        variant={isActive ? "default" : "ghost"}
+                        size="sm"
+                        className="justify-start text-base px-4 py-2 w-full"
+                        onClick={() => scrollTo(item.href)}
+                        enableAnimation={false}
+                      >
+                        {item.name}
+                      </Button>
+                    </motion.div>
+                  )
+                })}
 
-            <div className="mt-4 border-t pt-4">
-              <div className="text-sm text-muted-foreground mb-2">Appearance</div>
-              <ThemeToggle />
-            </div>
+                <motion.div
+                  className="mt-4 border-t pt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="text-sm text-muted-foreground mb-2">Appearance</div>
+                  <ThemeToggle />
+                </motion.div>
+              </motion.div>
+            </motion.aside>
           </div>
-        </aside>
-      </div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }
