@@ -95,8 +95,14 @@ export function AnimatedButton({
       className={cn(className)}
       whileHover={getHoverAnimation()}
       whileTap={getTapAnimation()}
+      whileFocus={{
+        scale: 1.02,
+        outline: "2px solid rgba(37, 99, 235, 0.5)",
+        outlineOffset: "2px",
+      }}
       animate={getPulseAnimation()}
       onClick={handleClick}
+      aria-label={props["aria-label"] || (typeof children === "string" ? children : undefined)}
       {...props}
     >
       {children}

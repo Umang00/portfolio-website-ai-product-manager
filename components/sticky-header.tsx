@@ -22,19 +22,27 @@ export function StickyHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
 
-  // Scroll spy
+  // Scroll spy with requestAnimationFrame throttling for performance
   useEffect(() => {
+    let ticking = false
+
     const handleScroll = () => {
-      const sections = navItems.map((i) => i.href.slice(1))
-      const y = window.scrollY + 100
-      for (const section of sections) {
-        const el = document.getElementById(section)
-        if (!el) continue
-        const { offsetTop, offsetHeight } = el
-        if (y >= offsetTop && y < offsetTop + offsetHeight) {
-          setActiveSection(section)
-          break
-        }
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const sections = navItems.map((i) => i.href.slice(1))
+          const y = window.scrollY + 100
+          for (const section of sections) {
+            const el = document.getElementById(section)
+            if (!el) continue
+            const { offsetTop, offsetHeight } = el
+            if (y >= offsetTop && y < offsetTop + offsetHeight) {
+              setActiveSection(section)
+              break
+            }
+          }
+          ticking = false
+        })
+        ticking = true
       }
     }
     window.addEventListener("scroll", handleScroll, { passive: true })

@@ -45,6 +45,7 @@ export function ScrollReveal({
       viewport={{ once, amount }}
       variants={variants}
       transition={{ duration, delay }}
+      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </motion.div>
@@ -124,7 +125,12 @@ export function ScrollRevealItem({ children, className }: ScrollRevealItemProps)
   }
 
   return (
-    <motion.div className={className} variants={itemVariants}>
+    <motion.div
+      className={className}
+      variants={itemVariants}
+      style={{ willChange: "transform, opacity" }}
+      aria-live="polite"
+    >
       {children}
     </motion.div>
   )

@@ -89,8 +89,11 @@ export function AnimatedCard({
     ? {
         transformStyle: "preserve-3d" as const,
         perspective: `${animationConfig.threeD.perspective}px`,
+        willChange: "transform",
       }
-    : undefined
+    : {
+        willChange: "transform",
+      }
 
   const MotionComponent = motion[as as keyof typeof motion] as typeof motion.div
 
@@ -108,10 +111,22 @@ export function AnimatedCard({
         ...getHoverAnimation(),
         transition: { duration: 0.2 },
       }}
+      whileFocus={{
+        ...getHoverAnimation(),
+        transition: { duration: 0.2 },
+      }}
       whileTap={{ scale: 0.98 }}
       viewport={{ once: true, amount: 0.3 }}
       onHoverStart={handleHoverStart}
       style={style}
+      tabIndex={props.onClick ? 0 : undefined}
+      role={props.onClick ? "button" : undefined}
+      onKeyDown={(e: React.KeyboardEvent) => {
+        if (props.onClick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault()
+          ;(props.onClick as any)(e)
+        }
+      }}
       {...props}
     >
       {children}
