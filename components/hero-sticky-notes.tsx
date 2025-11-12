@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
 // Layout from reference image: 3 horizontal rows with staggered horizontal positioning
+// LEFT notes: negative xOffset = further left, positive = closer to photo
+// RIGHT notes: positive xOffset = further right, negative = closer to photo
 const leftSideNotes = [
   {
     id: 1,
@@ -13,7 +15,7 @@ const leftSideNotes = [
     color: "yellow",
     rotation: -6,
     yOffset: -200, // TOP ROW - aligns with green note (4) on right
-    xOffset: -50, // Far left position
+    xOffset: 0, // Standard far left position
     tapePosition: "top-center",
   },
   {
@@ -22,7 +24,7 @@ const leftSideNotes = [
     color: "pink",
     rotation: 2,
     yOffset: 0, // MIDDLE ROW - aligns with brown note (5) on right
-    xOffset: -90, // Centered between left edge and photo (moved more left)
+    xOffset: 60, // CLOSER to photo (centered between left edge and photo)
     tapePosition: "top-center",
   },
   {
@@ -31,7 +33,7 @@ const leftSideNotes = [
     color: "blue",
     rotation: -3,
     yOffset: 200, // BOTTOM ROW - aligns with pink note (6) on right
-    xOffset: -50, // Standard left position
+    xOffset: 0, // Standard far left position
     tapePosition: "top-center",
   },
 ]
@@ -44,7 +46,7 @@ const rightSideNotes = [
     color: "green",
     rotation: 4,
     yOffset: -200, // TOP ROW - aligns with brown note (1) on left
-    xOffset: 50, // Standard right position
+    xOffset: 0, // Standard right position
     tapePosition: "top-center",
   },
   {
@@ -53,7 +55,7 @@ const rightSideNotes = [
     color: "yellow",
     rotation: -2,
     yOffset: 0, // MIDDLE ROW - aligns with pink note (2) on left
-    xOffset: 90, // Centered between photo and right edge (moved more right)
+    xOffset: -60, // CLOSER to photo (centered between photo and right edge)
     tapePosition: "top-center",
   },
   {
@@ -62,7 +64,7 @@ const rightSideNotes = [
     color: "pink",
     rotation: 3,
     yOffset: 200, // BOTTOM ROW - aligns with blue note (3) on left
-    xOffset: 130, // Far right position (moved to rightmost)
+    xOffset: 100, // Far right position (furthest from photo)
     tapePosition: "top-bottom",
   },
 ]
