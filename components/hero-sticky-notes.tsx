@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
 // Layout from reference image: 3 horizontal rows with staggered horizontal positioning
-// LEFT notes: negative xOffset = further left, positive = closer to photo
-// RIGHT notes: positive xOffset = further right, negative = closer to photo
+// LEFT notes: negative xOffset = further LEFT (away from photo), positive = toward photo
+// RIGHT notes: positive xOffset = further RIGHT (away from photo), negative = toward photo
 const leftSideNotes = [
   {
     id: 1,
@@ -15,7 +15,7 @@ const leftSideNotes = [
     color: "yellow",
     rotation: -6,
     yOffset: -200, // TOP ROW - aligns with green note (4) on right
-    xOffset: 0, // Standard far left position
+    xOffset: 0, // Standard position
     tapePosition: "top-center",
   },
   {
@@ -24,7 +24,7 @@ const leftSideNotes = [
     color: "pink",
     rotation: 2,
     yOffset: 0, // MIDDLE ROW - aligns with brown note (5) on right
-    xOffset: 60, // CLOSER to photo (centered between left edge and photo)
+    xOffset: -80, // FURTHER LEFT - centered between left edge and photo
     tapePosition: "top-center",
   },
   {
@@ -33,7 +33,7 @@ const leftSideNotes = [
     color: "blue",
     rotation: -3,
     yOffset: 200, // BOTTOM ROW - aligns with pink note (6) on right
-    xOffset: 0, // Standard far left position
+    xOffset: 0, // Standard position
     tapePosition: "top-center",
   },
 ]
@@ -46,7 +46,7 @@ const rightSideNotes = [
     color: "green",
     rotation: 4,
     yOffset: -200, // TOP ROW - aligns with brown note (1) on left
-    xOffset: 0, // Standard right position
+    xOffset: 0, // Standard position
     tapePosition: "top-center",
   },
   {
@@ -55,7 +55,7 @@ const rightSideNotes = [
     color: "yellow",
     rotation: -2,
     yOffset: 0, // MIDDLE ROW - aligns with pink note (2) on left
-    xOffset: -60, // CLOSER to photo (centered between photo and right edge)
+    xOffset: 80, // FURTHER RIGHT - centered between photo and right edge
     tapePosition: "top-center",
   },
   {
@@ -64,7 +64,7 @@ const rightSideNotes = [
     color: "pink",
     rotation: 3,
     yOffset: 200, // BOTTOM ROW - aligns with blue note (3) on left
-    xOffset: 100, // Far right position (furthest from photo)
+    xOffset: 180, // FAR RIGHT - aligned with outer edge like green note
     tapePosition: "top-bottom",
   },
 ]
