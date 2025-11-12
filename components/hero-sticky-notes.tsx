@@ -5,17 +5,15 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
-// Layout from reference image: 3 horizontal rows with staggered horizontal positioning
-// LEFT notes: negative xOffset = further LEFT (away from photo), positive = toward photo
-// RIGHT notes: positive xOffset = further RIGHT (away from photo), negative = toward photo
+// Layout from labeled reference image 1: wider vertical spacing between notes
 const leftSideNotes = [
   {
     id: 1,
     text: "90% of PMs fail to deliver because they skip user research",
     color: "yellow",
     rotation: -6,
-    yOffset: -200, // TOP ROW - aligns with green note (4) on right
-    xOffset: 0, // Standard position
+    yOffset: -150, // TOP note - increased spacing
+    xOffset: -50,
     tapePosition: "top-center",
   },
   {
@@ -23,8 +21,8 @@ const leftSideNotes = [
     text: "Ship fast, learn faster. Perfection is the enemy of progress.",
     color: "pink",
     rotation: 2,
-    yOffset: 0, // MIDDLE ROW - aligns with brown note (5) on right
-    xOffset: -80, // FURTHER LEFT - centered between left edge and photo
+    yOffset: 0, // MIDDLE note - centered
+    xOffset: -45,
     tapePosition: "top-center",
   },
   {
@@ -32,8 +30,8 @@ const leftSideNotes = [
     text: "Data tells you what, users tell you why",
     color: "blue",
     rotation: -3,
-    yOffset: 200, // BOTTOM ROW - aligns with pink note (6) on right
-    xOffset: 0, // Standard position
+    yOffset: 150, // BOTTOM note - increased spacing
+    xOffset: -50,
     tapePosition: "top-center",
   },
 ]
@@ -45,8 +43,8 @@ const rightSideNotes = [
     text: "The best product decisions come from saying 'no' 9 times out of 10",
     color: "green",
     rotation: 4,
-    yOffset: -200, // TOP ROW - aligns with brown note (1) on left
-    xOffset: 0, // Standard position
+    yOffset: -150, // TOP note - aligned with note 1
+    xOffset: 50,
     tapePosition: "top-center",
   },
   {
@@ -54,8 +52,8 @@ const rightSideNotes = [
     text: "200% engagement increase isn't luck—it's ruthless iteration",
     color: "yellow",
     rotation: -2,
-    yOffset: 0, // MIDDLE ROW - aligns with pink note (2) on left
-    xOffset: 80, // FURTHER RIGHT - centered between photo and right edge
+    yOffset: 0, // MIDDLE note - aligned with note 2
+    xOffset: 45,
     tapePosition: "top-center",
   },
   {
@@ -63,8 +61,8 @@ const rightSideNotes = [
     text: "Build for users, measure for business, iterate for impact",
     color: "pink",
     rotation: 3,
-    yOffset: 200, // BOTTOM ROW - aligns with blue note (3) on left
-    xOffset: 180, // FAR RIGHT - aligned with outer edge like green note
+    yOffset: 150, // BOTTOM note - aligned with note 3
+    xOffset: 50,
     tapePosition: "top-bottom",
   },
 ]
