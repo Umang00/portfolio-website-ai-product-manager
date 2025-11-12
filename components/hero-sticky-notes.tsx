@@ -5,64 +5,64 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
-// V-shape arrangement: top and bottom notes further out, middle note closer to center (forms V pointing toward profile)
+// Horizontal arrangement: 1,3,4,6 at equal level; 2 centered between 1,3 on left; 5 centered between 4,6 on right
 const leftSideNotes = [
   {
     id: 1,
     text: "90% of PMs fail to deliver because they skip user research",
     color: "yellow",
     rotation: -4,
-    yOffset: -100,
-    xOffset: -40, // Further out for V shape (top-left)
-    tapePosition: "top-left",
+    yOffset: -120, // Top position at equal level with note 4
+    xOffset: -40,
+    tapePosition: "top-center",
   },
   {
     id: 2,
     text: "Ship fast, learn faster. Perfection is the enemy of progress.",
     color: "pink",
     rotation: 1,
-    yOffset: 0,
-    xOffset: -10, // Closer to center for V shape (middle)
-    tapePosition: "top-bottom",
+    yOffset: 0, // Centered between note 1 and 3
+    xOffset: -35,
+    tapePosition: "top-center",
   },
   {
     id: 3,
     text: "Data tells you what, users tell you why",
     color: "blue",
     rotation: -2,
-    yOffset: 100,
-    xOffset: -35, // Further out for V shape (bottom-left)
-    tapePosition: "top-right",
+    yOffset: 120, // Bottom position at equal level with note 6
+    xOffset: -40,
+    tapePosition: "top-center",
   },
 ]
 
-// Inverted V-shape arrangement: top and bottom notes further out, middle note closer to center
+// Right side notes: 4 at top, 5 in middle, 6 at bottom (4 and 6 aligned with 1 and 3)
 const rightSideNotes = [
   {
     id: 4,
     text: "The best product decisions come from saying 'no' 9 times out of 10",
     color: "green",
     rotation: 3,
-    yOffset: -90,
-    xOffset: 35, // Further out for inverted V shape (top-right)
-    tapePosition: "top-left",
+    yOffset: -120, // Top position at equal level with note 1
+    xOffset: 40,
+    tapePosition: "top-center",
   },
   {
     id: 5,
     text: "200% engagement increase isn't luck—it's ruthless iteration",
     color: "yellow",
     rotation: -1,
-    yOffset: 0,
-    xOffset: 10, // Closer to center for inverted V shape (middle)
-    tapePosition: "sides",
+    yOffset: 0, // Centered between note 4 and 6
+    xOffset: 35,
+    tapePosition: "top-center",
   },
   {
     id: 6,
     text: "Build for users, measure for business, iterate for impact",
     color: "pink",
     rotation: 2,
-    yOffset: 90,
-    xOffset: 40, // Further out for inverted V shape (bottom-right)
+    yOffset: 120, // Bottom position at equal level with note 3
+    xOffset: 40,
     tapePosition: "top-center",
   },
 ]
