@@ -5,65 +5,65 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
-// Layout from reference: 1,3,4,6 at similar levels; 2,5 in middle
+// Layout from labeled reference image 1: wider vertical spacing between notes
 const leftSideNotes = [
   {
     id: 1,
     text: "90% of PMs fail to deliver because they skip user research",
     color: "yellow",
-    rotation: -4,
-    yOffset: -120,
-    xOffset: -40,
-    tapePosition: "top-left", // Single tape at top-left corner like reference
+    rotation: -6,
+    yOffset: -150, // TOP note - increased spacing
+    xOffset: -50,
+    tapePosition: "top-center",
   },
   {
     id: 2,
     text: "Ship fast, learn faster. Perfection is the enemy of progress.",
     color: "pink",
-    rotation: 1,
-    yOffset: 0,
-    xOffset: -35,
-    tapePosition: "top-center", // Single tape at top center
+    rotation: 2,
+    yOffset: 0, // MIDDLE note - centered
+    xOffset: -45,
+    tapePosition: "top-center",
   },
   {
     id: 3,
     text: "Data tells you what, users tell you why",
     color: "blue",
-    rotation: -2,
-    yOffset: 120,
-    xOffset: -40,
-    tapePosition: "top-right", // Single tape at top-right corner for variety
+    rotation: -3,
+    yOffset: 150, // BOTTOM note - increased spacing
+    xOffset: -50,
+    tapePosition: "top-center",
   },
 ]
 
-// Right side notes with varied tape positions for natural look
+// Right side notes - aligned horizontally with left side (1 with 4, 2 with 5, 3 with 6)
 const rightSideNotes = [
   {
     id: 4,
     text: "The best product decisions come from saying 'no' 9 times out of 10",
     color: "green",
-    rotation: 3,
-    yOffset: -120,
-    xOffset: 40,
-    tapePosition: "top-left", // Single tape at top-left
+    rotation: 4,
+    yOffset: -150, // TOP note - aligned with note 1
+    xOffset: 50,
+    tapePosition: "top-center",
   },
   {
     id: 5,
     text: "200% engagement increase isn't luck—it's ruthless iteration",
     color: "yellow",
-    rotation: -1,
-    yOffset: 0,
-    xOffset: 35,
-    tapePosition: "top-center", // Single tape at top center
+    rotation: -2,
+    yOffset: 0, // MIDDLE note - aligned with note 2
+    xOffset: 45,
+    tapePosition: "top-center",
   },
   {
     id: 6,
     text: "Build for users, measure for business, iterate for impact",
     color: "pink",
-    rotation: 2,
-    yOffset: 120,
-    xOffset: 40,
-    tapePosition: "top-bottom", // Two tapes: top and bottom like reference image 2 (right note)
+    rotation: 3,
+    yOffset: 150, // BOTTOM note - aligned with note 3
+    xOffset: 50,
+    tapePosition: "top-bottom",
   },
 ]
 
