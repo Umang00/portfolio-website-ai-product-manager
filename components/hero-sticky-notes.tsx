@@ -5,65 +5,65 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
-// Horizontal arrangement: 1,3,4,6 at equal level; 2 centered between 1,3 on left; 5 centered between 4,6 on right
+// Layout from reference: 1,3,4,6 at similar levels; 2,5 in middle
 const leftSideNotes = [
   {
     id: 1,
     text: "90% of PMs fail to deliver because they skip user research",
     color: "yellow",
     rotation: -4,
-    yOffset: -120, // Top position at equal level with note 4
+    yOffset: -120,
     xOffset: -40,
-    tapePosition: "top-center",
+    tapePosition: "top-left", // Single tape at top-left corner like reference
   },
   {
     id: 2,
     text: "Ship fast, learn faster. Perfection is the enemy of progress.",
     color: "pink",
     rotation: 1,
-    yOffset: 0, // Centered between note 1 and 3
+    yOffset: 0,
     xOffset: -35,
-    tapePosition: "top-center",
+    tapePosition: "top-center", // Single tape at top center
   },
   {
     id: 3,
     text: "Data tells you what, users tell you why",
     color: "blue",
     rotation: -2,
-    yOffset: 120, // Bottom position at equal level with note 6
+    yOffset: 120,
     xOffset: -40,
-    tapePosition: "top-center",
+    tapePosition: "top-right", // Single tape at top-right corner for variety
   },
 ]
 
-// Right side notes: 4 at top, 5 in middle, 6 at bottom (4 and 6 aligned with 1 and 3)
+// Right side notes with varied tape positions for natural look
 const rightSideNotes = [
   {
     id: 4,
     text: "The best product decisions come from saying 'no' 9 times out of 10",
     color: "green",
     rotation: 3,
-    yOffset: -120, // Top position at equal level with note 1
+    yOffset: -120,
     xOffset: 40,
-    tapePosition: "top-center",
+    tapePosition: "top-left", // Single tape at top-left
   },
   {
     id: 5,
     text: "200% engagement increase isn't luck—it's ruthless iteration",
     color: "yellow",
     rotation: -1,
-    yOffset: 0, // Centered between note 4 and 6
+    yOffset: 0,
     xOffset: 35,
-    tapePosition: "top-center",
+    tapePosition: "top-center", // Single tape at top center
   },
   {
     id: 6,
     text: "Build for users, measure for business, iterate for impact",
     color: "pink",
     rotation: 2,
-    yOffset: 120, // Bottom position at equal level with note 3
+    yOffset: 120,
     xOffset: 40,
-    tapePosition: "top-center",
+    tapePosition: "top-bottom", // Two tapes: top and bottom like reference image 2 (right note)
   },
 ]
 
