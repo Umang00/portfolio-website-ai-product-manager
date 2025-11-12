@@ -1,6 +1,244 @@
-# AI Companion Architecture Document
+# System Architecture: Portfolio Website with AI Companion
 
-## System Overview
+## Overview
+
+This document describes the complete system architecture for the portfolio website and its integrated AI Companion feature. The system is built on Next.js 14 with App Router, using TypeScript for type safety and Tailwind CSS for styling.
+
+---
+
+## Part 1: Portfolio Website Architecture
+
+### System Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    PORTFOLIO FRONTEND                       │
+│  - Hero Section (with AI Companion input)                  │
+│  - KPI Chips (count-up animations)                          │
+│  - Process Wheel (5-step visualization)                    │
+│  - Featured Projects (carousel with modals)                  │
+│  - Trusted By (client logos marquee)                        │
+│  - Wall of Love (testimonials)                              │
+│  - Skills & Stack (toolkit showcase)                        │
+│  - Journey Timeline (career progression)                    │
+│  - Contact Section (form + Calendly + WhatsApp)            │
+│  - Footer (back-to-top, social links)                       │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PORTFOLIO API LAYER (Next.js)                   │
+│  /api/contact       - Contact form submission               │
+│  /api/companion?q=  - AI Companion streaming (legacy)      │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  EXTERNAL SERVICES                          │
+│  - Resend (email delivery)                                  │
+│  - Supabase (contact form storage)                         │
+│  - Calendly (scheduling)                                    │
+│  - Plausible (analytics)                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Component Structure
+
+**Location:** `/components/`
+
+#### Core Portfolio Components
+
+1. **`hero.tsx`** - Hero Section
+   - Greeting pill (cycles every 4s)
+   - Typewriter H1 with dynamic verbs
+   - AI Companion input field (integrated)
+   - Social buttons (LinkedIn, GitHub, Resume)
+   - Multi-armed PM illustration
+   - Sticky notes animation
+   - Scroll reveal animations
+
+2. **`sticky-header.tsx`** - Navigation Header
+   - Sticky positioning on scroll
+   - Active section highlighting (scroll spy)
+   - Smooth scroll to anchors
+   - Mobile drawer menu
+   - Theme toggle integration
+   - Navigation items: Home, Process, Projects, Social Proof, Journey, Tools, Contact
+
+3. **`kpi-section.tsx`** - KPI Chips
+   - Count-up animations (staggered 80ms)
+   - Respects `prefers-reduced-motion`
+   - Large, tappable chips
+   - Displays metrics (100k+ polls, 3.2× match-rate, etc.)
+
+4. **`process-wheel.tsx`** - Process Visualization
+   - 5-step circular layout: Research → Build → Launch → Measure → Learn
+   - SVG stroke animation (1.5s)
+   - Tooltips on hover/focus
+   - Keyboard accessible
+   - Central whiteboard/doodle image
+
+5. **`projects-slider.tsx`** - Featured Projects Carousel
+   - Auto-scroll carousel (3s interval)
+   - Pause on hover/interaction
+   - Responsive: 3-up desktop, 1-up mobile
+   - Integration with project detail modals
+   - Custom hooks for visibility/page state management
+
+6. **`projects/project-card.tsx`** - Individual Project Card
+   - Image-first design
+   - Status badges (Active/In Progress/Inactive)
+   - Action buttons: View Details, View Demo, View YouTube
+   - Tilt animation on hover (≤6°)
+   - Technology tags (optional)
+
+7. **`projects/project-details-modal.tsx`** - Project Detail Modal
+   - Sheet modal with project information
+   - 2-paragraph description
+   - KPI display
+   - "Ask AI Companion" button integration
+   - Links to GitHub, Live Demo, YouTube
+
+8. **`client-logos.tsx`** - Trusted By Section
+   - Marquee animation (18s loop)
+   - Pause on hover
+   - Greyscale → color on hover
+   - Supports 12-16 logos
+
+9. **`wall-of-love.tsx`** - Testimonials
+   - Desktop: 2-column auto-swap (6s interval)
+   - Mobile: horizontal scroll with snap
+   - Avatar with ring (48px)
+   - LinkedIn integration
+   - "Read more" expandable quotes
+
+10. **`skills-and-stack.tsx`** - Toolkit Section
+    - Core Skills grid (3 columns)
+    - Tech Stack marquee (dual belt scrollers)
+    - Categorized lists (Frontend, Backend, Data, Analytics, AI, DX)
+    - Falls back to static list if reduced motion
+
+11. **`timeline.tsx`** - Journey/About Section
+    - Vertical timeline layout
+    - First card functions as About section
+    - Multiple roles at one company (expandable)
+    - Fade-in on scroll
+    - Supports images/GIFs
+
+12. **`contact-section.tsx`** - Contact Form
+    - Name, Email, Website/Social (optional), Message inputs
+    - Send Email button (Resend integration)
+    - Book 30 min button (Calendly modal)
+    - WhatsApp deep-link
+    - Success/error toasts
+    - Spam honeypot
+
+13. **`footer.tsx`** - Footer
+    - Back-to-top arrow (fixed bottom-left)
+    - Social links (LinkedIn, GitHub, Resume)
+    - Copyright notice
+    - Light/dark aware
+
+14. **`back-to-top.tsx`** - Back to Top Button
+    - Appears after 120vh scroll
+    - Smooth scroll to top
+    - Fixed bottom-left positioning
+
+#### Animation Components
+
+**Location:** `/components/animations/`
+
+- `scroll-reveal.tsx` - Scroll-triggered animations (fadeInUp, fadeInLeft, fadeInRight)
+- `parallax.tsx` - Parallax scrolling effects
+- `animated-card.tsx` - Card animations
+- `animated-button.tsx` - Button animations
+- `3d-container.tsx` - 3D container effects
+- `3d-highlight.tsx` - 3D highlight effects
+
+#### UI Components
+
+**Location:** `/components/ui/`
+
+- `button.tsx` - Button component (shadcn/ui)
+- `badge.tsx` - Badge component
+- `input.tsx` - Input component
+- `textarea.tsx` - Textarea component
+- `dialog.tsx` - Dialog/Modal component
+- `carousel.tsx` - Carousel component
+- `tooltip.tsx` - Tooltip component
+- `skeleton.tsx` - Loading skeleton
+- `social-buttons.tsx` - Social media buttons
+
+#### Custom Hooks
+
+**Location:** `/hooks/`
+
+- `use-reduced-motion.ts` - Detects user's motion preference
+- `use-intersection-observer.ts` - Observes element visibility
+- `use-page-visibility.ts` - Detects tab visibility
+- `use-auto-scroll.ts` - Manages auto-scroll with pause
+- `use-speech-input.ts` - Voice input for AI Companion
+- `use-sound.ts` - Sound effects (celebration, tick)
+
+### State Management
+
+- **Theme State**: Managed via `theme-provider.tsx` (light/dark mode)
+- **Modal State**: Local component state (open/close)
+- **Form State**: React Hook Form (contact form)
+- **Carousel State**: Custom hooks managing auto-scroll, pause/resume
+- **Scroll State**: Scroll spy for active section highlighting
+
+### API Routes (Portfolio)
+
+**Location:** `/app/api/`
+
+#### `/api/contact/route.ts`
+- **Method:** POST
+- **Purpose:** Handle contact form submissions
+- **Process:**
+  1. Validate input (name, email, message)
+  2. Send email via Resend to `umangthakkar005@gmail.com`
+  3. Insert row into Supabase `leads` table
+  4. Return success/error response
+- **Output:** `{ success: boolean, message: string }`
+
+#### `/api/companion/route.ts` (Legacy)
+- **Method:** GET
+- **Purpose:** Legacy AI Companion endpoint (replaced by `/api/ai/query`)
+- **Status:** ⚠️ May be deprecated in favor of new AI Companion API
+
+### Technology Stack (Portfolio)
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| Framework | Next.js 14 (App Router) | React framework with SSR/SSG |
+| Language | TypeScript | Type safety |
+| Styling | Tailwind CSS | Utility-first CSS |
+| UI Components | shadcn/ui (Radix) | Accessible component library |
+| Motion | Framer Motion 6 | Animations |
+| Carousel | keen-slider | Carousel functionality |
+| Tilt | react-parallax-tilt | 3D tilt effects |
+| Typewriter | react-simple-typewriter | Typewriter animation |
+| Count-up | react-countup | Number animations |
+| Email | Resend | Email delivery |
+| Database | Supabase | Contact form storage |
+| Analytics | Plausible | Privacy-first analytics |
+| Hosting | Vercel | Deployment platform |
+
+### Performance Optimizations
+
+- **Image Optimization**: Next.js `Image` component with lazy loading
+- **Code Splitting**: Automatic via Next.js App Router
+- **Bundle Size**: Target ≤ 150 kB gzipped
+- **LCP Target**: ≤ 1.5s (4G desktop)
+- **Lighthouse Score**: ≥ 95
+- **Accessibility**: WCAG 2.1 AA compliance
+
+---
+
+## Part 2: AI Companion Architecture
+
+### System Overview
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     USER INTERFACE (Next.js)                 │
@@ -53,9 +291,9 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Component Details
+### Component Details
 
-### 1. Frontend Layer
+#### 1. Frontend Layer
 
 **Location:** `/components/ai/`, `/components/api-test/`, and `/components/projects/`
 
@@ -64,29 +302,6 @@
 - `message-bubble.tsx` - Individual message display
 - `suggested-questions.tsx` - Follow-up prompts
 - Voice input integrated via `use-speech-input.ts` hook
-
-**Projects Showcase Components:** ✅ **IMPLEMENTED**
-- `projects-slider.tsx` - Main carousel component with auto-scroll (3s interval)
-- `project-card.tsx` - Individual project card with action buttons
-- `project-details-modal.tsx` - Modal for detailed project information
-- `types.ts` - TypeScript interfaces for Project data structure
-
-**Custom Hooks for Projects Carousel:**
-- `use-reduced-motion.ts` - Detects user's motion preference for accessibility
-- `use-intersection-observer.ts` - Observes carousel visibility for pause/resume
-- `use-page-visibility.ts` - Detects tab visibility for pause/resume
-- `use-auto-scroll.ts` - Manages auto-scroll with pause on interaction
-
-**Project Card Features:**
-- Three action buttons: "View Details" (always), "View Demo" (optional), "View YouTube Video" (optional)
-- Each button takes 33% width, left-aligned with smart spacing
-- Status badges: Transparent with colored dots (green/yellow/grey) and pulsing animation
-- Technologies: Optional display (default hidden)
-- Card dimensions: Taller cards (h-80/h-96) with improved aspect ratio
-- Modal integration: Clicking "View Details" opens ProjectDetailsModal
-- AI Companion integration: Modal includes "Ask AI Companion" button that opens full-screen chat
-
-**Note:** The `components/chat-fab.tsx` file is a contact form, not the AI chat interface.
 
 **API Testing Interface:**
 - `/app/api-test/page.tsx` - Main API testing page
@@ -103,34 +318,10 @@
 - Loading states
 - Error states
 - Modal open/close state
-- Carousel auto-scroll state (pause/resume on interaction)
 
 **API Communication:**
 - POST to `/api/ai/query` with { query, conversationHistory }
 - Receive { answer, suggestedQuestions, sources }
-
-**Projects Data Structure:**
-```typescript
-interface Project {
-  // Required fields
-  id: string
-  slug: string
-  title: string
-  image: string
-  imageAlt: string
-  briefDescription: string
-  technologies: string[]
-  
-  // Optional fields
-  detailedDescription?: string
-  bullets?: string[] // Max 3 items
-  demoUrl?: string
-  youtubeUrl?: string
-  status?: "Active" | "In Progress" | "Inactive"
-  aiContext?: string // For AI Companion queries
-  // ... see components/projects/types.ts for full interface
-}
-```
 
 ### 2. API Routes Layer
 
@@ -168,33 +359,10 @@ interface Project {
 - **Process:** Force full rebuild regardless of changes
 - **Output:** `{ success: boolean, message: string, chunksCreated: number, documentsProcessed: number, stats: object }`
 
-#### `/api/ai/test-pdf-parsing/route.ts` (Test Endpoint)
-- **Method:** POST
-- **Auth:** Requires `ADMIN_SECRET` in request body
-- **Input:** `{ filename: string, secret: string }`
-- **Purpose:** Test PDF parsing and section detection without generating embeddings
-- **Output:** `{ success: boolean, filename, type, metadata, rawText, sectionsDetected, sectionDetails }`
-
-#### `/api/ai/test-chunking/route.ts` (Test Endpoint)
-- **Method:** POST, GET
-- **Auth:** Requires `ADMIN_SECRET` in request body (POST) or query param (GET)
-- **Input:** `{ filename: string, documentType?: string, secret: string, testAll?: boolean }`
-- **Purpose:** Test document chunking without generating embeddings
-- **Output:** `{ chunks: TestChunk[], stats: ChunkingStats, quality: ChunkQualityReport }`
-
-#### `/api/ai/test-pdfs/route.ts` (Test Endpoint)
-- **Method:** GET
-- **Auth:** Requires `ADMIN_SECRET` in query param
-- **Purpose:** List and test all PDFs without triggering embeddings/OpenAI
-- **Output:** Array of parsed PDF documents with types and text lengths
-
-#### `/api/ai/optimize-query/route.ts`
-- **Method:** POST
-- **Purpose:** Query rewriting for better retrieval
-
-#### `/api/ai/compress-memory/route.ts`
-- **Method:** POST
-- **Purpose:** Conversation history compression
+#### Test Endpoints
+- `/api/ai/test-pdf-parsing/route.ts` - Test PDF parsing without embeddings
+- `/api/ai/test-chunking/route.ts` - Test document chunking
+- `/api/ai/test-pdfs/route.ts` - List and test all PDFs
 
 ### 3. AI Service Layer
 
@@ -205,321 +373,144 @@ interface Project {
 - `buildMemoryIndex(forceRebuild)` - Load docs, chunk, embed, store
 - `queryAI(query, conversationHistory)` - Retrieve context, generate response
 - `checkForChanges()` - Hash-based file change detection
-- `analyzeQuery(query)` - **NEW:** Extract intent and metadata filters from query
-- `generateSuggestedQuestions(query, chunks)` - **NEW:** Context-aware follow-ups
-
-**Data Flow:**
-```
-buildMemoryIndex():
-1. Check for file changes (hash comparison)
-2. Load changed documents (loaders)
-3. Chunk documents (chunking strategies)
-4. Generate embeddings (embeddings.js)
-5. Store in vector DB (vector-store.js)
-6. Update file hashes
-
-queryAI():
-1. Generate query embedding
-2. Vector search for relevant chunks
-3. Construct context from top chunks
-4. Call LLM with context + query
-5. Return formatted response
-```
+- `analyzeQuery(query)` - Extract intent and metadata filters from query
+- `generateSuggestedQuestions(query, chunks)` - Context-aware follow-ups
 
 #### `embeddings.js`
 **Purpose:** Generate embeddings using OpenAI API
-**Key Functions:**
-- `generateEmbedding(text)` - Single text to embedding
-- `batchGenerateEmbeddings(texts)` - Batch processing (efficient)
-
-**Configuration:**
 - Model: `text-embedding-3-small`
 - Dimensions: 1536
-- Batch size: 50 (to avoid rate limits)
+- Batch size: 50
 
 #### `llm.js`
 **Purpose:** Generate responses using OpenRouter
-**Key Functions:**
-- `generateResponse(context, query, history)` - Main chat function
-- `summarizeConversation(history)` - Compress old messages
-
-**Configuration:**
-- Model: `meta-llama/llama-3.1-8b-instruct:free` (configurable via env)
+- Model: `meta-llama/llama-3.1-8b-instruct:free`
 - Max tokens: 2000
 - Temperature: 0.7
-- System prompt: Defines AI persona as "Umang's companion" speaking in first person
-  - Natural, conversational tone (no mention of "context" or technical details)
-  - First-person responses ("I did this", not "Umang did this")
-  - Avoids mentioning files, documents, or implementation details
+- First-person responses in Umang's voice
 
 #### `vector-store.js`
 **Purpose:** MongoDB Atlas operations
-**Key Functions:**
 - `storeEmbeddings(chunks)` - Batch insert
 - `searchSimilar(queryEmbedding, limit)` - Basic vector kNN search
-- `smartSearch(queryEmbedding, filters, limit)` - **NEW:** Multi-stage retrieval with filtering and re-ranking
-- `rerankResults(chunks, filters)` - **NEW:** Multi-signal scoring algorithm
-- `deleteBySource(filename)` - Remove old chunks on update
+- `smartSearch(queryEmbedding, filters, limit)` - Multi-stage retrieval with filtering and re-ranking
+- `rerankResults(chunks, filters)` - Multi-signal scoring algorithm
 
-**Collections:**
-- `memoryIndex` - Stores chunks with embeddings (NOTE: Collection name is `memoryIndex`, not `embeddings`)
-- `file_metadata` - Tracks file hashes and update times (✅ IMPLEMENTED)
-- `conversations` - Optional: store chat histories
-
-#### `file-watcher.ts` (✅ IMPLEMENTED)
+#### `file-watcher.ts`
 **Purpose:** Detect document changes
-**Status:** ✅ **IMPLEMENTED** - Change detection reduces API costs by only processing modified files
-**Key Functions:**
-- `getFileHash(filepath)` - SHA-256 hash of file
-- `checkForPDFChanges()` - Compare current vs stored hashes for PDFs
-- `checkForGitHubChanges()` - Compare updatedAt timestamps for GitHub repos
-- `checkForChanges()` - Combined change detection for all sources
-- `updateFileMetadata()` - Store/update file metadata (hash, chunkCount, fileSize, lastProcessed)
-- `getFileMetadata()` - Retrieve stored metadata
-- `deleteFileMetadata()` - Remove metadata for deleted files
-
-#### Smart Retrieval Pipeline
-
-**Multi-Stage Retrieval:**
-```
-Query: "What did Umang work on recently?"
-    ↓
-1. Query Analysis (analyzeQuery)
-   - Detects: "work" → Filter to linkedin_experience
-   - Detects: "recent" → Filter to 2024-2025
-   - Detects: temporal keyword → Boost recency
-    ↓
-2. Vector Search (smartSearch)
-   - Generate query embedding
-   - MongoDB kNN search with metadata filters
-   - Retrieve 20 candidates (4x final limit)
-    ↓
-3. Re-ranking (rerankResults)
-   - Base score: Vector similarity
-   - Category boost: +30% for linkedin_experience
-   - Recency boost: +5% per year (last 5 years)
-   - Length boost: +10% for 100-300 token chunks
-    ↓
-4. Top-K Selection
-   - Sort by final score
-   - Return top 5 chunks
-    ↓
-5. Follow-up Generation
-   - Analyze chunk categories
-   - Suggest 2-3 contextual questions
-```
-
-**Re-ranking Signals:**
-| Signal | Weight | Example Impact |
-|--------|--------|----------------|
-| Vector Similarity | 1.0x (base) | Query "AI projects" matches "built AI chatbot" |
-| Category Relevance | 1.0-1.3x | Work query boosts LinkedIn 30% |
-| Recency | 1.0-1.25x | 2024 experience gets 25% boost over 2020 |
-| Chunk Quality | 1.0-1.1x | Medium-length chunks preferred |
-
-**Query Intent Patterns:**
-- Work/Experience: `work|job|experience|role|company`
-- Journey/Decisions: `decision|learn|journey|why|approach`
-- Technical: `project|build|code|github`
-- Recent: `recent|current|latest|2024|2025`
-- Skills: `skill|technology|tool|tech stack`
+- SHA-256 hash comparison for PDFs
+- Timestamp comparison for GitHub repos
+- Only processes changed files to reduce API costs
 
 ### 4. Document Loaders
 
 **Location:** `/lib/ai/loaders/`
 
-#### `resume-loader.js` (From reference repo)
-**Purpose:** Parse resume.pdf with section detection
-**Strategy:** Uppercase headers → sections → bullet groups
-**Output:** Array of chunks with metadata
-
-#### `github-loader.js` (From reference repo)
-**Purpose:** Fetch GitHub repos via API
-**Strategy:** Get repos → fetch READMEs → paragraph chunking
-**Output:** Array of chunks with repo metadata
-
-#### `pdf-loader.ts` (TypeScript Implementation)
-**Purpose:** Load all PDF documents (resume, LinkedIn, journey, generic)
-**Strategy:**
-1. Scan `/documents` folder for all PDF files
-2. Uses `pdf-parse-new` library (migrated from `pdf-parse` for stability)
-3. Dynamic import to avoid Next.js webpack issues
-4. Detect document type (resume vs linkedin vs journey vs generic)
-5. Extract year metadata from filename (e.g., "journey_fy-2025-2026.pdf")
-6. Clean PDF artifacts (page numbers, form feeds)
-7. Route to appropriate chunker based on type
-**Output:** Array of { filename, content, type, metadata: { pages, year, source } }
-**Functions:**
-- `loadAllPDFs()` - Load all PDFs from `/documents`
-- `loadPDF(filename)` - Load single PDF
-- `parsePDF(filePath)` - Parse PDF with `pdf-parse-new`
-- `detectDocumentType(filename, content)` - Classify document type
-- `extractYearFromFilename(filename)` - Extract year metadata
-- `listPDFs()` - List all PDF files
+- `pdf-loader.ts` - Load all PDF documents (resume, LinkedIn, journey)
+- `github-loader.js` - Fetch GitHub repos via API
+- `resume-loader.js` - Parse resume with section detection
 
 ### 5. Chunking Strategies
 
 **Location:** `/lib/ai/chunking/`
 
-#### `professional-chunker.ts` (TypeScript Implementation)
-**For:** LinkedIn PDF, Resume
-**Strategy:**
-- Smart section detection (case-insensitive, expanded headers)
-- Detects: EXPERIENCE, EDUCATION, SKILLS, KEY PROJECTS, SUMMARY, ABOUT ME, etc.
-- Each job entry = 1 chunk (for resume)
-- LinkedIn: Groups multiple jobs per chunk
-- Skills grouped in batches
-- No overlap (independent bullets)
-- Captures header content (name, contact) as `about_me` section
-**Chunk Size:** 400-800 tokens
-**Metadata:** company, role, duration, location, industry, section
-
-#### `narrative-chunker.ts` (TypeScript Implementation)
-**For:** Journey PDFs
-**Strategy:**
-- Smart boundary detection using `boundary-detector.ts`
-- Paragraph-aware chunking (respects empty lines)
-- Smart overlap: 1 sentence or 20-30 words (max 50 tokens)
-- Strict token limits: Target 450, soft max 500, hard max 600 tokens
-- Preserves narrative flow with intelligent overlap
-- Extracts fiscal year from filename (e.g., "FY25-26")
-**Chunk Size:** 450-500 tokens (target), max 600 tokens
-**Overlap:** Smart sentence-based (max 30 words, 50 tokens)
-**Metadata:** fiscalYear, paragraphRange, partInfo (e.g., "Part 1 of 3")
-
-#### `boundary-detector.ts` (New - Shared Utility)
-**Purpose:** Smart boundary detection for all chunkers
-**Features:**
-- `detectParagraphs()` - Respects empty lines
-- `detectSentences()` - Handles abbreviations (Dr., Mr., etc.)
-- `calculateSmartOverlap()` - Sentence-aware overlap (max 30 words, 50 tokens)
-- `detectSectionHeaders()` - Detects ALL CAPS, Title Case, Markdown headers
-- `parseHeaderMetadata()` - Extracts company, position, dates from headers
-
-#### `generic-chunker.ts` (Fallback)
-**For:** Unknown document types
-**Strategy:** Simple paragraph-based splitting
-**Chunk Size:** 500 tokens
-**Overlap:** Minimal (50 tokens)
-
-#### `markdown-chunker.ts` (TypeScript Implementation)
-**For:** GitHub repository README files
-**Strategy:**
-- Detects markdown headers (# Header, ## Header, etc.)
-- Creates chunks that respect section boundaries
-- Smart paragraph-aware chunking with section awareness
-- Preserves markdown structure
-**Chunk Size:** 400-600 tokens
-**Metadata:** Repository name, language, stars, topics, section names
+- `professional-chunker.ts` - For LinkedIn PDF, Resume (400-800 tokens)
+- `narrative-chunker.ts` - For Journey PDFs (450-500 tokens, smart overlap)
+- `generic-chunker.ts` - Fallback for unknown types (500 tokens)
+- `markdown-chunker.ts` - For GitHub README files (400-600 tokens)
+- `boundary-detector.ts` - Shared utility for smart boundary detection
 
 ### 6. Vector Database
 
 **Platform:** MongoDB Atlas (Free M0 tier)
 **Search Index:** Atlas Search with kNN vector support
+**Collection:** `memoryIndex` (stores chunks with embeddings)
+**Status:** ✅ **VERIFIED** - Vector search index active, 254 documents indexed
 
-**Configuration:**
-```json
-{
-  "fields": [
-    {
-      "type": "vector",
-      "path": "embedding",
-      "numDimensions": 1536,
-      "similarity": "cosine"
-    }
-  ]
-}
-```
+---
 
-**Note:** Vector Search indexes use a simpler structure with `fields` as an array. Only the `embedding` field needs to be indexed for vector search.
+## Part 3: System Integration
 
-**Status:** ✅ **VERIFIED** - Vector search index `vector_index` exists and is active in MongoDB Atlas for the `memoryIndex` collection. Index status: READY, 254 documents indexed. See `build docs/MONGODB_VECTOR_INDEX_SETUP.md` for setup instructions.
+### How Portfolio and AI Companion Integrate
 
-**Document Schema:**
-```javascript
-{
-  _id: ObjectId,
-  text: string,           // Original chunk text
-  embedding: [float],     // 1536-dim vector
-  category: string,       // 'linkedin_experience', 'journey_narrative', etc.
-  metadata: {
-    source: string,       // Filename
-    company: string,      // For LinkedIn chunks
-    role: string,
-    duration: string,
-    topic: string,        // For journey chunks
-    timeframe: string
-  },
-  createdAt: Date
-}
-```
+1. **Hero Section Integration**
+   - AI Companion input field embedded in hero section
+   - Quick access without leaving main page
+   - Streaming responses displayed inline
 
-## Data Flow: End-to-End
+2. **Project Cards Integration**
+   - "Ask AI Companion" button in project detail modals
+   - Context-aware queries about specific projects
+   - Seamless transition from project view to chat
 
-### Indexing Flow (Startup/Daily Rebuild)
-```
-1. Cron job triggers /api/ai/refresh (⚠️ vercel.json not yet configured)
-2. checkForChanges() compares file hashes (✅ IMPLEMENTED)
-   - Checks PDF files using SHA-256 hashes
-   - Checks GitHub repos using updatedAt timestamps
-   - Returns list of changed files/repos
-3. If changes detected (or forceRebuild=true):
-   a. Load only changed PDFs (loaders) - ✅ Only loads changed files
-   b. Filter GitHub repos to only changed ones - ✅ Only processes changed repos
-   c. Chunk based on document type (chunkers)
-   d. Delete old embeddings for changed files (deleteBySource)
-   e. Generate embeddings (OpenAI API) - Only for changed files
-   f. Insert new chunks
-   g. Update file hashes in metadata collection (✅ IMPLEMENTED)
-4. Return success with filesUpdated array
-```
+3. **Shared Components**
+   - Dark/light mode support across both systems
+   - Consistent UI/UX design language (shadcn/ui components)
+   - Shared state management for theme preferences
+   - Common animation patterns (scroll reveal, fade-in)
 
-### Query Flow (User Asks Question)
-```
-1. User types question in chat modal (⚠️ NOT IMPLEMENTED - Phase 5)
-   - Currently: No frontend UI exists
-   - Workaround: Use /api-test page or direct API calls
-2. Frontend sends POST to /api/ai/query (✅ IMPLEMENTED)
-3. API route calls queryAI(query, history) (✅ IMPLEMENTED)
-4. Service layer:
-   a. Analyze query intent (✅ analyzeQueryForCategories)
-   b. Generate embedding for query (OpenAI) (✅ IMPLEMENTED)
-   c. Smart vector search (✅ with filters & re-ranking)
-      - Get candidates from MongoDB
-      - Apply metadata filters
-      - Re-rank by multiple signals
-      - Select top 5
-   d. Construct context from retrieved chunks (✅ IMPLEMENTED)
-      - Context formatted without exposing technical source details to LLM
-      - Source labels removed to prevent LLM from mentioning files/documents
-   e. Call LLM (OpenRouter) with context + history + query (✅ IMPLEMENTED)
-      - Conversation history handled automatically in production (frontend maintains state)
-      - History passed as array, normalized to string format for LLM
-   f. Format source names for user-friendly display (✅ IMPLEMENTED)
-      - Technical filenames converted to friendly names (e.g., "Resume", "LinkedIn Profile")
-   g. Generate suggested follow-ups (✅ IMPLEMENTED)
-5. Return response + formatted sources + suggestions (✅ IMPLEMENTED)
-   - Sources returned as user-friendly names, not technical filenames
-6. Frontend displays with relevance scores (⚠️ NOT IMPLEMENTED - Phase 5)
-```
+4. **User Experience Flow**
+   - Visitor lands on portfolio → sees hero with AI Companion
+   - Can ask questions immediately or explore portfolio first
+   - AI Companion provides context-aware answers based on portfolio content
+   - Smooth navigation between portfolio sections and AI chat
 
-## Technology Stack
+5. **Data Flow Integration**
+   - Portfolio projects data (`components/projects/projects-data.ts`) used by AI Companion for context
+   - AI Companion can reference portfolio projects in responses
+   - Shared contact form infrastructure (Resend, Supabase)
+
+### Combined Technology Stack
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| Frontend | Next.js 14 (App Router) | React framework |
+| Framework | Next.js 14 (App Router) | React framework |
+| Language | TypeScript | Type safety |
 | Styling | Tailwind CSS | UI styling |
-| API Routes | Next.js API Routes | Backend endpoints |
-| Language | TypeScript | Full type safety |
+| UI Components | shadcn/ui (Radix) | Component library |
+| Motion | Framer Motion 6 | Animations |
 | Vector DB | MongoDB Atlas (M0) | Embeddings storage |
 | Embeddings | OpenAI text-embedding-3-small | Vector generation |
 | LLM | OpenRouter (Llama 3.1 8B free) | Chat completions |
-| PDF Parsing | pdf-parse-new | Extract text from PDFs (migrated from pdf-parse for stability) |
-| GitHub API | node-fetch | Fetch repository data |
-| Scheduling | Vercel Cron | Daily rebuild trigger (⚠️ vercel.json not configured) |
+| PDF Parsing | pdf-parse-new | Extract text from PDFs |
+| Email | Resend | Email delivery |
+| Database | Supabase | Contact form storage |
+| Analytics | Plausible | Privacy-first analytics |
 | Hosting | Vercel | Deployment platform |
 
-## Environment Variables
+### Deployment Architecture
+
+```
+GitHub Repo
+    │
+    ├─ Push to main branch
+    │
+    ▼
+Vercel (Auto Deploy)
+    │
+    ├─ Build Next.js app
+    ├─ Set environment variables
+    ├─ Deploy to edge network
+    │
+    ▼
+Production Site
+    │
+    ├─ Serves portfolio frontend
+    ├─ Runs API routes (portfolio + AI)
+    ├─ Executes cron jobs (daily 2 AM for AI index rebuild)
+    │
+    ▼
+External Services
+    ├─ MongoDB Atlas (vector storage)
+    ├─ OpenAI API (embeddings)
+    ├─ OpenRouter API (LLM)
+    ├─ Resend (email)
+    ├─ Supabase (contact storage)
+    └─ Plausible (analytics)
+```
+
+### Environment Variables
+
 ```bash
 # MongoDB
 MONGODB_URI="mongodb+srv://..."
@@ -544,25 +535,30 @@ ADMIN_SECRET="your-secret-key"
 
 # App
 NEXT_PUBLIC_APP_URL="https://your-site.vercel.app"
+
+# Resend (Portfolio)
+RESEND_API_KEY="re_..."
+
+# Supabase (Portfolio)
+SUPABASE_URL="https://..."
+SUPABASE_ANON_KEY="..."
 ```
 
-## Security Considerations
+### Security Considerations
 
 1. **API Keys:** Never commit to git, use .env.local
 2. **Admin Endpoints:** Require secret token
-3. **Rate Limiting:** Implement on /api/ai/query (10 req/min per IP)
-4. **Input Validation:** Sanitize user queries
+3. **Rate Limiting:** Implement on public endpoints
+4. **Input Validation:** Sanitize user queries and form inputs
 5. **CORS:** Restrict to your domain only
 6. **Error Messages:** Don't leak internal details
 
-## Monitoring & Logging
+### Monitoring & Logging
 
 **Key Metrics:**
-- Query latency (p50, p95, p99)
-- Embedding API costs
-- LLM API calls
-- Vector search performance
-- File rebuild frequency
+- Portfolio: Lighthouse Performance ≥ 95, LCP ≤ 1.5s
+- AI Companion: Query latency (p50, p95, p99), embedding API costs, LLM API calls
+- Overall: Page views, engagement, conversion rates
 
 **Logging Strategy:**
 - Use `console.log` for development
@@ -570,34 +566,7 @@ NEXT_PUBLIC_APP_URL="https://your-site.vercel.app"
 - Log all API calls with timestamps
 - Track errors with stack traces
 
-## Deployment Architecture
-```
-GitHub Repo
-    │
-    ├─ Push to main branch
-    │
-    ▼
-Vercel (Auto Deploy)
-    │
-    ├─ Build Next.js app
-    ├─ Set environment variables
-    ├─ Deploy to edge network
-    │
-    ▼
-Production Site
-    │
-    ├─ Serves frontend
-    ├─ Runs API routes
-    ├─ Executes cron jobs (daily 2 AM)
-    │
-    ▼
-External Services
-    ├─ MongoDB Atlas (vector storage)
-    ├─ OpenAI API (embeddings)
-    └─ OpenRouter API (LLM)
-```
-
-## Scalability Considerations
+### Scalability Considerations
 
 **Current Limitations (Free Tier):**
 - MongoDB: 512 MB storage (~500K chunks)
@@ -612,9 +581,17 @@ External Services
 4. Use cheaper embedding models (OpenRouter alternatives)
 5. Implement smarter retrieval (re-ranking, metadata filtering)
 
+---
+
 ## Future Enhancements
 
-**V2 Features:**
+**Portfolio V2:**
+- Enhanced animations and micro-interactions
+- More project showcases
+- Blog section integration
+- Newsletter signup
+
+**AI Companion V2:**
 - Fine-tune model on Umang's writing style
 - Multi-modal support (images, diagrams)
 - Voice output (text-to-speech)
@@ -622,8 +599,7 @@ External Services
 - Visitor profiling (tailor responses to recruiter vs VC)
 - Integration with calendar (schedule meetings)
 
-**V3 Features:**
-- Multi-language support
-- Mobile app (React Native)
-- Slack/Discord integration
-- Email summaries of conversations
+**Integration V2:**
+- AI-powered project recommendations
+- Context-aware navigation suggestions
+- Personalized content based on visitor profile

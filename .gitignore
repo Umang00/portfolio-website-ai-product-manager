@@ -26,3 +26,6 @@ VERCEL_ENV_SETUP.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archived documentation
+build docs/ARCHIVE/
