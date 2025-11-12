@@ -5,14 +5,14 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { cn } from "@/lib/utils"
 
 // PM Learnings/Quotes for sticky notes
-// Layout from labeled reference image 1: wider vertical spacing between notes
+// Layout from labeled reference image 1: MUCH wider vertical spacing to prevent overlap
 const leftSideNotes = [
   {
     id: 1,
     text: "90% of PMs fail to deliver because they skip user research",
     color: "yellow",
     rotation: -6,
-    yOffset: -150, // TOP note - increased spacing
+    yOffset: -200, // TOP note - much wider spacing to match reference
     xOffset: -50,
     tapePosition: "top-center",
   },
@@ -30,7 +30,7 @@ const leftSideNotes = [
     text: "Data tells you what, users tell you why",
     color: "blue",
     rotation: -3,
-    yOffset: 150, // BOTTOM note - increased spacing
+    yOffset: 200, // BOTTOM note - much wider spacing to match reference
     xOffset: -50,
     tapePosition: "top-center",
   },
@@ -43,7 +43,7 @@ const rightSideNotes = [
     text: "The best product decisions come from saying 'no' 9 times out of 10",
     color: "green",
     rotation: 4,
-    yOffset: -150, // TOP note - aligned with note 1
+    yOffset: -200, // TOP note - aligned with note 1
     xOffset: 50,
     tapePosition: "top-center",
   },
@@ -61,7 +61,7 @@ const rightSideNotes = [
     text: "Build for users, measure for business, iterate for impact",
     color: "pink",
     rotation: 3,
-    yOffset: 150, // BOTTOM note - aligned with note 3
+    yOffset: 200, // BOTTOM note - aligned with note 3
     xOffset: 50,
     tapePosition: "top-bottom",
   },
