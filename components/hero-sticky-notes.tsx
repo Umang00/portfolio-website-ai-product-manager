@@ -14,7 +14,7 @@ const leftSideNotes = [
     rotation: -6,
     yOffset: -150, // TOP note - increased spacing
     xOffset: -60,
-    tapePosition: "top-center",
+    tapePosition: "top-left",
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const leftSideNotes = [
     rotation: 2,
     yOffset: 0, // MIDDLE note - centered
     xOffset: -180,
-    tapePosition: "top-center",
+    tapePosition: "sides",
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ const rightSideNotes = [
     rotation: 4,
     yOffset: -150, // TOP note - aligned with note 1
     xOffset: 60,
-    tapePosition: "top-center",
+    tapePosition: "top-right",
   },
   {
     id: 5,

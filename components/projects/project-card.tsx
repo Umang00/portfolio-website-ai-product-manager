@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useRef } from "react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Youtube, FileText } from "lucide-react"
 import { ProjectDetailsModal } from "./project-details-modal"
 import { AnimatedCard } from "@/components/animations/animated-card"
+import { ProjectImagePlaceholder } from "./project-image-placeholder"
+import { CloudinaryImage } from "./cloudinary-image"
 import { cn } from "@/lib/utils"
 import type { Project } from "./types"
 
@@ -21,11 +22,15 @@ export function ProjectCard({
   showTechnologies = false, // Default to false (hidden)
 }: ProjectCardProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const cardRef = useRef<HTMLElement | null>(null)
 
   // Determine which action buttons to show
   const hasDemo = project.hasDemo ?? (!!project.demoUrl && project.demoUrl.trim() !== "")
   const hasYoutube = project.hasYoutube ?? (!!project.youtubeUrl && project.youtubeUrl.trim() !== "")
+  
+  // Check if we should show placeholder (no image or image failed to load)
+  const showPlaceholder = !project.image || imageError
 
 
   return (
@@ -42,24 +47,33 @@ export function ProjectCard({
         )}
         aria-label={`Project: ${project.title}. ${project.briefDescription}`}
       >
-        {/* Project Image - Increased height */}
+        {/* Project Image - Fills entire container */}
         <div className="relative w-full h-80 md:h-96 overflow-hidden bg-muted flex-shrink-0">
-          {project.image && (
-            <Image
-              src={project.image}
-              alt={project.imageAlt || project.title}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              priority={priority}
-              placeholder={project.imageBlurDataURL ? "blur" : "empty"}
-              blurDataURL={project.imageBlurDataURL}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
+          {showPlaceholder ? (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <ProjectImagePlaceholder project={project} />
+            </div>
+          ) : (
+            <div className="relative w-full h-full next-image-wrapper">
+              <CloudinaryImage
+                src={project.image}
+                alt={project.imageAlt || project.title}
+                fill
+                className="object-contain object-center transition-transform duration-300 group-hover:scale-105"
+                priority={priority}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 100vw"
+                onError={() => setImageError(true)}
+                style={{
+                  imageRendering: 'auto',
+                }}
+              />
+            </div>
           )}
 
           {/* Status Badge - Transparent with colored dot and text */}
+          {/* Show for all projects with status (both real images and placeholders) */}
           {project.status && (
-            <div className="absolute top-4 left-4">
+            <div className="absolute top-4 left-4 z-10">
               <span
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",

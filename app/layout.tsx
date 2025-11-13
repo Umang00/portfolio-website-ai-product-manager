@@ -17,12 +17,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://assets.calendly.com" crossOrigin="" />
         <link rel="preconnect" href="https://calendly.com" crossOrigin="" />
       </head>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
         <Suspense fallback={<div>Loading...</div>}>
           <ThemeProvider>{children}</ThemeProvider>
           <Analytics />

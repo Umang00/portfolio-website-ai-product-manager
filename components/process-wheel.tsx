@@ -63,7 +63,7 @@ export function ProcessWheel() {
             {/* Full-bleed portrait / safe placeholder */}
             <div className="absolute inset-0 rounded-full overflow-hidden shadow-xl bg-muted/20">
               <img
-                src="/umang-profile.png"
+                src="/process-profile.png"
                 alt=""
                 className="w-full h-full object-cover"
               />

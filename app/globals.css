@@ -264,4 +264,62 @@
   .logo-card:focus-visible .logo-color {
     filter: grayscale(0) brightness(1) contrast(1) opacity(1);
   }
+
+  /* Prevent blur on image transforms - optimized for high-quality photos */
+  img[data-next-image],
+  .next-image-wrapper img {
+    /* Use auto for best quality (browser will choose optimal method) */
+    image-rendering: auto;
+    /* Hardware acceleration for smooth transforms */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform;
+    /* Better text rendering in images */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent subpixel rendering issues */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+  }
+
+  /* Ensure high-quality rendering for project images on hover */
+  .group:hover img[data-next-image],
+  .group:hover .next-image-wrapper img {
+    image-rendering: auto;
+    /* Maintain quality during scale */
+    -webkit-transform: translateZ(0) scale(1.05);
+    transform: translateZ(0) scale(1.05);
+  }
+
+  /* Better image container for object-contain - ensures full image is visible */
+  .next-image-wrapper {
+    position: relative;
+    /* Ensure proper rendering context */
+    isolation: isolate;
+  }
+
+  /* Ensure object-contain images are centered and show fully */
+  /* Maximize fill while preserving content - images will scale to fill width/height */
+  .next-image-wrapper img.object-contain {
+    object-position: center;
+    /* Maintain aspect ratio and quality */
+    image-rendering: auto;
+    /* Scale to fill container while maintaining aspect ratio */
+    width: 100%;
+    height: 100%;
+    /* Ensure image fills as much space as possible */
+    min-width: 100%;
+    min-height: 100%;
+  }
+
+  /* Optimize for screenshots and UI images (common in project cards) */
+  .next-image-wrapper img[src*="projects"] {
+    /* For UI screenshots, prioritize readability */
+    image-rendering: auto;
+    /* Ensure text in screenshots is readable */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 }

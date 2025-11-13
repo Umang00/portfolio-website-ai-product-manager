@@ -2,39 +2,6 @@ import type { Project } from "./types"
 
 export const projectsData: Project[] = [
   {
-    id: "astro-ai",
-    slug: "astro-ai",
-    title: "Astro AI",
-    image: "/projects/astro-ai.png",
-    imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
-    briefDescription:
-      "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
-   problem:
-  "Professional astrology is often inaccessible — consultations cost $50–$200 per session, require scheduled appointments, and are crowded with non-credible practitioners upselling gems and rituals. This creates high friction and low trust for users seeking genuine, affordable, and immediate guidance.",
-    detailedDescription:
-      "Astro AI is a conversational astrology platform that combines traditional Vedic astrology principles with modern AI technology. Using Swiss Ephemeris for precise astronomical calculations and GPT-5 for natural language conversations, it delivers personalized astrological insights through WhatsApp. The platform democratizes access to professional-quality astrology by making it affordable ($2.99/month vs $50-200 per consultation), instantly available (24/7 vs appointment-based), and accessible through WhatsApp (no app download required).",
-    outcomeBullets: [
-      "95% cost reduction vs traditional astrologers ($2.99/month vs $50-200 per consultation)",
-      "AI-powered birth chart generation with NASA-grade astronomical accuracy",
-      "Multilingual support (English, Hindi, Gujarati) at launch",
-      "24/7 availability with instant responses within 5-10 seconds",
-    ],
-    technologies: [
-      "Python",
-      "FastAPI",
-      "GPT-5",
-      "Swiss Ephemeris",
-      "PostgreSQL",
-      "Redis",
-      "WhatsApp Business API",
-    ],
-    status: "In Progress",
-    statusColor: "yellow",
-    isFeatured: true,
-    demoUrl: "",
-    youtubeUrl: "",
-  },
-  {
     id: "mbti-matching-system",
     slug: "mbti-personality-matching",
     title: "MBTI Personality Matching System",
@@ -68,7 +35,7 @@ export const projectsData: Project[] = [
     id: "voice-uxr-agent",
     slug: "voice-uxr-automation",
     title: "Voice-Based UXR Automation Agent",
-    image: "/projects/voice-uxr.png",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037618/voice-uxr_fx6qnh.png",
     imageAlt: "Voice-Based User Research Automation Agent",
     briefDescription:
       "AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. Automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily.",
@@ -101,7 +68,7 @@ export const projectsData: Project[] = [
     id: "marketing-analytics-dashboard",
     slug: "marketing-analytics",
     title: "Marketing Analytics Dashboard",
-    image: "/projects/marketing-analytics-dashboard.png",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037617/marketing-analytics-dashboard_lvouhu.png",
     imageAlt: "Retool Marketing Analytics Dashboard - Unified Analytics & Cost Optimization",
     briefDescription:
       "Consolidated marketing analytics dashboard unifying data from 3 sources (Instagram, Twitter, TikTok) with AI-powered sentiment analysis and trend detection. Replaced 3 expensive SaaS tools while providing better insights.",
@@ -165,7 +132,7 @@ export const projectsData: Project[] = [
     id: "poll-promotion-engine",
     slug: "poll-promotion-engine",
     title: "Poll Promotion Engine",
-    image: "/projects/poll-engine.png",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037609/poll-engine_ppfpoo.png",
     imageAlt: "Poll Promotion Engine - Automated Campaign Management & Targeting",
     briefDescription:
       "Automated campaign management interface for targeted poll distribution at Hunch, reducing campaign launch time from 2 days to under 5 minutes while eliminating 85% of manual work. Replaced dependency on Amazon Personalize.",
@@ -198,7 +165,7 @@ export const projectsData: Project[] = [
     id: "web-onboarding-revenue",
     slug: "web-onboarding-revenue",
     title: "Web Onboarding Revenue Stream",
-    image: "/projects/web-onboarding.png",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037620/web-onboarding_ddklq8.png",
     imageAlt: "Web Onboarding Revenue Stream - Personality Assessment & App Conversion Funnel",
     briefDescription:
       "Built web-based personality assessment (MBTI test) and app conversion funnel that created entirely new revenue stream for Hunch. Generated $1,500 in revenue from first month, contributing 30% boost to existing revenue.",
@@ -238,7 +205,7 @@ export const projectsData: Project[] = [
     id: "newsletter-generator",
     slug: "newsletter-generator",
     title: "Newsletter Generation System",
-    image: "/projects/newsletter-generator.png",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763044289/newsletter-generator1_uwvitb.png",
     imageAlt: "AI-powered newsletter generation and delivery system",
     briefDescription:
       "AI-driven newsletter generation platform that automates content aggregation, trend detection, and draft creation. Reduces newsletter drafting time from 2-3 hours to under 5 minutes with voice-matched drafts.",
@@ -271,43 +238,10 @@ export const projectsData: Project[] = [
     youtubeUrl: "https://youtu.be/e7ut-PZs7Hs?si=v3CcnciT0U_7BnWp",
   },
   {
-    id: "foggy-rainwater-text-generator",
-    slug: "foggy-rainwater-text-generator",
-    title: "Foggy Rainwater Style Text Generator",
-    image: "/projects/foggy-rainwater-text.png",
-    imageAlt: "Foggy rainwater style text written on misted glass",
-    briefDescription:
-      "Custom-trained LoRA model that generates realistic foggy window-style handwritten text and doodles. Created from scratch with no existing dataset, producing natural condensation-on-glass text effects for creative applications.",
-    problem:
-      "Existing diffusion models like Flux and SDXL could handle graffiti and calligraphy, but no LoRA existed for foggy rainwater glass text—the effect of text written on steamy windows during rainy days. This niche style required building everything from scratch: dataset creation, captioning, and LoRA training with no prior examples to reference.",
-    detailedDescription:
-      "Built a complete LoRA training pipeline from scratch, starting with concept exploration and dataset creation. Initially attempted TTF/OTF font-based synthetic generation but found text sat artificially 'on top' rather than appearing written 'into' the fog. Switched to manual data collection, scraping ~200 real foggy window images from Pinterest, Google Images, and iStock, then creating ~50 custom Photoshop images to cover symbols, digits, and missing glyphs. Used BLIP-2 for automated captioning of all 250 images. Trained 4 different LoRA versions (150, 80, 60, and 30 images) and discovered that smaller, high-quality datasets (30 & 60 images) outperformed larger ones, proving quality > quantity. The final LoRA handles edge cases including long marketing copy, multiline formulas, emojis, doodles, and math puzzles.",
-    outcomeBullets: [
-      "250-image curated dataset (200 real + 50 synthetic)",
-      "First-of-its-kind LoRA for foggy window text effects",
-      "Proved quality > quantity (30-60 images outperformed 150)",
-      "Supports emojis, symbols, doodles, multiline text, and formulas",
-      "Open-sourced on CivitAI and Hugging Face",
-    ],
-    technologies: [
-      "Flux",
-      "LoRA Training",
-      "ComfyUI",
-      "BLIP-2 Captioning",
-      "Photoshop",
-      "Jarvis Labs",
-    ],
-    status: "Active",
-    statusColor: "green",
-    isFeatured: true,
-    demoUrl: "",
-    youtubeUrl: "https://youtu.be/VIGsmIW2Gu0?si=nnnKdpaITykyG0Xt",
-  },
-  {
     id: "lecture-lens",
     slug: "lecture-lens-rag-cohort-assistant",
     title: "Lecture Lens - Cohort Assistant",
-    image: "/projects/lecture-lens.png",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763044289/lecture-lens1_gtbpyo.png",
     imageAlt: "Lecture Lens - AI-Powered Lecture Search & Cohort Assistant",
     briefDescription:
       "AI-powered chat interface that transforms cohort curriculum into a searchable knowledge base. Students ask natural language questions and receive instant answers with precise citations from lectures (with timestamps) and auto-scraped resources.",
@@ -342,5 +276,71 @@ export const projectsData: Project[] = [
     kpiValue: "Built in 24 Hours",
     demoUrl: "",
     youtubeUrl: "",
+  },
+  {
+    id: "astro-ai",
+    slug: "astro-ai",
+    title: "Astro AI",
+    image: "/projects/astro-ai.png",
+    imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
+    briefDescription:
+      "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
+   problem:
+  "Professional astrology is often inaccessible — consultations cost $50–$200 per session, require scheduled appointments, and are crowded with non-credible practitioners upselling gems and rituals. This creates high friction and low trust for users seeking genuine, affordable, and immediate guidance.",
+    detailedDescription:
+      "Astro AI is a conversational astrology platform that combines traditional Vedic astrology principles with modern AI technology. Using Swiss Ephemeris for precise astronomical calculations and GPT-5 for natural language conversations, it delivers personalized astrological insights through WhatsApp. The platform democratizes access to professional-quality astrology by making it affordable ($2.99/month vs $50-200 per consultation), instantly available (24/7 vs appointment-based), and accessible through WhatsApp (no app download required).",
+    outcomeBullets: [
+      "95% cost reduction vs traditional astrologers ($2.99/month vs $50-200 per consultation)",
+      "AI-powered birth chart generation with NASA-grade astronomical accuracy",
+      "Multilingual support (English, Hindi, Gujarati) at launch",
+      "24/7 availability with instant responses within 5-10 seconds",
+    ],
+    technologies: [
+      "Python",
+      "FastAPI",
+      "GPT-5",
+      "Swiss Ephemeris",
+      "PostgreSQL",
+      "Redis",
+      "WhatsApp Business API",
+    ],
+    status: "In Progress",
+    statusColor: "yellow",
+    isFeatured: true,
+    demoUrl: "",
+    youtubeUrl: "",
+  },
+  {
+    id: "foggy-rainwater-text-generator",
+    slug: "foggy-rainwater-text-generator",
+    title: "Foggy Rainwater Style Text Generator",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037611/foggy-rainwater-text_dywcef.png",
+    imageAlt: "Foggy rainwater style text written on misted glass",
+    briefDescription:
+      "Custom-trained LoRA model that generates realistic foggy window-style handwritten text and doodles. Created from scratch with no existing dataset, producing natural condensation-on-glass text effects for creative applications.",
+    problem:
+      "Existing diffusion models like Flux and SDXL could handle graffiti and calligraphy, but no LoRA existed for foggy rainwater glass text—the effect of text written on steamy windows during rainy days. This niche style required building everything from scratch: dataset creation, captioning, and LoRA training with no prior examples to reference.",
+    detailedDescription:
+      "Built a complete LoRA training pipeline from scratch, starting with concept exploration and dataset creation. Initially attempted TTF/OTF font-based synthetic generation but found text sat artificially 'on top' rather than appearing written 'into' the fog. Switched to manual data collection, scraping ~200 real foggy window images from Pinterest, Google Images, and iStock, then creating ~50 custom Photoshop images to cover symbols, digits, and missing glyphs. Used BLIP-2 for automated captioning of all 250 images. Trained 4 different LoRA versions (150, 80, 60, and 30 images) and discovered that smaller, high-quality datasets (30 & 60 images) outperformed larger ones, proving quality > quantity. The final LoRA handles edge cases including long marketing copy, multiline formulas, emojis, doodles, and math puzzles.",
+    outcomeBullets: [
+      "250-image curated dataset (200 real + 50 synthetic)",
+      "First-of-its-kind LoRA for foggy window text effects",
+      "Proved quality > quantity (30-60 images outperformed 150)",
+      "Supports emojis, symbols, doodles, multiline text, and formulas",
+      "Open-sourced on CivitAI and Hugging Face",
+    ],
+    technologies: [
+      "Flux",
+      "LoRA Training",
+      "ComfyUI",
+      "BLIP-2 Captioning",
+      "Photoshop",
+      "Jarvis Labs",
+    ],
+    status: "Active",
+    statusColor: "green",
+    isFeatured: true,
+    demoUrl: "",
+    youtubeUrl: "https://youtu.be/VIGsmIW2Gu0?si=nnnKdpaITykyG0Xt",
   },
 ]
