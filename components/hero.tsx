@@ -32,13 +32,13 @@ export function Hero() {
   const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError, permission: micPermission } = useSpeechInput({
     onResult: (text, isFinal) => {
       if (isFinal) {
-        // Final result - append to existing input (like ChatOverlay)
+        // Final result - append to existing input and keep listening
         setQuery((prev) => {
           const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
           return baseText ? baseText + " " + text : text
         })
         setInterimInput("") // Clear interim
-        stopListening()
+        // Don't stop listening - user will click mic again to stop
       } else {
         // Interim result - show what's being transcribed
         setInterimInput(text)
@@ -98,9 +98,18 @@ export function Hero() {
 
   const handleMicClick = () => {
     if (listening) {
+      // Stop listening and add any interim input to query
+      if (interimInput) {
+        setQuery((prev) => {
+          const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
+          return baseText ? baseText + " " + interimInput : interimInput
+        })
+      }
       stopListening()
       setInterimInput("") // Clear interim when stopping
     } else {
+      // Start listening
+      setInterimInput("") // Clear any previous interim
       startListening()
     }
   }
@@ -260,20 +269,28 @@ export function Hero() {
           {/* Input Field */}
           <div className="relative flex-1">
             <Input
-              value={interimInput ? (query ? `${query} ${interimInput}` : interimInput) : query}
+              value={query}
               onChange={(e) => {
-                // Only update query if not showing interim input
-                if (!interimInput) {
-                  setQuery(e.target.value)
-                }
+                setQuery(e.target.value)
+                setInterimInput("") // Clear interim when user types
               }}
               onKeyDown={handleKeyDown}
               placeholder={listening ? "Listening..." : "Ask me anything..."}
               className={`h-16 text-lg rounded-2xl border-2 w-full hover:border-primary/50 focus:border-primary transition-all duration-300 pr-16 ${
                 listening ? "border-primary/50 shadow-[0_0_20px_rgba(37,99,235,0.3)]" : ""
               }`}
-              readOnly={!!interimInput}
+              disabled={listening}
             />
+            {/* Show interim transcription as overlay hint - matching ChatOverlay implementation */}
+            {interimInput && listening && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute bottom-3 left-4 text-sm text-muted-foreground pointer-events-none italic z-10"
+              >
+                {interimInput}
+              </motion.div>
+            )}
             {listening && !shouldReduceMotion && (
               <motion.div
                 className="absolute inset-0 rounded-2xl pointer-events-none"

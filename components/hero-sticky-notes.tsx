@@ -13,7 +13,7 @@ const leftSideNotes = [
     color: "yellow",
     rotation: -6,
     yOffset: -150, // TOP note - increased spacing
-    xOffset: -50,
+    xOffset: -60,
     tapePosition: "top-center",
   },
   {
@@ -22,7 +22,7 @@ const leftSideNotes = [
     color: "pink",
     rotation: 2,
     yOffset: 0, // MIDDLE note - centered
-    xOffset: -45,
+    xOffset: -180,
     tapePosition: "top-center",
   },
   {
@@ -31,7 +31,7 @@ const leftSideNotes = [
     color: "blue",
     rotation: -3,
     yOffset: 150, // BOTTOM note - increased spacing
-    xOffset: -50,
+    xOffset: -360,
     tapePosition: "top-center",
   },
 ]
@@ -44,25 +44,25 @@ const rightSideNotes = [
     color: "green",
     rotation: 4,
     yOffset: -150, // TOP note - aligned with note 1
-    xOffset: 50,
+    xOffset: 60,
     tapePosition: "top-center",
   },
   {
     id: 5,
     text: "200% engagement increase isn't luck—it's ruthless iteration",
-    color: "yellow",
+    color: "orange",
     rotation: -2,
     yOffset: 0, // MIDDLE note - aligned with note 2
-    xOffset: 45,
+    xOffset: 180,
     tapePosition: "top-center",
   },
   {
     id: 6,
     text: "Build for users, measure for business, iterate for impact",
-    color: "pink",
+    color: "purple",
     rotation: 3,
     yOffset: 150, // BOTTOM note - aligned with note 3
-    xOffset: 50,
+    xOffset: 360,
     tapePosition: "top-bottom",
   },
 ]
@@ -87,6 +87,16 @@ const colorStyles = {
     bg: "bg-green-200 dark:bg-green-800",
     text: "text-green-900 dark:text-green-100",
     border: "border-green-300 dark:border-green-700",
+  },
+  orange: {
+    bg: "bg-orange-200 dark:bg-orange-800",
+    text: "text-orange-900 dark:text-orange-100",
+    border: "border-orange-300 dark:border-orange-700",
+  },
+  purple: {
+    bg: "bg-purple-200 dark:bg-purple-800",
+    text: "text-purple-900 dark:text-purple-100",
+    border: "border-purple-300 dark:border-purple-700",
   },
 }
 

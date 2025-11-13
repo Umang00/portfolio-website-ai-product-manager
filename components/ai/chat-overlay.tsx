@@ -62,13 +62,13 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   const { listening, supported: speechSupported, start: startListening, stop: stopListening, error: speechError, permission: micPermission } = useSpeechInput({
     onResult: (text, isFinal) => {
       if (isFinal) {
-        // Final result - append to existing input (like boilerplate)
+        // Final result - append to existing input and keep listening
         setInput((prev) => {
           const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
           return baseText ? baseText + " " + text : text
         })
         setInterimInput("") // Clear interim
-        stopListening()
+        // Don't stop listening - user will click mic again to stop
       } else {
         // Interim result - show what's being transcribed
         setInterimInput(text)
@@ -276,8 +276,19 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
   }
 
   const handleSendMessage = async (query?: string) => {
-    const queryText = query || input.trim()
-    if (!queryText || isLoading) return
+    // Calculate final query text - include interim input if listening
+    let finalQueryText = query
+    if (!finalQueryText) {
+      if (listening && interimInput) {
+        // Combine input and interim input
+        const baseText = input.replace(/ \[listening:.*?\]$/, "").trim()
+        finalQueryText = baseText ? baseText + " " + interimInput : interimInput
+      } else {
+        finalQueryText = input.trim()
+      }
+    }
+    
+    if (!finalQueryText || isLoading) return
 
     // Stop voice input if active
     if (listening) {
@@ -287,7 +298,7 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
 
     // Add user message to UI immediately
     const userMessageId = getNextMessageId()
-    const userMessage: Message = { role: "user", content: queryText, id: userMessageId }
+    const userMessage: Message = { role: "user", content: finalQueryText, id: userMessageId }
     setMessages((prev) => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
@@ -299,7 +310,7 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: queryText,
+          query: finalQueryText,
           conversationHistory: conversationHistory,
         }),
       })
@@ -323,7 +334,7 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
       // Update conversation history
       const updatedHistory = [
         ...conversationHistory,
-        { role: "user" as const, content: queryText },
+        { role: "user" as const, content: finalQueryText },
         { role: "assistant" as const, content: data.answer },
       ]
       setConversationHistory(updatedHistory)
@@ -599,6 +610,13 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                   size="icon"
                   onClick={() => {
                     if (listening) {
+                      // Stop listening and add any interim input to input field
+                      if (interimInput) {
+                        setInput((prev) => {
+                          const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
+                          return baseText ? baseText + " " + interimInput : interimInput
+                        })
+                      }
                       stopListening()
                       setInterimInput("") // Clear interim when stopping
                     } else {
@@ -650,6 +668,13 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                     onClick={() => {
                       if (!shouldReduceMotion) play("click")
                       if (listening) {
+                        // Stop listening and add any interim input to input field
+                        if (interimInput) {
+                          setInput((prev) => {
+                            const baseText = prev.replace(/ \[listening:.*?\]$/, "").trim()
+                            return baseText ? baseText + " " + interimInput : interimInput
+                          })
+                        }
                         stopListening()
                         setInterimInput("") // Clear interim when stopping
                       } else {
