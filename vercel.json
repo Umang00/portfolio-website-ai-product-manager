@@ -1,0 +1,9 @@
+{
+  "crons": [
+    {
+      "path": "/api/ai/rebuild",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
+

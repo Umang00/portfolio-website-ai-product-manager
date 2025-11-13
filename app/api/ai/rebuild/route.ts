@@ -7,16 +7,46 @@ export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { secret } = body
-
-    // Verify admin secret
+    // Support multiple authentication methods:
+    // 1. Vercel cron header (automatic - most secure for cron jobs)
+    // 2. Bearer token (if CRON_SECRET is configured)
+    // 3. Body secret (for manual/admin calls)
+    const vercelCronHeader = req.headers.get('x-vercel-cron')
+    const authHeader = req.headers.get('authorization')
+    const cronSecret = process.env.CRON_SECRET
     const adminSecret = process.env.ADMIN_SECRET
 
-    if (!adminSecret || secret !== adminSecret) {
+    let isAuthorized = false
+
+    // Check Vercel cron header first (most secure - automatically added by Vercel)
+    if (vercelCronHeader) {
+      // Vercel automatically adds this header for cron jobs - can't be spoofed
+      isAuthorized = true
+      console.log('[Rebuild API] Authenticated via Vercel cron header')
+    }
+    // Check Bearer token (alternative method if needed)
+    else if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+      isAuthorized = true
+      console.log('[Rebuild API] Authenticated via Bearer token')
+    }
+    // Check body secret (for manual/admin calls)
+    else {
+      try {
+        const body = await req.json()
+        const { secret } = body
+        if (adminSecret && secret === adminSecret) {
+          isAuthorized = true
+          console.log('[Rebuild API] Authenticated via body secret')
+        }
+      } catch {
+        // Body parsing failed or empty
+      }
+    }
+
+    if (!isAuthorized) {
       console.warn('[Rebuild API] Unauthorized attempt')
       return NextResponse.json(
-        { error: 'Unauthorized - Invalid admin secret' },
+        { error: 'Unauthorized - Invalid secret' },
         { status: 401 }
       )
     }

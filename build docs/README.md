@@ -28,11 +28,6 @@ This directory contains documentation for the portfolio website with integrated 
   - Re-ranking system and design decisions
   - **Read this** for implementation details
 
-- **Inspiration.md** - Design Inspiration Catalogue
-  - Portfolio design inspiration sites and components
-  - Ratings and component borrowings
-  - Reference for design decisions
-
 ### 🔧 Operational Documentation (Setup & Troubleshooting)
 
 - **MONGODB_VECTOR_INDEX_SETUP.md** - MongoDB Setup Guide
@@ -61,6 +56,7 @@ See `ARCHIVE/` folder for historical docs:
 - **FILES_TO_DELETE.md** - Record of deleted test files
 - **DOCS_TO_DELETE.md** - Documentation cleanup proposal
 - **OLD_DOCS_CLEANUP.md** - Old docs cleanup proposal
+- **Inspiration.md** - Design inspiration catalogue (historical reference)
 
 ## 📝 Documentation Maintenance
 
