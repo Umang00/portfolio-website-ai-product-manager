@@ -10,6 +10,7 @@ import {
 import { ChatOverlay } from "@/components/ai/chat-overlay"
 import { Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { highlightMetrics } from "@/lib/utils/highlight-metrics"
 import type { Project } from "./types"
 
 interface ProjectDetailsModalProps {
@@ -53,7 +54,7 @@ export function ProjectDetailsModal({
                   Problem
                 </h3>
                 <p className="text-foreground leading-relaxed">
-                  {project.problem}
+                  {highlightMetrics(project.problem)}
                 </p>
               </div>
             )}
@@ -65,7 +66,7 @@ export function ProjectDetailsModal({
                   Solution
                 </h3>
                 <p className="text-foreground leading-relaxed">
-                  {project.detailedDescription || project.briefDescription}
+                  {highlightMetrics(project.detailedDescription || project.briefDescription)}
                 </p>
               </div>
             )}
@@ -78,7 +79,7 @@ export function ProjectDetailsModal({
                 </h3>
                 <ul className="list-disc list-inside space-y-2 text-foreground">
                   {project.outcomeBullets.map((bullet, index) => (
-                    <li key={index}>{bullet}</li>
+                    <li key={index}>{highlightMetrics(bullet)}</li>
                   ))}
                 </ul>
               </div>
@@ -91,7 +92,7 @@ export function ProjectDetailsModal({
                   Additional Details
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {project.hoverDetails}
+                  {highlightMetrics(project.hoverDetails)}
                 </p>
               </div>
             )}

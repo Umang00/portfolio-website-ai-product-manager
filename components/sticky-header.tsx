@@ -9,6 +9,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 const navItems = [
   { name: "Home", href: "#hero" },
+  { name: "KPIs", href: "#kpis" },
   { name: "Process", href: "#process" },
   { name: "Projects", href: "#projects" },
   { name: "Social Proof", href: "#social-proof" },
@@ -31,15 +32,29 @@ export function StickyHeader() {
         window.requestAnimationFrame(() => {
           const sections = navItems.map((i) => i.href.slice(1))
           const y = window.scrollY + 100
+          const viewportCenter = window.scrollY + window.innerHeight / 2
+          
+          // Find the section whose center is closest to the viewport center
+          let activeSection = "hero"
+          let minDistance = Infinity
+          
           for (const section of sections) {
             const el = document.getElementById(section)
             if (!el) continue
             const { offsetTop, offsetHeight } = el
+            const sectionCenter = offsetTop + offsetHeight / 2
+            const distance = Math.abs(viewportCenter - sectionCenter)
+            
+            // Only consider sections that are in view
             if (y >= offsetTop && y < offsetTop + offsetHeight) {
-              setActiveSection(section)
-              break
+              if (distance < minDistance) {
+                minDistance = distance
+                activeSection = section
+              }
             }
           }
+          
+          setActiveSection(activeSection)
           ticking = false
         })
         ticking = true

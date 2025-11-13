@@ -8,6 +8,7 @@ import { AnimatedCard } from "@/components/animations/animated-card"
 import { ProjectImagePlaceholder } from "./project-image-placeholder"
 import { CloudinaryImage } from "./cloudinary-image"
 import { cn } from "@/lib/utils"
+import { highlightMetrics } from "@/lib/utils/highlight-metrics"
 import type { Project } from "./types"
 
 interface ProjectCardProps {
@@ -123,7 +124,7 @@ export function ProjectCard({
 
           {/* Brief Description */}
           <p className="text-muted-foreground mb-6 flex-1">
-            {project.briefDescription}
+            {highlightMetrics(project.briefDescription)}
           </p>
 
           {/* Action Buttons - Smart distribution: 33% each, left-aligned */}

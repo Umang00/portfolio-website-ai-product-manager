@@ -161,7 +161,7 @@ export function Hero() {
             <span className="text-primary">
               {isMounted ? (
                 <Typewriter
-                  words={["ship", "scale", "monetize"]}
+                  words={["ship", "scale", "monetize", "drive retention", "users love"]}
                   loop={0}
                   cursor
                   cursorStyle="_"
@@ -175,7 +175,7 @@ export function Hero() {
             </span>
           </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance mt-4 mb-8">
-  AI Product Manager focused on data-driven growth and user delight.
+  AI Product Manager blending product thinking, engineering rigor, and user psychology to ship high-impact products
 </p>
         </div>
         </ScrollReveal>

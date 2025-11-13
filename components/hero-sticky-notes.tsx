@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 const leftSideNotes = [
   {
     id: 1,
-    text: "90% of PMs fail to deliver because they skip user research",
+    text: "Ship fast, learn faster. Perfection is the enemy of progress.",
     color: "yellow",
     rotation: -6,
     yOffset: -150, // TOP note - increased spacing
@@ -18,7 +18,7 @@ const leftSideNotes = [
   },
   {
     id: 2,
-    text: "Ship fast, learn faster. Perfection is the enemy of progress.",
+    text: "90% of PMs fail to deliver because they skip user research.",
     color: "pink",
     rotation: 2,
     yOffset: 0, // MIDDLE note - centered
@@ -27,7 +27,7 @@ const leftSideNotes = [
   },
   {
     id: 3,
-    text: "Data tells you what, users tell you why",
+    text: "Data tells you what, users tell you why.",
     color: "blue",
     rotation: -3,
     yOffset: 150, // BOTTOM note - increased spacing
@@ -40,7 +40,7 @@ const leftSideNotes = [
 const rightSideNotes = [
   {
     id: 4,
-    text: "The best product decisions come from saying 'no' 9 times out of 10",
+    text: "If users need a tutorial, you built it wrong.",
     color: "green",
     rotation: 4,
     yOffset: -150, // TOP note - aligned with note 1
@@ -49,7 +49,7 @@ const rightSideNotes = [
   },
   {
     id: 5,
-    text: "200% engagement increase isn't luck—it's ruthless iteration",
+    text: "The best PMs are statisticians with empathy.",
     color: "orange",
     rotation: -2,
     yOffset: 0, // MIDDLE note - aligned with note 2
@@ -58,7 +58,7 @@ const rightSideNotes = [
   },
   {
     id: 6,
-    text: "Build for users, measure for business, iterate for impact",
+    text: "Hallucinations aren't bugs they're unhandled moments.",
     color: "purple",
     rotation: 3,
     yOffset: 150, // BOTTOM note - aligned with note 3

@@ -494,6 +494,23 @@ export function ChatOverlay({ open, onClose, initialQuery }: ChatOverlayProps) {
                 </p>
               </motion.div>
 
+              {/* Combined disclaimer as info box */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="w-full max-w-lg"
+              >
+                <div className="bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/50 rounded-lg px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+                  <div className="flex items-start gap-2">
+                    <span className="text-amber-600 dark:text-amber-400 mt-0.5">⚠️</span>
+                    <p className="flex-1">
+                      <strong className="font-medium">Heads up:</strong> Umang's build velocity is intense. I try to stay current, but he often ships quicker than I can index.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
               <div className="w-full max-w-lg space-y-3">
                 <motion.p
                   initial={{ opacity: 0 }}

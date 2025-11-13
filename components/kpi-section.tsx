@@ -81,7 +81,7 @@ export function KpiSection() {
   }
 
   return (
-    <section id="kpis" ref={sectionRef} className="py-20 px-4 bg-muted/50 dark:bg-muted/20">
+    <section id="kpis" ref={sectionRef} className="pt-24 pb-20 px-4 bg-muted/50 dark:bg-muted/20 scroll-mt-24">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
           <div className="text-center mb-12">

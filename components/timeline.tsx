@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { highlightMetrics } from "@/lib/utils/highlight-metrics"
 
 type TimelineItem = {
   title: string
@@ -130,7 +131,7 @@ export function Timeline() {
                     {item.achievements.map((achievement, i) => (
                       <li key={i} className="text-muted-foreground leading-relaxed flex items-start gap-3">
                         <span className="text-primary mt-1 flex-shrink-0 text-lg leading-none">•</span>
-                        <span className="flex-1">{achievement}</span>
+                        <span className="flex-1">{highlightMetrics(achievement)}</span>
                       </li>
                     ))}
                   </ul>

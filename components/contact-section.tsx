@@ -209,7 +209,7 @@ export function ContactSection() {
                   <EmailButton />
                 <div className="text-left">
                   <h3 className="font-semibold">Email</h3>
-                  <p className="text-muted-foreground">umangthakkar005@gmail.com</p>
+                  <p className="text-muted-foreground">Hit me an email</p>
                 </div>
                 </button>
               </AnimatedCard>

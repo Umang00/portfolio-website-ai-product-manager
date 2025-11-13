@@ -2,6 +2,72 @@ import type { Project } from "./types"
 
 export const projectsData: Project[] = [
   {
+    id: "astro-ai",
+    slug: "astro-ai",
+    title: "Astro AI",
+    image: "/projects/astro-ai.png",
+    imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
+    briefDescription:
+      "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
+   problem:
+  "Professional astrology is often inaccessible — consultations cost $50–$200 per session, require scheduled appointments, and are crowded with non-credible practitioners upselling gems and rituals. This creates high friction and low trust for users seeking genuine, affordable, and immediate guidance.",
+    detailedDescription:
+      "Astro AI is a conversational astrology platform that combines traditional Vedic astrology principles with modern AI technology. Using Swiss Ephemeris for precise astronomical calculations and GPT-5 for natural language conversations, it delivers personalized astrological insights through WhatsApp. The platform democratizes access to professional-quality astrology by making it affordable ($2.99/month vs $50-200 per consultation), instantly available (24/7 vs appointment-based), and accessible through WhatsApp (no app download required).",
+    outcomeBullets: [
+      "95% cost reduction vs traditional astrologers ($2.99/month vs $50-200 per consultation)",
+      "AI-powered birth chart generation with NASA-grade astronomical accuracy",
+      "Multilingual support (English, Hindi, Gujarati) at launch",
+      "24/7 availability with instant responses within 5-10 seconds",
+    ],
+    technologies: [
+      "Python",
+      "FastAPI",
+      "GPT-5",
+      "Swiss Ephemeris",
+      "PostgreSQL",
+      "Redis",
+      "WhatsApp Business API",
+    ],
+    status: "In Progress",
+    statusColor: "yellow",
+    isFeatured: true,
+    demoUrl: "",
+    youtubeUrl: "",
+  },
+  {
+    id: "voice-uxr-agent",
+    slug: "voice-uxr-automation",
+    title: "Voice-Based UXR Agent",
+    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037618/voice-uxr_fx6qnh.png",
+    imageAlt: "Voice-Based User Research Agent",
+    briefDescription:
+      "AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. Automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily.",
+    problem:
+      "Hunch's user research process was bottlenecked by manual interviews, limiting capacity to 2-3 interviews per day. Each interview required significant time investment and took 3 days to generate insights, making it impossible to scale user research effectively.",
+    detailedDescription:
+      "Built an AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. The system automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily while reducing per-interview cost by 70%. The voice agent conducts natural conversations, asks follow-up questions, performs sentiment analysis, and generates actionable insights—all without human intervention.",
+    outcomeBullets: [
+      "2,400% capacity increase (2 interviews/day → 50+ interviews/day)",
+      "70% cost reduction per interview ($50 → $15)",
+      "99% faster insights (3 days → 5 minutes)",
+      "82% completion rate with 4.2/5 user satisfaction",
+    ],
+    technologies: [
+      "GPT-o3-mini",
+      "ElevenLabs",
+      "Twilio",
+      "Redshift SQL",
+    ],
+    status: "Active",
+    statusColor: "green",
+    isFeatured: true,
+    kpi: "25x",
+    kpiLabel: "Capacity Increase",
+    kpiValue: "2 → 50+ interviews/day",
+    demoUrl: "",
+    youtubeUrl: "",
+  },
+  {
     id: "mbti-matching-system",
     slug: "mbti-personality-matching",
     title: "MBTI Personality Matching System",
@@ -28,39 +94,6 @@ export const projectsData: Project[] = [
     kpi: "200%",
     kpiLabel: "Session Time Increase",
     kpiValue: "3 min → 9 min",
-    demoUrl: "",
-    youtubeUrl: "",
-  },
-  {
-    id: "voice-uxr-agent",
-    slug: "voice-uxr-automation",
-    title: "Voice-Based UXR Automation Agent",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037618/voice-uxr_fx6qnh.png",
-    imageAlt: "Voice-Based User Research Automation Agent",
-    briefDescription:
-      "AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. Automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily.",
-    problem:
-      "Hunch's user research process was bottlenecked by manual interviews, limiting capacity to 2-3 interviews per day. Each interview required significant time investment and took 3 days to generate insights, making it impossible to scale user research effectively.",
-    detailedDescription:
-      "Built an AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. The system automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily while reducing per-interview cost by 70%. The voice agent conducts natural conversations, asks follow-up questions, performs sentiment analysis, and generates actionable insights—all without human intervention.",
-    outcomeBullets: [
-      "2,400% capacity increase (2 interviews/day → 50+ interviews/day)",
-      "70% cost reduction per interview ($50 → $15)",
-      "99% faster insights (3 days → 5 minutes)",
-      "82% completion rate with 4.2/5 user satisfaction",
-    ],
-    technologies: [
-      "GPT-o3-mini",
-      "ElevenLabs",
-      "Twilio",
-      "Redshift SQL",
-    ],
-    status: "Active",
-    statusColor: "green",
-    isFeatured: true,
-    kpi: "25x",
-    kpiLabel: "Capacity Increase",
-    kpiValue: "2 → 50+ interviews/day",
     demoUrl: "",
     youtubeUrl: "",
   },
@@ -102,22 +135,22 @@ export const projectsData: Project[] = [
     slug: "fine-tuned-ai-chatbot",
     title: "Fine-Tuned In-App Chatbot",
     image: "/projects/fine-tuned-chatbot.png",
-    imageAlt: "Fine-Tuned AI Chatbot for Personality-Based Conversation Starters",
+    imageAlt: "Fine-Tuned AI Chatbot for Personalized Conversations",
     briefDescription:
-      "Fine-tuned GPT-4o on 450+ high-quality conversation examples to create a personalized chatbot that generates AI-powered conversation starters based on users' personality types (MBTI). Increased average session time by 100%.",
+      "Fine-tuned GPT-4o on 450+ carefully curated conversation examples to build a natural, human-like in-app chatbot. It adapts to user tone, discusses diverse topics, and provides personalized responses—improving session time by 100%.",
     problem:
-      "Users struggled to start meaningful conversations with matches, leading to low response rates (15%) and short conversation threads (3.2 messages average). Only 8% of users were utilizing conversation openers, indicating a significant engagement gap.",
-    detailedDescription:
-      "Fine-tuned GPT-4o on 450+ high-quality conversation examples to create a personalized chatbot that generates AI-powered conversation starters based on users' personality types (MBTI). The chatbot increased average session time by 100% and became a core engagement driver for Hunch. System generates contextual icebreakers, conversation suggestions, and follow-up prompts tailored to each user's personality, helping them start and maintain meaningful conversations with matches.",
+      "Users often struggled to hold meaningful or natural conversations inside the app—leading to low response rates (15%) and shallow conversations averaging only 3.2 messages. This limited user engagement and overall satisfaction.",
+      detailedDescription:
+      "Led the end-to-end development of Hunch’s Fine-Tuned Chatbot, starting from dataset creation to production deployment. The project began with curating a high-quality dataset of 450+ conversation examples, each scored and cleaned through a structured data-quality framework. This ensured consistent formatting, labeling, and conversational tone across all samples. GPT-4o was then fine-tuned on this dataset to create a model capable of holding natural, personalized, and context-aware conversations. Further collaborated with engineering to integrate the model into the production app serving 100,000+ users, where it became a key engagement driver.",
     outcomeBullets: [
       "180% increase in response rate (15% → 42%)",
       "144% increase in average messages per conversation (3.2 → 7.8)",
       "100% increase in session time (4 min → 8 min)",
-      "487% increase in opener usage (8% → 47%)",
+      "487% increase in opener usage (8% → 47%)"
     ],
     technologies: [
       "GPT-4o",
-      "Redshift SQL",
+      "Redshift SQL"
     ],
     status: "Active",
     statusColor: "green",
@@ -126,7 +159,7 @@ export const projectsData: Project[] = [
     kpiLabel: "Session Duration Increase",
     kpiValue: "4 min → 8 min",
     demoUrl: "",
-    youtubeUrl: "",
+    youtubeUrl: ""
   },
   {
     id: "poll-promotion-engine",
@@ -274,39 +307,6 @@ export const projectsData: Project[] = [
     kpi: "1st Runner-Up",
     kpiLabel: "Hackathon",
     kpiValue: "Built in 24 Hours",
-    demoUrl: "",
-    youtubeUrl: "",
-  },
-  {
-    id: "astro-ai",
-    slug: "astro-ai",
-    title: "Astro AI",
-    image: "/projects/astro-ai.png",
-    imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
-    briefDescription:
-      "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
-   problem:
-  "Professional astrology is often inaccessible — consultations cost $50–$200 per session, require scheduled appointments, and are crowded with non-credible practitioners upselling gems and rituals. This creates high friction and low trust for users seeking genuine, affordable, and immediate guidance.",
-    detailedDescription:
-      "Astro AI is a conversational astrology platform that combines traditional Vedic astrology principles with modern AI technology. Using Swiss Ephemeris for precise astronomical calculations and GPT-5 for natural language conversations, it delivers personalized astrological insights through WhatsApp. The platform democratizes access to professional-quality astrology by making it affordable ($2.99/month vs $50-200 per consultation), instantly available (24/7 vs appointment-based), and accessible through WhatsApp (no app download required).",
-    outcomeBullets: [
-      "95% cost reduction vs traditional astrologers ($2.99/month vs $50-200 per consultation)",
-      "AI-powered birth chart generation with NASA-grade astronomical accuracy",
-      "Multilingual support (English, Hindi, Gujarati) at launch",
-      "24/7 availability with instant responses within 5-10 seconds",
-    ],
-    technologies: [
-      "Python",
-      "FastAPI",
-      "GPT-5",
-      "Swiss Ephemeris",
-      "PostgreSQL",
-      "Redis",
-      "WhatsApp Business API",
-    ],
-    status: "In Progress",
-    statusColor: "yellow",
-    isFeatured: true,
     demoUrl: "",
     youtubeUrl: "",
   },

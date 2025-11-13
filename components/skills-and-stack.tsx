@@ -32,7 +32,7 @@ const techStack = [
   { header: "Backend & APIs", items: ["Python","Node.js","FastAPI","Supabase","PostgreSQL","Prisma","Resend","Postman"]},
   { header: "Infra & DevOps", items: ["Vercel","AWS","Docker","GitHub Actions","Git","Serverless Deployment"]},
   { header: "Analytics & Operations", items: ["Mixpanel","PostHog","Amplitude","Google Analytics","Retool","Tableau","Notion","Linear","Coda","Airtable"]},
-  { header: "Design & Prototyping", items: ["Figma","V0","Cursor","Bolt.new","Lovable","Replit","VoiceFlow"]},
+  { header: "Design & Prototyping", items: ["Figma","V0","Cursor","Claude Code","Bolt.new","Lovable","Replit","VoiceFlow"]},
   { header: "Automation & Workflows", items: ["Make.com","n8n","Zapier","Retool Workflows"]},
 ]
 
