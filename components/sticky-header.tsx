@@ -150,9 +150,9 @@ export function StickyHeader() {
             className="lg:hidden fixed inset-0 z-50"
             aria-hidden={!drawerOpen}
           >
-            {/* Overlay - more transparency allows backdrop-blur to show */}
+            {/* Overlay - strong blur and dim to hide background content */}
             <motion.div
-              className="absolute inset-0 bg-black/50 backdrop-blur-md"
+              className="absolute inset-0 bg-black/60 backdrop-blur-xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -160,17 +160,18 @@ export function StickyHeader() {
               onClick={() => setDrawerOpen(false)}
             />
 
-            {/* Panel */}
+            {/* Panel - solid background to fully cover content behind */}
             <motion.aside
-              className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-2xl"
+              className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background dark:bg-[#0a0a0a] border-l shadow-2xl isolate"
               role="dialog"
               aria-modal="true"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              style={{ backgroundColor: 'var(--background)' }}
             >
-              <div className="flex items-center justify-between px-5 py-4 border-b">
+              <div className="flex items-center justify-between px-5 py-4 border-b bg-inherit">
                 <div className="font-semibold">Menu</div>
                 <motion.button
                   aria-label="Close menu"
@@ -185,7 +186,7 @@ export function StickyHeader() {
               </div>
 
               <motion.div
-                className="p-4 flex flex-col gap-2"
+                className="p-4 flex flex-col gap-2 bg-inherit"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
