@@ -183,7 +183,7 @@ export function ProjectsSlider() {
         </ScrollReveal>
 
         <div
-          className="relative overflow-visible pt-8 pb-6 pl-6 pr-8 md:pt-12 md:pb-8 md:pl-8 md:pr-12" // Padding: top for hover lift, right for scale
+          className="relative overflow-visible pt-8 pb-8 px-8 md:pt-12 md:pb-8 md:px-12" // Padding: top for hover lift, horizontal for arrows
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onFocus={() => setIsFocused(true)}
@@ -268,7 +268,7 @@ export function ProjectsSlider() {
 
           {/* Pagination Dots - One dot per scroll position (every 2 projects) */}
           {projects.length > 2 && (
-            <div className="flex justify-center gap-2 mt-8">
+            <div className="flex justify-center gap-2 mt-6 md:mt-8">
               {Array.from({ length: Math.ceil(projects.length / 2) }).map(
                 (_, index) => {
                   const scrollIndex = index * 2

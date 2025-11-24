@@ -152,7 +152,7 @@ export function StickyHeader() {
           >
             {/* Overlay */}
             <motion.div
-              className="absolute inset-0 bg-black/40"
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -162,7 +162,7 @@ export function StickyHeader() {
 
             {/* Panel */}
             <motion.aside
-              className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl"
+              className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-2xl"
               role="dialog"
               aria-modal="true"
               initial={{ x: "100%" }}

@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button"
 import { Linkedin } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { cn } from "@/lib/utils"
 
 const testimonials = [
   {
@@ -36,9 +37,34 @@ const testimonials = [
 export function WallOfLove() {
   const [currentSet, setCurrentSet] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(0)
+  const mobileScrollRef = useRef<HTMLDivElement>(null)
 
   // Calculate number of sets - ensure we always have at least 1 set
   const totalSets = Math.max(1, Math.ceil(testimonials.length / 2))
+
+  // Handle mobile scroll to track active testimonial
+  const handleMobileScroll = useCallback(() => {
+    const container = mobileScrollRef.current
+    if (!container) return
+
+    const scrollLeft = container.scrollLeft
+    const cardWidth = container.offsetWidth * 0.85 + 24 // 85vw + gap
+    const newIndex = Math.round(scrollLeft / cardWidth)
+    setMobileActiveIndex(Math.min(newIndex, testimonials.length - 1))
+  }, [])
+
+  // Scroll to specific testimonial on dot click
+  const scrollToTestimonial = useCallback((index: number) => {
+    const container = mobileScrollRef.current
+    if (!container) return
+
+    const cardWidth = container.offsetWidth * 0.85 + 24 // 85vw + gap
+    container.scrollTo({
+      left: index * cardWidth,
+      behavior: "smooth",
+    })
+  }, [])
 
   useEffect(() => {
     if (isPaused || testimonials.length === 0) return
@@ -171,44 +197,70 @@ export function WallOfLove() {
           </div>
         </div>
 
-        <div className="md:hidden flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4">
-          {testimonials.map((testimonial, index) => (
-            <AnimatedCard
-              key={index}
-              variant="all"
-              className="flex-none w-[85vw] snap-start bg-card rounded-xl p-6 border shadow-sm"
-            >
-              <div className="flex items-start gap-4 mb-6">
-                <div className="relative flex-shrink-0">
-                  <img
-                    src={testimonial.avatar || "/placeholder.svg"}
-                    alt={testimonial.name}
-                    className="w-14 h-14 rounded-full object-cover ring-2 ring-primary/20"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h4 className="font-semibold text-base">{testimonial.name}</h4>
-                    {testimonial.linkedin && (
-                      <a
-                        href={testimonial.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${testimonial.name}'s LinkedIn`}
-                        className="group inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-card hover:bg-[#0A66C2]/10 transition-colors flex-shrink-0"
-                      >
-                        <Linkedin className="h-3.5 w-3.5 transition-colors group-hover:text-[#0A66C2]" />
-                      </a>
-                    )}
+        {/* Mobile testimonials with pagination dots */}
+        <div className="md:hidden">
+          <div
+            ref={mobileScrollRef}
+            onScroll={handleMobileScroll}
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 scrollbar-hide"
+          >
+            {testimonials.map((testimonial, index) => (
+              <AnimatedCard
+                key={index}
+                variant="all"
+                className="flex-none w-[85vw] snap-start bg-card rounded-xl p-6 border shadow-sm"
+              >
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={testimonial.avatar || "/placeholder.svg"}
+                      alt={testimonial.name}
+                      className="w-14 h-14 rounded-full object-cover ring-2 ring-primary/20"
+                    />
                   </div>
-                  <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1">
+                      <h4 className="font-semibold text-base">{testimonial.name}</h4>
+                      {testimonial.linkedin && (
+                        <a
+                          href={testimonial.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${testimonial.name}'s LinkedIn`}
+                          className="group inline-flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-card hover:bg-[#0A66C2]/10 transition-colors flex-shrink-0"
+                        >
+                          <Linkedin className="h-3.5 w-3.5 transition-colors group-hover:text-[#0A66C2]" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                  </div>
                 </div>
-              </div>
-              <blockquote className="text-sm leading-relaxed text-foreground/90">
-                "{testimonial.quote}"
-              </blockquote>
-            </AnimatedCard>
-          ))}
+                <blockquote className="text-sm leading-relaxed text-foreground/90">
+                  "{testimonial.quote}"
+                </blockquote>
+              </AnimatedCard>
+            ))}
+          </div>
+
+          {/* Pagination dots for mobile */}
+          {testimonials.length > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => scrollToTestimonial(index)}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                  className={cn(
+                    "h-2 rounded-full transition-all duration-300",
+                    mobileActiveIndex === index
+                      ? "bg-primary w-6"
+                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50 w-2"
+                  )}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

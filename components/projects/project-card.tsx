@@ -127,23 +127,24 @@ export function ProjectCard({
             {highlightMetrics(project.briefDescription)}
           </p>
 
-          {/* Action Buttons - Smart distribution: 33% each, left-aligned */}
-          <div className="flex gap-2 mt-auto">
+          {/* Action Buttons - Responsive: icon-only on mobile, icon+text on larger screens */}
+          <div className="flex gap-2 mt-auto flex-wrap">
             {/* View Details - Always present */}
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsDetailsOpen(true)}
               className={cn(
-                "h-10 transition-all duration-200",
+                "h-10 min-w-[44px] transition-all duration-200",
                 "hover:bg-accent hover:scale-[1.02]",
                 "focus-visible:ring-2 focus-visible:ring-ring",
-                "w-[33%]" // Always 33% width
+                "px-3 sm:px-4" // Smaller padding on mobile
               )}
               aria-label={`View details for ${project.title}`}
+              title="View Details"
             >
-              <FileText className="h-4 w-4 mr-2" />
-              View Details
+              <FileText className="h-4 w-4 sm:mr-2 flex-shrink-0" />
+              <span className="hidden sm:inline">View Details</span>
             </Button>
 
             {/* View Demo - Optional */}
@@ -153,12 +154,11 @@ export function ProjectCard({
                 size="sm"
                 asChild
                 className={cn(
-                  "h-10 transition-all duration-200",
+                  "h-10 min-w-[44px] transition-all duration-200",
                   "hover:bg-accent hover:scale-[1.02]",
                   "focus-visible:ring-2 focus-visible:ring-ring",
-                  "w-[33%]" // Always 33% width
+                  "px-3 sm:px-4"
                 )}
-                aria-label={`View demo for ${project.title}`}
               >
                 <a
                   href={project.demoUrl}
@@ -168,9 +168,11 @@ export function ProjectCard({
                       ? "noopener noreferrer"
                       : undefined
                   }
+                  aria-label={`View demo for ${project.title}`}
+                  title="View Demo"
                 >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  View Demo
+                  <ExternalLink className="h-4 w-4 sm:mr-2 flex-shrink-0" />
+                  <span className="hidden sm:inline">View Demo</span>
                 </a>
               </Button>
             )}
@@ -182,20 +184,21 @@ export function ProjectCard({
                 size="sm"
                 asChild
                 className={cn(
-                  "h-10 transition-all duration-200",
+                  "h-10 min-w-[44px] transition-all duration-200",
                   "hover:bg-accent hover:scale-[1.02]",
                   "focus-visible:ring-2 focus-visible:ring-ring",
-                  "w-[33%]" // Always 33% width
+                  "px-3 sm:px-4"
                 )}
-                aria-label={`Watch video for ${project.title}`}
               >
                 <a
                   href={project.youtubeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`Watch video for ${project.title}`}
+                  title="Watch Video"
                 >
-                  <Youtube className="h-4 w-4 mr-2" />
-                  Watch Video
+                  <Youtube className="h-4 w-4 sm:mr-2 flex-shrink-0" />
+                  <span className="hidden sm:inline">Watch Video</span>
                 </a>
               </Button>
             )}

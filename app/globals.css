@@ -322,4 +322,36 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+
+  /* Hide scrollbar while maintaining scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  /* Mobile tap feedback for interactive elements */
+  .tap-feedback {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .tap-feedback:active {
+    transform: scale(0.97);
+    opacity: 0.8;
+  }
+
+  /* Logo tap feedback on mobile */
+  .logo-card:active {
+    transform: scale(calc(var(--logo-scale, 1) * 0.95)) !important;
+    opacity: 0.85;
+  }
+
+  /* Button tap feedback (for CSS-only buttons) */
+  button:active,
+  a[role="button"]:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+  }
 }
