@@ -12,6 +12,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { ProjectCard } from "./projects/project-card"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer"
+import { useIsMobile } from "@/hooks/use-media-query"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { cn } from "@/lib/utils"
 import { projectsData } from "./projects/projects-data"
@@ -28,24 +29,27 @@ export function ProjectsSlider() {
   const [carouselRef, isCarouselVisible] = useIntersectionObserver({
     threshold: 0.1,
   })
+  const isMobile = useIsMobile()
+
+  // Items per view: 1 on mobile, 2 on desktop
+  const itemsPerView = isMobile ? 1 : 2
 
   // Auto-scroll state
   const [isPaused, setIsPaused] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
 
-  // Custom auto-scroll that scrolls 2 projects at a time
+  // Custom auto-scroll that scrolls by itemsPerView
   useEffect(() => {
-    if (!api || prefersReducedMotion || projects.length <= 2) return
+    if (!api || prefersReducedMotion || projects.length <= itemsPerView) return
 
     const shouldPause = isPaused || isHovered || isFocused || !isCarouselVisible
 
     if (shouldPause) return
 
-    const totalScrollPositions = Math.ceil(projects.length / 2)
     const intervalId = setInterval(() => {
       const currentIndex = api.selectedScrollSnap()
-      const nextIndex = (Math.floor(currentIndex / 2) + 1) * 2
+      const nextIndex = (Math.floor(currentIndex / itemsPerView) + 1) * itemsPerView
 
       if (nextIndex < projects.length) {
         api.scrollTo(nextIndex)
@@ -56,7 +60,7 @@ export function ProjectsSlider() {
     }, 3000)
 
     return () => clearInterval(intervalId)
-  }, [api, prefersReducedMotion, projects.length, isPaused, isHovered, isFocused, isCarouselVisible])
+  }, [api, prefersReducedMotion, projects.length, isPaused, isHovered, isFocused, isCarouselVisible, itemsPerView])
 
   const handleInteraction = useCallback(() => {
     setIsPaused(true)
@@ -86,7 +90,7 @@ export function ProjectsSlider() {
     }
   }, [api, handleInteraction])
 
-  // Handle keyboard navigation - scroll by 2 positions
+  // Handle keyboard navigation - scroll by itemsPerView
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (!api) return
@@ -94,13 +98,13 @@ export function ProjectsSlider() {
       if (e.key === "ArrowLeft") {
         e.preventDefault()
         const currentIndex = api.selectedScrollSnap()
-        const prevIndex = Math.max(0, Math.floor(currentIndex / 2) - 1) * 2
+        const prevIndex = Math.max(0, Math.floor(currentIndex / itemsPerView) - 1) * itemsPerView
         api.scrollTo(prevIndex)
         handleInteraction()
       } else if (e.key === "ArrowRight") {
         e.preventDefault()
         const currentIndex = api.selectedScrollSnap()
-        const nextIndex = Math.min(projects.length - 1, (Math.floor(currentIndex / 2) + 1) * 2)
+        const nextIndex = Math.min(projects.length - 1, (Math.floor(currentIndex / itemsPerView) + 1) * itemsPerView)
         api.scrollTo(nextIndex)
         handleInteraction()
       } else if (e.key === "Home") {
@@ -109,12 +113,12 @@ export function ProjectsSlider() {
         handleInteraction()
       } else if (e.key === "End") {
         e.preventDefault()
-        const lastIndex = Math.floor((projects.length - 1) / 2) * 2
+        const lastIndex = Math.floor((projects.length - 1) / itemsPerView) * itemsPerView
         api.scrollTo(lastIndex)
         handleInteraction()
       }
     },
-    [api, handleInteraction, projects.length]
+    [api, handleInteraction, projects.length, itemsPerView]
   )
 
   // Empty state
@@ -219,8 +223,8 @@ export function ProjectsSlider() {
               ))}
             </CarouselContent>
 
-            {/* Navigation Arrows - Custom to scroll by 2 positions */}
-            {projects.length > 2 && (
+            {/* Navigation Arrows - Custom to scroll by itemsPerView */}
+            {projects.length > itemsPerView && (
               <>
                 <Button
                   variant="outline"
@@ -233,14 +237,14 @@ export function ProjectsSlider() {
                   onClick={() => {
                     if (!api) return
                     const currentIndex = api.selectedScrollSnap()
-                    const prevIndex = Math.max(0, Math.floor(currentIndex / 2) - 1) * 2
+                    const prevIndex = Math.max(0, Math.floor(currentIndex / itemsPerView) - 1) * itemsPerView
                     api.scrollTo(prevIndex)
                     handleInteraction()
                   }}
-                  aria-label="Previous 2 projects"
+                  aria-label={`Previous ${itemsPerView} project${itemsPerView > 1 ? 's' : ''}`}
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  <span className="sr-only">Previous 2 projects</span>
+                  <span className="sr-only">Previous project</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -253,30 +257,30 @@ export function ProjectsSlider() {
                   onClick={() => {
                     if (!api) return
                     const currentIndex = api.selectedScrollSnap()
-                    const nextIndex = Math.min(projects.length - 1, (Math.floor(currentIndex / 2) + 1) * 2)
+                    const nextIndex = Math.min(projects.length - 1, (Math.floor(currentIndex / itemsPerView) + 1) * itemsPerView)
                     api.scrollTo(nextIndex)
                     handleInteraction()
                   }}
-                  aria-label="Next 2 projects"
+                  aria-label={`Next ${itemsPerView} project${itemsPerView > 1 ? 's' : ''}`}
                 >
                   <ArrowRight className="h-4 w-4" />
-                  <span className="sr-only">Next 2 projects</span>
+                  <span className="sr-only">Next project</span>
                 </Button>
               </>
             )}
           </Carousel>
 
-          {/* Pagination Dots - One dot per scroll position (every 2 projects) */}
-          {projects.length > 2 && (
+          {/* Pagination Dots - Responsive: 1 per project on mobile, 1 per pair on desktop */}
+          {projects.length > itemsPerView && (
             <div className="flex justify-center gap-2 mt-6 md:mt-8">
-              {Array.from({ length: Math.ceil(projects.length / 2) }).map(
+              {Array.from({ length: Math.ceil(projects.length / itemsPerView) }).map(
                 (_, index) => {
-                  const scrollIndex = index * 2
+                  const scrollIndex = index * itemsPerView
                   // Calculate which projects are visible at this scroll position
                   const startProject = scrollIndex + 1
-                  const endProject = Math.min(scrollIndex + 2, projects.length)
+                  const endProject = Math.min(scrollIndex + itemsPerView, projects.length)
                   // Check if current position is within this scroll position's range
-                  const isActive = current >= scrollIndex && current < scrollIndex + 2
+                  const isActive = current >= scrollIndex && current < scrollIndex + itemsPerView
 
                   return (
                     <button
@@ -288,11 +292,11 @@ export function ProjectsSlider() {
                       className={cn(
                         "h-2 w-2 rounded-full transition-all",
                         isActive
-                          ? "bg-primary w-8"
+                          ? "bg-primary w-6"
                           : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       )}
-                      aria-label={`Go to projects ${startProject}-${endProject}`}
+                      aria-label={itemsPerView === 1 ? `Go to project ${startProject}` : `Go to projects ${startProject}-${endProject}`}
                       aria-current={isActive ? "true" : undefined}
                     />
                   )

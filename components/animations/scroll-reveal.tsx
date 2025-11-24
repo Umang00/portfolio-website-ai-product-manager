@@ -26,7 +26,7 @@ export function ScrollReveal({
   duration = 0.6,
   delay = 0,
   once = true,
-  amount = 0.3,
+  amount = 0.4,
 }: ScrollRevealProps) {
   const shouldReduceMotion = useReducedMotion()
 
@@ -91,7 +91,7 @@ export function ScrollRevealList({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.4 }}
       variants={containerVariants}
     >
       {children}

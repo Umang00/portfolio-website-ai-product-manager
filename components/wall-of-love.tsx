@@ -49,7 +49,8 @@ export function WallOfLove() {
     if (!container) return
 
     const scrollLeft = container.scrollLeft
-    const cardWidth = container.offsetWidth * 0.85 + 24 // 85vw + gap
+    // Full width card (container width - padding) + gap
+    const cardWidth = container.offsetWidth - 32 + 24 // full width minus 2*px-4 padding + gap
     const newIndex = Math.round(scrollLeft / cardWidth)
     setMobileActiveIndex(Math.min(newIndex, testimonials.length - 1))
   }, [])
@@ -59,7 +60,8 @@ export function WallOfLove() {
     const container = mobileScrollRef.current
     if (!container) return
 
-    const cardWidth = container.offsetWidth * 0.85 + 24 // 85vw + gap
+    // Full width card + gap
+    const cardWidth = container.offsetWidth - 32 + 24
     container.scrollTo({
       left: index * cardWidth,
       behavior: "smooth",
@@ -208,7 +210,7 @@ export function WallOfLove() {
               <AnimatedCard
                 key={index}
                 variant="all"
-                className="flex-none w-[85vw] snap-start bg-card rounded-xl p-6 border shadow-sm"
+                className="flex-none w-[calc(100%-2rem)] snap-start bg-card rounded-xl p-6 border shadow-sm"
               >
                 <div className="flex items-start gap-4 mb-6">
                   <div className="relative flex-shrink-0">

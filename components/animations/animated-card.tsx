@@ -116,7 +116,7 @@ export function AnimatedCard({
         transition: { duration: 0.2 },
       }}
       whileTap={{ scale: 0.98 }}
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.5 }}
       onHoverStart={handleHoverStart}
       style={style}
       tabIndex={props.onClick ? 0 : undefined}
@@ -160,7 +160,7 @@ export function AnimatedCardGrid({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.4 }}
       variants={{
         hidden: { opacity: 0 },
         visible: {
