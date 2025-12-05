@@ -93,6 +93,8 @@
     "@types/node": "^24.10.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cloudinary": "^2.8.0",
+    "dotenv": "^17.2.3",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",

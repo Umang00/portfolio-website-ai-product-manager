@@ -183,8 +183,7 @@ export function CloudinaryImage({
   const maxHeight = 1080 // 1920 / 16 * 9 = 1080 (maintains 16:9)
 
   // When using fill, CANNOT use width/height props (Next.js restriction)
-  // Must use rawTransformations to resize FIRST before any processing
-  // Put ALL transformations in rawTransformations to ensure proper order
+  // Use pre-cached transformations (uploaded via eager upload script)
   if (fill) {
     return (
       <CldImage
@@ -193,30 +192,14 @@ export function CloudinaryImage({
         fill={fill}
         priority={priority}
         className={className}
-        // CRITICAL: Use fill_pad mode - the BEST solution for preserving content
-        // fill_pad tries smart cropping first, then adds padding if needed to preserve content
-        // This ensures consistent 16:9 aspect ratio while preserving full image content
-        // Requires g_auto (AI gravity) to work - finds best focal point
-        // b_auto = automatically match padding color to image content (seamless blend)
+        // Use inline transformation matching our upload script
+        // This will use the pre-cached version from Cloudinary CDN
         rawTransformations={[
-          // fill_pad mode: Smart cropping with intelligent padding fallback
-          // ar_16:9 = enforce 16:9 aspect ratio
-          // c_fill_pad = tries fill mode first, adds padding if crop would cut important content
-          // g_auto = AI-powered gravity (REQUIRED for fill_pad, finds best focal point)
-          // b_auto = auto background color (matches image for seamless padding)
-          // w_1920,h_1080 = max dimensions (stays under 25MP limit, maintains 16:9)
-          `ar_${aspectRatio},c_fill_pad,g_auto,b_auto,w_${maxWidth},h_${maxHeight}`,
+          `ar_${aspectRatio},c_fill_pad,g_auto,b_auto,w_${maxWidth},h_${maxHeight},q_auto:best,f_auto`,
         ]}
-        // Quality and format optimization
-        quality="auto:best"
-        format="auto"
-        // Limit DPR to prevent exceeding size limits
-        dpr={2}
-        // AI features: Enable AFTER resize in rawTransformations
-        // Since rawTransformations are applied first, these should work on resized image
-        enhance={true}
-        restore={true}
-        autoContrast={true}
+        // Reduce DPR to save quota
+        dpr={1.5}
+        // REMOVED: AI features (enhance, restore, autoContrast) - use pre-processed images
         // Loading strategy
         loading={priority ? "eager" : "lazy"}
         sizes={sizes}
@@ -227,7 +210,7 @@ export function CloudinaryImage({
     )
   }
 
-  // Non-fill mode: use explicit dimensions
+  // Non-fill mode: use explicit dimensions with minimal transformation
   return (
     <CldImage
       src={imageSrc}
@@ -237,14 +220,11 @@ export function CloudinaryImage({
       priority={priority}
       className={className}
       crop="limit"
-      gravity="auto"
-      quality="auto:best"
+      gravity="center"  // Changed from "auto" (no AI)
+      quality="auto:good"  // Downgraded from "best" to "good"
       format="auto"
-      dpr={2}
-      // AI features enabled for non-fill mode
-      enhance={true}
-      restore={true}
-      autoContrast={true}
+      dpr={1.5}  // Reduced from 2 to 1.5
+      // REMOVED: AI features (enhance, restore, autoContrast)
       loading={priority ? "eager" : "lazy"}
       sizes={sizes}
       onError={handleError}

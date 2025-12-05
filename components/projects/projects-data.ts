@@ -5,7 +5,7 @@ export const projectsData: Project[] = [
     id: "astro-ai",
     slug: "astro-ai",
     title: "Astro AI",
-    image: "/projects/astro-ai.png",
+    image: "projects/astro-ai",
     imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
     briefDescription:
       "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
@@ -38,7 +38,7 @@ export const projectsData: Project[] = [
     id: "voice-uxr-agent",
     slug: "voice-uxr-automation",
     title: "Voice-Based UXR Agent",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037618/voice-uxr_fx6qnh.png",
+    image: "projects/voice-uxr",
     imageAlt: "Voice-Based User Research Agent",
     briefDescription:
       "AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. Automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily.",
@@ -71,7 +71,7 @@ export const projectsData: Project[] = [
     id: "mbti-matching-system",
     slug: "mbti-personality-matching",
     title: "MBTI Personality Matching System",
-    image: "/projects/mbti-matching.png",
+    image: "projects/mbti-matching",
     imageAlt: "MBTI-Based Personality Matching System for Hunch Dating App",
     briefDescription:
       "Comprehensive personality matching algorithm integrating MBTI framework with user preferences. Provides transparent 0-100% compatibility scores with detailed explanations, becoming Hunch's core product differentiator.",
@@ -101,7 +101,7 @@ export const projectsData: Project[] = [
     id: "marketing-analytics-dashboard",
     slug: "marketing-analytics",
     title: "Marketing Analytics Dashboard",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037617/marketing-analytics-dashboard_lvouhu.png",
+    image: "projects/marketing-analytics-dashboard",
     imageAlt: "Retool Marketing Analytics Dashboard - Unified Analytics & Cost Optimization",
     briefDescription:
       "Consolidated marketing analytics dashboard unifying data from 3 sources (Instagram, Twitter, TikTok) with AI-powered sentiment analysis and trend detection. Replaced 3 expensive SaaS tools while providing better insights.",
@@ -134,7 +134,7 @@ export const projectsData: Project[] = [
     id: "fine-tuned-chatbot",
     slug: "fine-tuned-ai-chatbot",
     title: "Fine-Tuned In-App Chatbot",
-    image: "/projects/fine-tuned-chatbot.png",
+    image: "projects/fine-tuned-chatbot",
     imageAlt: "Fine-Tuned AI Chatbot for Personalized Conversations",
     briefDescription:
       "Fine-tuned GPT-4o on 450+ carefully curated conversation examples to build a natural, human-like in-app chatbot. It adapts to user tone, discusses diverse topics, and provides personalized responses—improving session time by 100%.",
@@ -165,7 +165,7 @@ export const projectsData: Project[] = [
     id: "poll-promotion-engine",
     slug: "poll-promotion-engine",
     title: "Poll Promotion Engine",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037609/poll-engine_ppfpoo.png",
+    image: "projects/poll-engine",
     imageAlt: "Poll Promotion Engine - Automated Campaign Management & Targeting",
     briefDescription:
       "Automated campaign management interface for targeted poll distribution at Hunch, reducing campaign launch time from 2 days to under 5 minutes while eliminating 85% of manual work. Replaced dependency on Amazon Personalize.",
@@ -198,7 +198,7 @@ export const projectsData: Project[] = [
     id: "web-onboarding-revenue",
     slug: "web-onboarding-revenue",
     title: "Web Onboarding Revenue Stream",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037620/web-onboarding_ddklq8.png",
+    image: "projects/web-onboarding",
     imageAlt: "Web Onboarding Revenue Stream - Personality Assessment & App Conversion Funnel",
     briefDescription:
       "Built web-based personality assessment (MBTI test) and app conversion funnel that created entirely new revenue stream for Hunch. Generated $1,500 in revenue from first month, contributing 30% boost to existing revenue.",
@@ -238,7 +238,7 @@ export const projectsData: Project[] = [
     id: "newsletter-generator",
     slug: "newsletter-generator",
     title: "Newsletter Generation System",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763044289/newsletter-generator1_uwvitb.png",
+    image: "projects/newsletter-generator",
     imageAlt: "AI-powered newsletter generation and delivery system",
     briefDescription:
       "AI-driven newsletter generation platform that automates content aggregation, trend detection, and draft creation. Reduces newsletter drafting time from 2-3 hours to under 5 minutes with voice-matched drafts.",
@@ -274,7 +274,7 @@ export const projectsData: Project[] = [
     id: "lecture-lens",
     slug: "lecture-lens-rag-cohort-assistant",
     title: "Lecture Lens - Cohort Assistant",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763044289/lecture-lens1_gtbpyo.png",
+    image: "projects/lecture-lens",
     imageAlt: "Lecture Lens - AI-Powered Lecture Search & Cohort Assistant",
     briefDescription:
       "AI-powered chat interface that transforms cohort curriculum into a searchable knowledge base. Students ask natural language questions and receive instant answers with precise citations from lectures (with timestamps) and auto-scraped resources.",
@@ -314,7 +314,7 @@ export const projectsData: Project[] = [
     id: "foggy-rainwater-text-generator",
     slug: "foggy-rainwater-text-generator",
     title: "Foggy Rainwater Style Text Generator",
-    image: "https://res.cloudinary.com/du5vqjsl4/image/upload/v1763037611/foggy-rainwater-text_dywcef.png",
+    image: "projects/foggy-rainwater-text",
     imageAlt: "Foggy rainwater style text written on misted glass",
     briefDescription:
       "Custom-trained LoRA model that generates realistic foggy window-style handwritten text and doodles. Created from scratch with no existing dataset, producing natural condensation-on-glass text effects for creative applications.",
