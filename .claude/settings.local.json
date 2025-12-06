@@ -32,7 +32,8 @@
       "Bash(npm run lint:*)",
       "Bash(git merge:*)",
       "Bash(npm view:*)",
-      "Bash(node scripts/upload-project-images.js:*)"
+      "Bash(node scripts/upload-project-images.js:*)",
+      "Bash(pnpm run build:*)"
     ],
     "deny": [],
     "ask": []
