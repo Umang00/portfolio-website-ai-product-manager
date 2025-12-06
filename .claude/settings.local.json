@@ -26,7 +26,13 @@
       "Bash(git push:*)",
       "Bash(python3:*)",
       "Bash(timeout /t 15 /nobreak)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git checkout:*)",
+      "Bash(git show:*)",
+      "Bash(npm run lint:*)",
+      "Bash(git merge:*)",
+      "Bash(npm view:*)",
+      "Bash(node scripts/upload-project-images.js:*)"
     ],
     "deny": [],
     "ask": []

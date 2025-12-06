@@ -197,8 +197,8 @@ export function CloudinaryImage({
         rawTransformations={[
           `ar_${aspectRatio},c_fill_pad,g_auto,b_auto,w_${maxWidth},h_${maxHeight},q_auto:best,f_auto`,
         ]}
-        // Reduce DPR to save quota
-        dpr={1.5}
+        // Keep DPR at 2 for high-quality display (doesn't increase transformations)
+        dpr={2}
         // REMOVED: AI features (enhance, restore, autoContrast) - use pre-processed images
         // Loading strategy
         loading={priority ? "eager" : "lazy"}
@@ -221,9 +221,9 @@ export function CloudinaryImage({
       className={className}
       crop="limit"
       gravity="center"  // Changed from "auto" (no AI)
-      quality="auto:good"  // Downgraded from "best" to "good"
+      quality="auto:best"  // Keep best quality (doesn't trigger transformations)
       format="auto"
-      dpr={1.5}  // Reduced from 2 to 1.5
+      dpr={2}  // Keep DPR at 2 (doesn't increase transformations)
       // REMOVED: AI features (enhance, restore, autoContrast)
       loading={priority ? "eager" : "lazy"}
       sizes={sizes}
