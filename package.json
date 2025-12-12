@@ -62,7 +62,7 @@
     "keen-slider": "latest",
     "lucide-react": "^0.454.0",
     "mongodb": "^6.20.0",
-    "next": "15.2.6",
+    "next": "15.2.8",
     "next-cloudinary": "^6.17.4",
     "node-fetch": "^2.7.0",
     "openai": "^6.8.0",
