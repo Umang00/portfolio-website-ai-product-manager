@@ -2,39 +2,6 @@ import type { Project } from "./types"
 
 export const projectsData: Project[] = [
   {
-    id: "astro-ai",
-    slug: "astro-ai",
-    title: "Astro AI",
-    image: "projects/astro-ai",
-    imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
-    briefDescription:
-      "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
-   problem:
-  "Professional astrology is often inaccessible — consultations cost $50–$200 per session, require scheduled appointments, and are crowded with non-credible practitioners upselling gems and rituals. This creates high friction and low trust for users seeking genuine, affordable, and immediate guidance.",
-    detailedDescription:
-      "Astro AI is a conversational astrology platform that combines traditional Vedic astrology principles with modern AI technology. Using Swiss Ephemeris for precise astronomical calculations and GPT-5 for natural language conversations, it delivers personalized astrological insights through WhatsApp. The platform democratizes access to professional-quality astrology by making it affordable ($2.99/month vs $50-200 per consultation), instantly available (24/7 vs appointment-based), and accessible through WhatsApp (no app download required).",
-    outcomeBullets: [
-      "95% cost reduction vs traditional astrologers ($2.99/month vs $50-200 per consultation)",
-      "AI-powered birth chart generation with NASA-grade astronomical accuracy",
-      "Multilingual support (English, Hindi, Gujarati) at launch",
-      "24/7 availability with instant responses within 5-10 seconds",
-    ],
-    technologies: [
-      "Python",
-      "FastAPI",
-      "GPT-5",
-      "Swiss Ephemeris",
-      "PostgreSQL",
-      "Redis",
-      "WhatsApp Business API",
-    ],
-    status: "In Progress",
-    statusColor: "yellow",
-    isFeatured: true,
-    demoUrl: "",
-    youtubeUrl: "",
-  },
-  {
     id: "voice-uxr-agent",
     slug: "voice-uxr-automation",
     title: "Voice-Based UXR Agent",
@@ -45,7 +12,7 @@ export const projectsData: Project[] = [
     problem:
       "Hunch's user research process was bottlenecked by manual interviews, limiting capacity to 2-3 interviews per day. Each interview required significant time investment and took 3 days to generate insights, making it impossible to scale user research effectively.",
     detailedDescription:
-      "Built an AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. The system automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily while reducing per-interview cost by 70%. The voice agent conducts natural conversations, asks follow-up questions, performs sentiment analysis, and generates actionable insights—all without human intervention.",
+      "Built an AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. The system automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily while reducing per-interview cost by 70%.\n\nThe voice agent conducts natural conversations, asks follow-up questions, performs sentiment analysis, and generates actionable insights, all without human intervention.",
     outcomeBullets: [
       "2,400% capacity increase (2 interviews/day → 50+ interviews/day)",
       "70% cost reduction per interview ($50 → $15)",
@@ -78,7 +45,7 @@ export const projectsData: Project[] = [
     problem:
       "Hunch needed a strong product differentiator to stand out in the competitive dating app market. The app was shifting from anonymous polling to matchmaking but lacked a compelling matching system that could improve user engagement and retention.",
     detailedDescription:
-      "Designed and implemented a comprehensive personality matching algorithm that integrates the MBTI (Myers-Briggs Type Indicator) psychological framework with existing user preference filters. This system became Hunch's core product differentiator and fundamentally shifted the app's direction from anonymous polling to personality-based matchmaking. The algorithm provides transparent 0-100% compatibility scores with detailed explanations, helping users understand why they're matched and building trust in the platform.",
+      "Designed and implemented a comprehensive personality matching algorithm that integrates the MBTI (Myers-Briggs Type Indicator) psychological framework with existing user preference filters. This system became Hunch's core product differentiator and fundamentally shifted the app's direction from anonymous polling to personality-based matchmaking.\n\nThe algorithm provides transparent 0-100% compatibility scores with detailed explanations, helping users understand why they're matched and building trust in the platform.",
     outcomeBullets: [
       "200% increase in average session time (3 min → 9 min)",
       "152% increase in messages per match (2.3 → 5.8)",
@@ -98,6 +65,73 @@ export const projectsData: Project[] = [
     youtubeUrl: "",
   },
   {
+    id: "ai-food-analyzer",
+    slug: "ai-food-analyzer",
+    title: "AI Food Analyzer",
+    image: "projects/ai-food-analyzer",
+    imageAlt: "AI Food Analyzer - Smart Dietary Safety Scanner",
+    briefDescription:
+      "AI-powered mobile app that scans packaged food ingredients and provides personalized safety verdicts based on allergies, religious dietary rules (Jain/Vaishnav/Swaminarayan), and vegan preferences. Works globally without regional database dependency. Built in 15 days.",
+    problem:
+      "\"Is this actually safe for me to eat?\" Millions ask this question when facing allergies, religious restrictions, or hidden ingredients. Existing apps are barcode-based, country-specific, and have zero understanding of religious nuance. \"Veg\" doesn't always mean what you think. If you travel, these apps break. If you care about accuracy, they fail.",
+    detailedDescription:
+      "AI-powered mobile app that lets users click a photo of ingredients and get a clear verdict based on allergies, Jain/Vaishnav/Swaminarayan rules, and vegan preferences. The app works whether you're in India, US, Russia, China, Japan, or Europe with no dependency on regional databases.\n\nBuilt with a tiered AI system prioritizing accuracy over latency. Made one non-negotiable decision early: Accuracy over speed. Most importantly, it's 100% free as our way of giving back to the community.",
+    outcomeBullets: [
+      "Complete mobile app built in 15 days",
+      "AI image recognition for ingredient labels (no barcode dependency)",
+      "Supports allergies, Jain/Vaishnav/Swaminarayan, vegan preferences",
+      "Works globally with no regional database needed",
+      "100% free, team-sustained for the community",
+      "Pending release on Play Store and App Store",
+    ],
+    technologies: [
+      "React Native",
+      "Expo 54",
+      "TypeScript",
+      "NativeWind v4",
+      "Zustand",
+      "Bun",
+      "Hono",
+      "Neon",
+    ],
+    status: "Active",
+    statusColor: "green",
+    isFeatured: true,
+    demoUrl: "",
+    youtubeUrl: "",
+  },
+  {
+    id: "breakup-recovery-squad",
+    slug: "breakup-recovery-squad",
+    title: "Breakup Recovery Squad",
+    image: "projects/breakup-recovery-squad",
+    imageAlt: "Breakup Recovery Squad - Multi-Agent AI Support System",
+    briefDescription:
+      "Multi-agent AI system with 4 specialized personas that helps users navigate breakups through emotional support, chat screenshot analysis, closure exercises, and music therapy. Went viral with 100+ users in 48 hours from Reddit, offering free 24/7 support with zero data storage.",
+    problem:
+      "Breakups are silently devastating. People still go to work, reply \"I'm fine,\" but inside they're overthinking messages and replaying endings. Most people don't have someone they can open up to without feeling judged. Therapy costs $50-100/session, and friends get exhausted being the 24/7 support system.",
+    detailedDescription:
+      "Built a 4-agent AI system using Agno orchestration and Google Gemini 2.5 Flash that provides what most people don't have: Empathy, Clarity, Closure, and Direction, all at once.\n\nMaya (The Therapist) reflects emotions back, making you feel understood. Riya (The Truth-Teller) analyzes uploaded chat screenshots with brutal honesty. Harper (Closure Coach) crafts unsent letters and release rituals. Jonas (The Planner) creates personalized 7-day healing plans with curated music therapy from 115 songs.\n\nPrivacy-first design: no login, no analytics, no data collection, screenshots auto-delete after processing.",
+    outcomeBullets: [
+      "100+ users within 48 hours of Reddit launch (viral adoption)",
+      "4 specialized AI agents providing Empathy, Clarity, Closure, Direction",
+      "Screenshot analysis for objective relationship pattern detection",
+      "115-song curated music therapy database across 4 eras",
+      "Zero data storage, no accounts required (100% privacy-first)",
+    ],
+    technologies: [
+      "Python",
+      "Streamlit",
+      "Agno",
+      "Google Gemini 2.5 Flash",
+    ],
+    status: "Active",
+    statusColor: "green",
+    isFeatured: true,
+    demoUrl: "https://umang-breakup-recovery-agent.streamlit.app/",
+    youtubeUrl: "",
+  },
+  {
     id: "marketing-analytics-dashboard",
     slug: "marketing-analytics",
     title: "Marketing Analytics Dashboard",
@@ -108,7 +142,7 @@ export const projectsData: Project[] = [
     problem:
       "The marketing team was using 3 separate expensive SaaS tools to track performance across Instagram, Twitter, and TikTok. This fragmented approach required 15+ hours of manual work weekly, lacked unified insights, and cost over $1,000 per month in tool subscriptions.",
     detailedDescription:
-      "Built a centralized marketing analytics dashboard using Retool that unified data from 3 sources (Instagram, Twitter, TikTok) with AI-powered sentiment analysis and trend detection. Replaced 3 expensive SaaS tools while providing better insights and saving the marketing team 15+ hours of manual work weekly. The dashboard provides real-time metrics, automated comment analysis and viral content pattern identification—all in one interface.",
+      "Built a centralized marketing analytics dashboard using Retool that unified data from 3 sources (Instagram, Twitter, TikTok) with AI-powered sentiment analysis and trend detection. Replaced 3 expensive SaaS tools while providing better insights and saving the marketing team 15+ hours of manual work weekly.\n\nThe dashboard provides real-time metrics, automated comment analysis, and viral content pattern identification, all in one interface.",
     outcomeBullets: [
       "$1,000+ cost saved per month",
       "15+ hours/week time savings for marketing team",
@@ -137,11 +171,11 @@ export const projectsData: Project[] = [
     image: "projects/fine-tuned-chatbot",
     imageAlt: "Fine-Tuned AI Chatbot for Personalized Conversations",
     briefDescription:
-      "Fine-tuned GPT-4o on 450+ carefully curated conversation examples to build a natural, human-like in-app chatbot. It adapts to user tone, discusses diverse topics, and provides personalized responses—improving session time by 100%.",
+      "Fine-tuned GPT-4o on 450+ carefully curated conversation examples to build a natural, human-like in-app chatbot. It adapts to user tone, discusses diverse topics, and provides personalized responses, improving session time by 100%.",
     problem:
-      "Users often struggled to hold meaningful or natural conversations inside the app—leading to low response rates (15%) and shallow conversations averaging only 3.2 messages. This limited user engagement and overall satisfaction.",
-      detailedDescription:
-      "Led the end-to-end development of Hunch’s Fine-Tuned Chatbot, starting from dataset creation to production deployment. The project began with curating a high-quality dataset of 450+ conversation examples, each scored and cleaned through a structured data-quality framework. This ensured consistent formatting, labeling, and conversational tone across all samples. GPT-4o was then fine-tuned on this dataset to create a model capable of holding natural, personalized, and context-aware conversations. Further collaborated with engineering to integrate the model into the production app serving 100,000+ users, where it became a key engagement driver.",
+      "Users often struggled to hold meaningful or natural conversations inside the app, leading to low response rates (15%) and shallow conversations averaging only 3.2 messages. This limited user engagement and overall satisfaction.",
+    detailedDescription:
+      "Led the end-to-end development of Hunch's Fine-Tuned Chatbot, starting from dataset creation to production deployment. The project began with curating a high-quality dataset of 450+ conversation examples, each scored and cleaned through a structured data-quality framework. This ensured consistent formatting, labeling, and conversational tone across all samples.\n\nGPT-4o was then fine-tuned on this dataset to create a model capable of holding natural, personalized, and context-aware conversations. Further collaborated with engineering to integrate the model into the production app serving 100,000+ users, where it became a key engagement driver.",
     outcomeBullets: [
       "180% increase in response rate (15% → 42%)",
       "144% increase in average messages per conversation (3.2 → 7.8)",
@@ -162,6 +196,41 @@ export const projectsData: Project[] = [
     youtubeUrl: ""
   },
   {
+    id: "git-roast",
+    slug: "git-roast",
+    title: "Git Roast: Dev Roasting Platform",
+    image: "projects/git-roast",
+    imageAlt: "Git Roast - AI-Powered Developer Roasting Platform",
+    briefDescription:
+      "AI-powered web app that brutally roasts any GitHub repository or profile, analyzing commit patterns, late-night coding habits, and code quality with savage, brutally honest feedback. Features MCP integration for Claude Desktop, Cursor, and other AI tools.",
+    problem:
+      "Developers have linters, analyzers, dashboards, metrics, CI/CD pipelines. Everything serious and structured. But no tool tells you the truth the way a friend would at 2 AM about your coding habits. Late-night commits, poor commit messages, and overworking patterns go unnoticed until burnout hits.",
+    detailedDescription:
+      "Built a full-stack TypeScript application with Google Gemini AI that generates personalized, brutally honest roasts based on actual repository data.\n\nFeatures include: Deep Git Analysis (commit patterns, late-night coding detection, weekend work identification), Savage Developer Grades (A to F), and Dubious Achievements (\"Vampire Coder\" for late commits, \"Bug Factory\" for too many fix commits, \"Keyboard Prisoner\" for weekend work).\n\nAlso includes PDF exports to \"keep you grounded\" and MCP integration enabling direct access from Claude Desktop, ChatGPT, Cursor, and other AI tools. Deployed on Vercel with serverless functions and real-time streaming responses.",
+    outcomeBullets: [
+      "MCP integration for Claude Desktop, ChatGPT, Cursor, and other AI tools",
+      "Deep analysis: commit patterns, late-night coding, weekend work",
+      "Achievement system: \"Vampire Coder\", \"Keyboard Prisoner\", \"Bug Factory\"",
+      "Developer Report Card with A+ to F grading",
+      "PDF export with complete roast reports",
+      "Real-time streaming AI responses",
+    ],
+    technologies: [
+      "React 18",
+      "Vite 6",
+      "TypeScript",
+      "TailwindCSS",
+      "Framer Motion",
+      "Google Gemini AI",
+      "Vercel Serverless Functions",
+    ],
+    status: "Active",
+    statusColor: "green",
+    isFeatured: true,
+    demoUrl: "https://git-roasts.vercel.app/",
+    youtubeUrl: "",
+  },
+  {
     id: "poll-promotion-engine",
     slug: "poll-promotion-engine",
     title: "Poll Promotion Engine",
@@ -172,7 +241,7 @@ export const projectsData: Project[] = [
     problem:
       "Launching poll campaigns required 2 days of manual work involving spreadsheets, SQL queries, and engineering dependencies. The team relied on Amazon Personalize for targeting, which was a black box for us and didn't provide the precision needed for effective campaigns.",
     detailedDescription:
-      "Built automated campaign management interface for targeted poll distribution at Hunch, reducing campaign launch time from 2 days to under 5 minutes while eliminating 85% of manual work. System replaced dependency on Amazon Personalize with custom targeting logic and precision audience segmentation. Features include visual campaign builder, precision audience targeting, preview before launch, A/B test setup, real-time performance tracking, and automated scheduling.",
+      "Built automated campaign management interface for targeted poll distribution at Hunch, reducing campaign launch time from 2 days to under 5 minutes while eliminating 85% of manual work. System replaced dependency on Amazon Personalize with custom targeting logic and precision audience segmentation.\n\nFeatures include visual campaign builder, precision audience targeting, preview before launch, A/B test setup, real-time performance tracking, and automated scheduling.",
     outcomeBullets: [
       "99% reduction in launch time (2 days → 5 minutes)",
       "85% reduction in manual effort (no spreadsheets, SQL, or engineering dependency)",
@@ -205,7 +274,7 @@ export const projectsData: Project[] = [
     problem:
       "Hunch needed to diversify revenue streams beyond the mobile app. The existing $5,000 monthly revenue was entirely dependent on in-app purchases, and there was no way to capture users who discovered the brand through web search or social media before downloading the app.",
     detailedDescription:
-      "Built web-based personality assessment (MBTI test) and app conversion funnel that created entirely new revenue stream for Hunch. Users could take the test on web, see their personality type, purchase a premium plan, and then install the app with their profile pre-loaded. This captured high-intent search traffic and started users with personalized context, increasing conversion efficiency and lifetime value.",
+      "Built web-based personality assessment (MBTI test) and app conversion funnel that created entirely new revenue stream for Hunch. Users could take the test on web, see their personality type, purchase a premium plan, and then install the app with their profile pre-loaded.\n\nThis captured high-intent search traffic and started users with personalized context, increasing conversion efficiency and lifetime value.",
     outcomeBullets: [
       "$1,500+ in revenue added from month one",
       "30% increase in overall monthly revenue",
@@ -235,6 +304,38 @@ export const projectsData: Project[] = [
     youtubeUrl: "",
   },
   {
+    id: "fashion-street-ai",
+    slug: "fashion-street-ai-style-reports",
+    title: "Fashion Street: AI Style Reports",
+    image: "projects/fashion-street-ai",
+    imageAlt: "Fashion Street - AI-Powered Personalized Style Reports",
+    briefDescription:
+      "AI fashion recommendation system running in a family retail store that generates personalized 4-page color analysis and style reports. Analyzes skin tone, facial features, body structure, and style preferences to recommend flattering colors and outfit combinations for men.",
+    problem:
+      "Men often lack confidence in fashion choices, relying on spouses or friends for guidance. Professional style consultations are expensive and inaccessible, while generic fashion advice doesn't account for individual skin tone (warm/cool/neutral), face shape, beard, glasses, or body structure.",
+    detailedDescription:
+      "Built an AI-powered fashion recommendation system deployed in a family-run men's garment store. Users submit their photo via Telegram, and the system analyzes skin undertone (warm/cool/neutral), facial features (beard, glasses, face cut), and body structure to generate a premium 4-page PDF report with store branding.\n\nReports include personalized color palettes (best colors, neutral colors, colors to avoid), outfit combination suggestions (shirt + trouser pairings), and styling tips. The system serves as a free top-of-funnel lead generation tool, bringing customers into the store. Future plans include plugging in store inventory for hyper-personalized recommendations.",
+    outcomeBullets: [
+      "Running in production for 1+ month (closed beta)",
+      "AI skin tone and facial feature analysis",
+      "Premium 4-page personalized PDF reports with store branding",
+      "Top-of-funnel lead generation driving in-store traffic",
+      "Telegram bot integration for easy customer access",
+      "Plans to expand with store inventory integration",
+    ],
+    technologies: [
+      "Python",
+      "FastAPI",
+      "Google Gemini",
+      "Telegram Bot API",
+    ],
+    status: "Active",
+    statusColor: "green",
+    isFeatured: true,
+    demoUrl: "",
+    youtubeUrl: "",
+  },
+  {
     id: "newsletter-generator",
     slug: "newsletter-generator",
     title: "Newsletter Generation System",
@@ -245,7 +346,7 @@ export const projectsData: Project[] = [
     problem:
       "Creators spend 2-3 hours daily scanning multiple sources (Twitter, YouTube, Reddit, blogs, RSS feeds) to draft newsletters, slowing publishing frequency and hurting consistency. Manual research and drafting prevents creators from focusing on high-value work and maintaining regular publication schedules.",
     detailedDescription:
-      "Built CreatorPulse, a production-grade newsletter generation system using Next.js, TypeScript, and Supabase. The system aggregates content from YouTube, Reddit, Twitter, RSS feeds, and blogs, then clusters and ranks emerging topics using custom algorithms. It generates drafts in the creator's writing style using GPT-OSS-20B (via OpenRouter), achieving ≥95% draft readiness. Features include rollback edits, source management toggles, modular pipelines, and cron-based automation for scheduled delivery.",
+      "Built CreatorPulse, a production-grade newsletter generation system using Next.js, TypeScript, and Supabase. The system aggregates content from YouTube, Reddit, Twitter, RSS feeds, and blogs, then clusters and ranks emerging topics using custom algorithms. It generates drafts in the creator's writing style using GPT-OSS-20B (via OpenRouter), achieving ≥95% draft readiness.\n\nFeatures include rollback edits, source management toggles, modular pipelines, and cron-based automation for scheduled delivery.",
     outcomeBullets: [
       "Reduced drafting time from 2-3 hours → <5 minutes",
       "≥95% ready drafts with tone and voice alignment",
@@ -281,7 +382,7 @@ export const projectsData: Project[] = [
     problem:
       "Students struggle to quickly find specific information within extensive lecture materials and scattered resources (GitHub repos, YouTube videos, blog posts). Manual searching through long lecture recordings wastes study time, and there's no way to ask follow-up context-aware questions about course content. This leads to inefficient learning and missed opportunities for deeper understanding.",
     detailedDescription:
-      "Lecture Lens is an AI-powered cohort assistant built with Next.js 14 (App Router), React 18, and Tailwind CSS. The system processes VTT lecture transcripts with semantic chunking, auto-scrapes resources from GitHub, YouTube, and blogs, and performs unified vector search across all content using Supabase (PostgreSQL 15 + pgvector). It leverages OpenRouter (Gemini + OpenAI embeddings) and LlamaIndex for AI/ML capabilities. The chat interface provides context-aware conversations with history, multi-cohort authentication with Row Level Security (RLS), hybrid ranking with title matching, and comprehensive timestamped summaries. Built end-to-end RAG pipeline in 24 hours for hackathon submission.",
+      "Lecture Lens is an AI-powered cohort assistant built with Next.js 14 (App Router), React 18, and Tailwind CSS. The system processes VTT lecture transcripts with semantic chunking, auto-scrapes resources from GitHub, YouTube, and blogs, and performs unified vector search across all content using Supabase (PostgreSQL 15 + pgvector). It leverages OpenRouter (Gemini + OpenAI embeddings) and LlamaIndex for AI/ML capabilities.\n\nThe chat interface provides context-aware conversations with history, multi-cohort authentication with Row Level Security (RLS), hybrid ranking with title matching, and comprehensive timestamped summaries. Built end-to-end RAG pipeline in 24 hours for hackathon submission.",
     outcomeBullets: [
       "Won 1st Runner-Up at hackathon (built in 24 hours)",
       "Complete RAG pipeline with timestamped citations",
@@ -311,6 +412,39 @@ export const projectsData: Project[] = [
     youtubeUrl: "",
   },
   {
+    id: "astro-ai",
+    slug: "astro-ai",
+    title: "Astro AI",
+    image: "projects/astro-ai",
+    imageAlt: "Astro AI - AI-Powered Vedic Astrology Platform on WhatsApp",
+    briefDescription:
+      "AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.",
+    problem:
+      "Professional astrology is often inaccessible. Consultations cost $50-$200 per session, require scheduled appointments, and are crowded with non-credible practitioners upselling gems and rituals. This creates high friction and low trust for users seeking genuine, affordable, and immediate guidance.",
+    detailedDescription:
+      "Astro AI is a conversational astrology platform that combines traditional Vedic astrology principles with modern AI technology. Using Swiss Ephemeris for precise astronomical calculations and GPT-5 for natural language conversations, it delivers personalized astrological insights through WhatsApp.\n\nThe platform democratizes access to professional-quality astrology by making it affordable ($2.99/month vs $50-200 per consultation), instantly available (24/7 vs appointment-based), and accessible through WhatsApp (no app download required).",
+    outcomeBullets: [
+      "95% cost reduction vs traditional astrologers ($2.99/month vs $50-200 per consultation)",
+      "AI-powered birth chart generation with NASA-grade astronomical accuracy",
+      "Multilingual support (English, Hindi, Gujarati) at launch",
+      "24/7 availability with instant responses within 5-10 seconds",
+    ],
+    technologies: [
+      "Python",
+      "FastAPI",
+      "GPT-5",
+      "Swiss Ephemeris",
+      "PostgreSQL",
+      "Redis",
+      "WhatsApp Business API",
+    ],
+    status: "In Progress",
+    statusColor: "yellow",
+    isFeatured: true,
+    demoUrl: "",
+    youtubeUrl: "",
+  },
+  {
     id: "foggy-rainwater-text-generator",
     slug: "foggy-rainwater-text-generator",
     title: "Foggy Rainwater Style Text Generator",
@@ -319,9 +453,9 @@ export const projectsData: Project[] = [
     briefDescription:
       "Custom-trained LoRA model that generates realistic foggy window-style handwritten text and doodles. Created from scratch with no existing dataset, producing natural condensation-on-glass text effects for creative applications.",
     problem:
-      "Existing diffusion models like Flux and SDXL could handle graffiti and calligraphy, but no LoRA existed for foggy rainwater glass text—the effect of text written on steamy windows during rainy days. This niche style required building everything from scratch: dataset creation, captioning, and LoRA training with no prior examples to reference.",
+      "Existing diffusion models like Flux and SDXL could handle graffiti and calligraphy, but no LoRA existed for foggy rainwater glass text: the effect of text written on steamy windows during rainy days. This niche style required building everything from scratch: dataset creation, captioning, and LoRA training with no prior examples to reference.",
     detailedDescription:
-      "Built a complete LoRA training pipeline from scratch, starting with concept exploration and dataset creation. Initially attempted TTF/OTF font-based synthetic generation but found text sat artificially 'on top' rather than appearing written 'into' the fog. Switched to manual data collection, scraping ~200 real foggy window images from Pinterest, Google Images, and iStock, then creating ~50 custom Photoshop images to cover symbols, digits, and missing glyphs. Used BLIP-2 for automated captioning of all 250 images. Trained 4 different LoRA versions (150, 80, 60, and 30 images) and discovered that smaller, high-quality datasets (30 & 60 images) outperformed larger ones, proving quality > quantity. The final LoRA handles edge cases including long marketing copy, multiline formulas, emojis, doodles, and math puzzles.",
+      "Built a complete LoRA training pipeline from scratch, starting with concept exploration and dataset creation. Initially attempted TTF/OTF font-based synthetic generation but found text sat artificially 'on top' rather than appearing written 'into' the fog. Switched to manual data collection, scraping ~200 real foggy window images from Pinterest, Google Images, and iStock, then creating ~50 custom Photoshop images to cover symbols, digits, and missing glyphs.\n\nUsed BLIP-2 for automated captioning of all 250 images. Trained 4 different LoRA versions (150, 80, 60, and 30 images) and discovered that smaller, high-quality datasets (30 & 60 images) outperformed larger ones, proving quality > quantity. The final LoRA handles edge cases including long marketing copy, multiline formulas, emojis, doodles, and math puzzles.",
     outcomeBullets: [
       "250-image curated dataset (200 real + 50 synthetic)",
       "First-of-its-kind LoRA for foggy window text effects",

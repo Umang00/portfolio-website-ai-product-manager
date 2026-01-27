@@ -65,9 +65,13 @@ export function ProjectDetailsModal({
                 <h3 className="text-lg font-semibold text-foreground">
                   Solution
                 </h3>
-                <p className="text-foreground leading-relaxed">
-                  {highlightMetrics(project.detailedDescription || project.briefDescription)}
-                </p>
+                <div className="space-y-4">
+                  {(project.detailedDescription || project.briefDescription).split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="text-foreground leading-relaxed">
+                      {highlightMetrics(paragraph.trim())}
+                    </p>
+                  ))}
+                </div>
               </div>
             )}
 
