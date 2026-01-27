@@ -168,11 +168,11 @@ export function ProjectCard({
                       ? "noopener noreferrer"
                       : undefined
                   }
-                  aria-label={`View demo for ${project.title}`}
-                  title="View Demo"
+                  aria-label={`Try out ${project.title}`}
+                  title="Try It Out"
                 >
                   <ExternalLink className="h-4 w-4 sm:mr-2 flex-shrink-0" />
-                  <span className="hidden sm:inline">View Demo</span>
+                  <span className="hidden sm:inline">Try It Out</span>
                 </a>
               </Button>
             )}

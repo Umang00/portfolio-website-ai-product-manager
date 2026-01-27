@@ -83,7 +83,7 @@ export function extractYearFromFilename(filename: string): string | undefined {
 }
 
 /**
- * Load all PDF documents from the documents folder
+ * Load all PDF and Markdown documents from the documents folder
  * @returns Array of parsed PDF documents
  */
 export async function loadAllPDFs(): Promise<PDFDocument[]> {
@@ -95,18 +95,21 @@ export async function loadAllPDFs(): Promise<PDFDocument[]> {
     return []
   }
 
-  const files = fs.readdirSync(documentsPath).filter(f => f.endsWith('.pdf'))
+  // Load both PDF and Markdown files
+  const pdfFiles = fs.readdirSync(documentsPath).filter(f => f.endsWith('.pdf'))
+  const mdFiles = fs.readdirSync(documentsPath).filter(f => f.endsWith('.md'))
 
-  if (files.length === 0) {
-    console.warn('No PDF files found in documents folder')
+  if (pdfFiles.length === 0 && mdFiles.length === 0) {
+    console.warn('No PDF or Markdown files found in documents folder')
     return []
   }
 
-  console.log(`Found ${files.length} PDF files to process`)
+  console.log(`Found ${pdfFiles.length} PDF files and ${mdFiles.length} Markdown files to process`)
 
   const documents: PDFDocument[] = []
 
-  for (const file of files) {
+  // Process PDF files
+  for (const file of pdfFiles) {
     try {
       const filePath = path.join(documentsPath, file)
       const content = await parsePDF(filePath)
@@ -136,24 +139,59 @@ export async function loadAllPDFs(): Promise<PDFDocument[]> {
     }
   }
 
+  // Process Markdown files (treated as 'generic' type)
+  for (const file of mdFiles) {
+    try {
+      const filePath = path.join(documentsPath, file)
+      const content = fs.readFileSync(filePath, 'utf-8')
+      const year = extractYearFromFilename(file)
+
+      // Estimate page count (rough estimate based on content length)
+      const estimatedPages = Math.ceil(content.length / 2000)
+
+      documents.push({
+        filename: file,
+        content,
+        type: 'generic',
+        metadata: {
+          pages: estimatedPages,
+          year,
+          source: file,
+        },
+      })
+
+      console.log(`✅ Loaded ${file} (markdown/generic, ~${estimatedPages} pages)`)
+    } catch (error) {
+      console.error(`❌ Failed to load ${file}:`, error)
+    }
+  }
+
   return documents
 }
 
 /**
- * Load a specific PDF document
- * @param filename Name of the PDF file in the documents folder
- * @returns Parsed PDF document
+ * Load a specific PDF or Markdown document
+ * @param filename Name of the file in the documents folder
+ * @returns Parsed document
  */
 export async function loadPDF(filename: string): Promise<PDFDocument> {
   const documentsPath = path.join(process.cwd(), 'documents')
   const filePath = path.join(documentsPath, filename)
 
   if (!fs.existsSync(filePath)) {
-    throw new Error(`PDF file not found: ${filename}`)
+    throw new Error(`Document file not found: ${filename}`)
   }
 
-  const content = await parsePDF(filePath)
-  const type = detectDocumentType(filename, content)
+  let content: string
+  
+  // Handle markdown files differently - read directly instead of parsing as PDF
+  if (filename.endsWith('.md')) {
+    content = fs.readFileSync(filePath, 'utf-8')
+  } else {
+    content = await parsePDF(filePath)
+  }
+  
+  const type = filename.endsWith('.md') ? 'generic' : detectDocumentType(filename, content)
   const year = extractYearFromFilename(filename)
 
   const estimatedPages = Math.ceil(content.length / 2000)
@@ -171,7 +209,7 @@ export async function loadPDF(filename: string): Promise<PDFDocument> {
 }
 
 /**
- * Get list of all PDF files in documents folder
+ * Get list of all PDF and Markdown files in documents folder
  * @returns Array of filenames
  */
 export function listPDFs(): string[] {
@@ -181,5 +219,5 @@ export function listPDFs(): string[] {
     return []
   }
 
-  return fs.readdirSync(documentsPath).filter(f => f.endsWith('.pdf'))
+  return fs.readdirSync(documentsPath).filter(f => f.endsWith('.pdf') || f.endsWith('.md'))
 }
