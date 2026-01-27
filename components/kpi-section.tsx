@@ -10,6 +10,7 @@ const quickStats = [
   { label: "Years Experience", value: 4, suffix: "+", icon: Briefcase },
   { label: "Clients Served", value: 20, suffix: "+", icon: Users },
   { label: "Users Reached", value: 5, suffix: "M+", icon: Target },
+  { label: "AI Products Shipped", value: 14, suffix: "+", icon: Zap },
 ]
 
 const impactKpis = [

@@ -17,7 +17,7 @@ import {
 
 const coreSkills = [
   { header: "Product Management", items: ["MVP Building","Feature Prioritization","Roadmapping","PRD Writing","Cross-Functional Leadership","Experimentation Design","Product Visioning","Market Research","OKR Planning","Go-to-Market Planning","Business Case Development"]},
-  { header: "AI Development", items: ["LLM Fine-Tuning","LoRA Training","RAG Systems","Voice Agent Development","Prompt Engineering","Context Engineering","Function Calling","Tool Integration","Agentic Workflow Design","Text-to-Image Generation","Image-to-Image Translation","Inpainting & Outpainting","Style Transfer","ControlNet Implementation","Model Training","API Integration"]},
+  { header: "AI Development", items: ["LLM Fine-Tuning","LoRA Training","RAG Systems","Voice Agent Development","Prompt Engineering","Context Engineering","Function Calling","Tool Integration","Agentic Workflow Design","Multi-Agent Orchestration","MCP Server Development","Agent SDK Integration","Model Selection Strategy","Text-to-Image Generation","Image-to-Image Translation","Inpainting & Outpainting","Style Transfer","ControlNet Implementation","Model Training","API Integration"]},
   { header: "Data & Analytics", items: ["SQL Analytics","Data Pipeline Design","Funnel Analysis","Cohort Analysis","Dashboard Building","Statistical Analysis","Performance Metrics","Vector Embeddings","Data Cleaning"]},
   { header: "User & Growth", items: ["User Research","UX Strategy","Onboarding Optimization","Retention Strategy","Engagement Design","A/B Testing","Conversion Optimization"]},
   { header: "Content & Strategy", items: ["Content Strategy","Storytelling","Trend Integration","Campaign Design","Growth Experiments"]},
@@ -26,10 +26,11 @@ const coreSkills = [
 
 const techStack = [
   { header: "AI & ML Platforms", items: ["OpenAI","Anthropic","Groq","Grok","Gemini","OpenRouter","Hugging Face","ElevenLabs","Whisper","Runway ML","HeyGen"]},
-  { header: "AI Development Frameworks", items: ["LangChain","LlamaIndex","AutoGen","CrewAI","DSPy","ComfyUI","FlashAttention","Gradio","Baseten"]},
+  { header: "Agentic AI & Orchestration", items: ["OpenAI Agents SDK","Google ADK","Claude Agent SDK","MCP Servers","A2A Protocol","Agno","CrewAI","AutoGen","LangGraph","Multi-Agent Systems"]},
+  { header: "AI Development Frameworks", items: ["LangChain","LlamaIndex","DSPy","ComfyUI","FlashAttention","Gradio","Baseten"]},
   { header: "Generative AI & Diffusion", items: ["Stable Diffusion","SDXL","Flux","Midjourney","ControlNet","AnimateDiff","DreamBooth","LoRA Training","Wan","Veo","NanoBanana","Seedream","InstantID","IP-Adapter"]},
   { header: "Frontend", items: ["React","Next.js","TypeScript","JavaScript","Tailwind","ShadCN","Framer Motion"]},
-  { header: "Backend & APIs", items: ["Python","Node.js","FastAPI","Supabase","PostgreSQL","Prisma","Resend","Postman"]},
+  { header: "Backend & APIs", items: ["Python","Node.js","FastAPI","Streamlit","Supabase","PostgreSQL","Prisma","Resend","Postman"]},
   { header: "Infra & DevOps", items: ["Vercel","AWS","Docker","GitHub Actions","Git","Serverless Deployment"]},
   { header: "Analytics & Operations", items: ["Mixpanel","PostHog","Amplitude","Google Analytics","Retool","Tableau","Notion","Linear","Coda","Airtable"]},
   { header: "Design & Prototyping", items: ["Figma","V0","Cursor","Claude Code","Bolt.new","Lovable","Replit","VoiceFlow"]},

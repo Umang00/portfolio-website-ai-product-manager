@@ -20,10 +20,11 @@ const timelineItems: TimelineItem[] = [
     company: "100x Engineers Cohort",
     date: "Jun 2025 – Present",
     achievements: [
-      "Upskilling in rapid MVP development and AI product experimentation through the cohort",
-      "Founded Lightning AI Solutions to deliver end-to-end AI products as a one-person product team",
-      "Built and shipped prototypes like Newsletter Generator, Lecture Lens, Foggy LoRA, and Astrology AI MVP",
-      "Specializing in End-to-End Product Building, LLM fine-tuning, Voice Agent Architectures, RAG Systems, and AI Agents",
+      "Building end-to-end AI products as a one-person product team through Lightning AI Solutions",
+      "Shipped 14+ AI products: Voice UXR Agent, Git Roast, Breakup Recovery Squad, Fashion Street AI, Newsletter Generator, Lecture Lens, and more",
+      "Deep expertise in Agentic AI: OpenAI Agents SDK, Google ADK, Claude Agent SDK, and multi-agent orchestration frameworks (Agno, CrewAI, AutoGen)",
+      "Built and deployed production MCP servers enabling AI tool integration across Claude Desktop, ChatGPT, and Cursor",
+      "Specializing in agent architecture decisions, model selection strategy, and context engineering for complex AI workflows",
     ],
   },
   {
