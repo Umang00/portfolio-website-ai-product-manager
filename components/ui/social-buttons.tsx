@@ -125,6 +125,25 @@ export function GitHubButton({ className = "", enableSound = true }: CommonProps
 export function ResumeButton({ className = "", enableSound = true }: CommonProps) {
   const shouldReduceMotion = useReducedMotion()
   const { play } = useSound()
+  
+  // Persona-specific resume paths
+  const resumePaths: Record<string, string> = {
+    pm: "/resumes/resume-pm.pdf",
+    builder: "/resumes/resume-builder.pdf",
+    consultant: "/resumes/resume-consultant.pdf",
+  }
+  
+  const getPersona = (): string => {
+    if (typeof window === 'undefined') return 'pm'
+    const params = new URLSearchParams(window.location.search)
+    const urlPersona = params.get('persona')
+    if (urlPersona && ['pm', 'builder', 'consultant'].includes(urlPersona)) {
+      return urlPersona
+    }
+    return process.env.NEXT_PUBLIC_PERSONA || 'pm'
+  }
+  
+  const resumePath = resumePaths[getPersona()] || resumePaths.pm
 
   const handleClick = () => {
     if (enableSound && !shouldReduceMotion) {
@@ -135,7 +154,7 @@ export function ResumeButton({ className = "", enableSound = true }: CommonProps
   if (shouldReduceMotion) {
     return (
       <a
-        href="/resume.pdf"
+        href={resumePath}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Resume"
@@ -155,7 +174,7 @@ export function ResumeButton({ className = "", enableSound = true }: CommonProps
 
   return (
     <motion.a
-      href="/resume.pdf"
+      href={resumePath}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Resume"
@@ -178,6 +197,7 @@ export function ResumeButton({ className = "", enableSound = true }: CommonProps
     </motion.a>
   )
 }
+
 
 // Email button - icon only version for use inside other buttons
 export function EmailButton({ className = "" }: CommonProps) {

@@ -2,9 +2,12 @@
 
 import { useCelebrateOnView } from "@/lib/use-celebrate-on-view"
 import { GitHubButton, LinkedInButton, ResumeButton } from "@/components/ui/social-buttons"
+import { footerContent, getPersona } from "@/lib/content-data"
 
 export function Footer() {
   const footerRef = useCelebrateOnView(0.3)
+  const persona = getPersona()
+  const content = footerContent[persona]
 
   return (
     <footer ref={footerRef} id="footer" className="py-20 px-4 bg-background">
@@ -12,10 +15,10 @@ export function Footer() {
         <div className="text-center space-y-8">
           <div className="space-y-3">
             <h2 className="text-2xl md:text-4xl font-bold">
-              🎉 <span>Congratulations — your search for the right PM ends here.</span>
+              {content.headline}
             </h2>
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-              ⏳ The time is ticking — let’s stop searching and start building.
+              {content.subheadline}
             </p>
           </div>
 

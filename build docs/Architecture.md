@@ -193,6 +193,7 @@ This document describes the complete system architecture for the portfolio websi
 **Location:** `/app/api/`
 
 #### `/api/contact/route.ts`
+
 - **Method:** POST
 - **Purpose:** Handle contact form submissions
 - **Process:**
@@ -203,27 +204,28 @@ This document describes the complete system architecture for the portfolio websi
 - **Output:** `{ success: boolean, message: string }`
 
 #### `/api/companion/route.ts` (Legacy)
+
 - **Method:** GET
 - **Purpose:** Legacy AI Companion endpoint (replaced by `/api/ai/query`)
 - **Status:** ⚠️ May be deprecated in favor of new AI Companion API
 
 ### Technology Stack (Portfolio)
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Framework | Next.js 14 (App Router) | React framework with SSR/SSG |
-| Language | TypeScript | Type safety |
-| Styling | Tailwind CSS | Utility-first CSS |
-| UI Components | shadcn/ui (Radix) | Accessible component library |
-| Motion | Framer Motion 6 | Animations |
-| Carousel | keen-slider | Carousel functionality |
-| Tilt | react-parallax-tilt | 3D tilt effects |
-| Typewriter | react-simple-typewriter | Typewriter animation |
-| Count-up | react-countup | Number animations |
-| Email | Resend | Email delivery |
-| Database | Supabase | Contact form storage |
-| Analytics | Plausible | Privacy-first analytics |
-| Hosting | Vercel | Deployment platform |
+| Layer         | Technology              | Purpose                      |
+| ------------- | ----------------------- | ---------------------------- |
+| Framework     | Next.js 14 (App Router) | React framework with SSR/SSG |
+| Language      | TypeScript              | Type safety                  |
+| Styling       | Tailwind CSS            | Utility-first CSS            |
+| UI Components | shadcn/ui (Radix)       | Accessible component library |
+| Motion        | Framer Motion 6         | Animations                   |
+| Carousel      | keen-slider             | Carousel functionality       |
+| Tilt          | react-parallax-tilt     | 3D tilt effects              |
+| Typewriter    | react-simple-typewriter | Typewriter animation         |
+| Count-up      | react-countup           | Number animations            |
+| Email         | Resend                  | Email delivery               |
+| Database      | Supabase                | Contact form storage         |
+| Analytics     | Plausible               | Privacy-first analytics      |
+| Hosting       | Vercel                  | Deployment platform          |
 
 ### Performance Optimizations
 
@@ -239,6 +241,7 @@ This document describes the complete system architecture for the portfolio websi
 ## Part 2: AI Companion Architecture
 
 ### System Overview
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     USER INTERFACE (Next.js)                 │
@@ -298,12 +301,14 @@ This document describes the complete system architecture for the portfolio websi
 **Location:** `/components/ai/`, `/components/api-test/`, and `/components/projects/`
 
 **AI Companion Components:** ✅ **IMPLEMENTED** - Phase 5
+
 - `chat-overlay.tsx` - Full-screen chat interface (uses createPortal for full-page rendering)
 - `message-bubble.tsx` - Individual message display
 - `suggested-questions.tsx` - Follow-up prompts
 - Voice input integrated via `use-speech-input.ts` hook
 
 **API Testing Interface:**
+
 - `/app/api-test/page.tsx` - Main API testing page
 - `/components/api-test/APITester.tsx` - Interactive API tester component
 - Features:
@@ -314,12 +319,14 @@ This document describes the complete system architecture for the portfolio websi
   - Support for GET (query params) and POST (JSON body) requests
 
 **State Management:**
+
 - Conversation history (array of messages)
 - Loading states
 - Error states
 - Modal open/close state
 
 **API Communication:**
+
 - POST to `/api/ai/query` with { query, conversationHistory }
 - Receive { answer, suggestedQuestions, sources }
 
@@ -330,6 +337,7 @@ This document describes the complete system architecture for the portfolio websi
 **Endpoints:**
 
 #### `/api/ai/query/route.ts`
+
 - **Method:** POST
 - **Input:** `{ query: string, conversationHistory?: array }`
 - **Process:**
@@ -339,6 +347,7 @@ This document describes the complete system architecture for the portfolio websi
 - **Output:** `{ answer: string, sources: array, suggestedQuestions?: array }`
 
 #### `/api/ai/create-index/route.ts`
+
 - **Method:** POST
 - **Input:** `{ forceRebuild?: boolean }`
 - **Process:**
@@ -347,6 +356,7 @@ This document describes the complete system architecture for the portfolio websi
 - **Output:** `{ success: boolean, chunksCreated: number, documentsProcessed: number }`
 
 #### `/api/ai/refresh/route.ts`
+
 - **Method:** POST (called by Vercel Cron)
 - **Process:**
   1. Check for file changes
@@ -354,12 +364,14 @@ This document describes the complete system architecture for the portfolio websi
 - **Output:** `{ success: boolean, message: string }`
 
 #### `/api/ai/rebuild/route.ts`
+
 - **Method:** POST, GET
 - **Auth:** Requires `ADMIN_SECRET` in request body (POST) or query param (GET)
 - **Process:** Force full rebuild regardless of changes
 - **Output:** `{ success: boolean, message: string, chunksCreated: number, documentsProcessed: number, stats: object }`
 
 #### Test Endpoints
+
 - `/api/ai/test-pdf-parsing/route.ts` - Test PDF parsing without embeddings
 - `/api/ai/test-chunking/route.ts` - Test document chunking
 - `/api/ai/test-pdfs/route.ts` - List and test all PDFs
@@ -369,7 +381,9 @@ This document describes the complete system architecture for the portfolio websi
 **Location:** `/lib/ai/`
 
 #### `service.js` (Main Orchestrator)
+
 **Key Functions:**
+
 - `buildMemoryIndex(forceRebuild)` - Load docs, chunk, embed, store
 - `queryAI(query, conversationHistory)` - Retrieve context, generate response
 - `checkForChanges()` - Hash-based file change detection
@@ -377,27 +391,35 @@ This document describes the complete system architecture for the portfolio websi
 - `generateSuggestedQuestions(query, chunks)` - Context-aware follow-ups
 
 #### `embeddings.js`
+
 **Purpose:** Generate embeddings using OpenAI API
+
 - Model: `text-embedding-3-small`
 - Dimensions: 1536
 - Batch size: 50
 
 #### `llm.js`
+
 **Purpose:** Generate responses using OpenRouter
+
 - Model: `meta-llama/llama-3.1-8b-instruct:free`
 - Max tokens: 2000
 - Temperature: 0.7
 - First-person responses in Umang's voice
 
 #### `vector-store.js`
+
 **Purpose:** MongoDB Atlas operations
+
 - `storeEmbeddings(chunks)` - Batch insert
 - `searchSimilar(queryEmbedding, limit)` - Basic vector kNN search
 - `smartSearch(queryEmbedding, filters, limit)` - Multi-stage retrieval with filtering and re-ranking
 - `rerankResults(chunks, filters)` - Multi-signal scoring algorithm
 
 #### `file-watcher.ts`
+
 **Purpose:** Detect document changes
+
 - SHA-256 hash comparison for PDFs
 - Timestamp comparison for GitHub repos
 - Only processes changed files to reduce API costs
@@ -429,7 +451,60 @@ This document describes the complete system architecture for the portfolio websi
 
 ---
 
-## Part 3: System Integration
+## Part 4: Polymorphic Architecture (The "3-in-1" System)
+
+### Concept
+
+The portfolio creates three distinct user experiences from a single codebase, tailored to specific viewer personas. This allows for hyper-personalized messaging while maintaining a single source of truth for code.
+
+### Control Mechanism
+
+- **Environment Variable:** `NEXT_PUBLIC_PERSONA` ("pm" | "builder" | "consultant")
+- **Default:** Falls back to "pm" if undefined.
+- **URL Override:** Can be overridden via query parameter `?persona=builder` for testing/specific links.
+
+### Implementation Layers
+
+#### 1. Content Layer (`lib/content-data.ts`)
+
+A central dictionary serves all text variation. Components request data by key, and the system resolves the correct string based on the active persona.
+
+```typescript
+export const heroContent = {
+  pm: { title: "Product Manager", subtitle: "Shipping impact..." },
+  builder: { title: "AI Engineer", subtitle: "Building pipelines..." },
+  consultant: {
+    title: "Solutions Architect",
+    subtitle: "Automating workflows...",
+  },
+};
+```
+
+#### 2. Component Adaptation
+
+Key components render differently based on the active persona:
+
+- **Hero Section:** Different value propositions, titles, and background emphases.
+- **Projects Showcase:** Projects are re-ordered and descriptions are re-written.
+  - _Example:_ "Voice Agent" is framed as "User Research Tool" for PMs, but "Twilio/Websockets Implementation" for Builders.
+- **Skills & Stack (`skills-and-stack.tsx`):**
+  - **PM:** Focus on Strategy, Metrics, No-Code.
+  - **Builder:** Focus on Tech Stack, Architecture, Code.
+  - **Consultant:** Focus on ROI, Automation, Delivery.
+- **Contact Section:** CTAs change ("Strategy Session" vs "Tech Deep Dive").
+- **Assets:** Dynamic resume links (`/resumes/resume-pm.pdf`, etc).
+
+#### 3. Deployment Strategy
+
+Three Vercel deployments connected to the same git repository, each with a different environment variable:
+
+- `umang-pm.vercel.app` (Persona: PM)
+- `umang-build.vercel.app` (Persona: Builder)
+- `umang-consult.vercel.app` (Persona: Consultant)
+
+---
+
+## Part 5: System Integration
 
 ### How Portfolio and AI Companion Integrate
 
@@ -462,21 +537,21 @@ This document describes the complete system architecture for the portfolio websi
 
 ### Combined Technology Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Framework | Next.js 14 (App Router) | React framework |
-| Language | TypeScript | Type safety |
-| Styling | Tailwind CSS | UI styling |
-| UI Components | shadcn/ui (Radix) | Component library |
-| Motion | Framer Motion 6 | Animations |
-| Vector DB | MongoDB Atlas (M0) | Embeddings storage |
-| Embeddings | OpenAI text-embedding-3-small | Vector generation |
-| LLM | OpenRouter (Llama 3.1 8B free) | Chat completions |
-| PDF Parsing | pdf-parse-new | Extract text from PDFs |
-| Email | Resend | Email delivery |
-| Database | Supabase | Contact form storage |
-| Analytics | Plausible | Privacy-first analytics |
-| Hosting | Vercel | Deployment platform |
+| Layer         | Technology                     | Purpose                 |
+| ------------- | ------------------------------ | ----------------------- |
+| Framework     | Next.js 14 (App Router)        | React framework         |
+| Language      | TypeScript                     | Type safety             |
+| Styling       | Tailwind CSS                   | UI styling              |
+| UI Components | shadcn/ui (Radix)              | Component library       |
+| Motion        | Framer Motion 6                | Animations              |
+| Vector DB     | MongoDB Atlas (M0)             | Embeddings storage      |
+| Embeddings    | OpenAI text-embedding-3-small  | Vector generation       |
+| LLM           | OpenRouter (Llama 3.1 8B free) | Chat completions        |
+| PDF Parsing   | pdf-parse-new                  | Extract text from PDFs  |
+| Email         | Resend                         | Email delivery          |
+| Database      | Supabase                       | Contact form storage    |
+| Analytics     | Plausible                      | Privacy-first analytics |
+| Hosting       | Vercel                         | Deployment platform     |
 
 ### Deployment Architecture
 
@@ -556,11 +631,13 @@ SUPABASE_ANON_KEY="..."
 ### Monitoring & Logging
 
 **Key Metrics:**
+
 - Portfolio: Lighthouse Performance ≥ 95, LCP ≤ 1.5s
 - AI Companion: Query latency (p50, p95, p99), embedding API costs, LLM API calls
 - Overall: Page views, engagement, conversion rates
 
 **Logging Strategy:**
+
 - Use `console.log` for development
 - Use structured logging in production (JSON format)
 - Log all API calls with timestamps
@@ -569,12 +646,14 @@ SUPABASE_ANON_KEY="..."
 ### Scalability Considerations
 
 **Current Limitations (Free Tier):**
+
 - MongoDB: 512 MB storage (~500K chunks)
 - Vercel: 100 GB bandwidth/month
 - OpenAI: Pay-as-you-go (no free tier)
 - OpenRouter: Free tier with rate limits
 
 **Scaling Strategy (If Needed):**
+
 1. Upgrade MongoDB to M10 ($0.08/hour)
 2. Upgrade Vercel to Pro ($20/month)
 3. Implement caching layer (Redis)
@@ -586,12 +665,14 @@ SUPABASE_ANON_KEY="..."
 ## Future Enhancements
 
 **Portfolio V2:**
+
 - Enhanced animations and micro-interactions
 - More project showcases
 - Blog section integration
 - Newsletter signup
 
 **AI Companion V2:**
+
 - Fine-tune model on Umang's writing style
 - Multi-modal support (images, diagrams)
 - Voice output (text-to-speech)
@@ -600,6 +681,7 @@ SUPABASE_ANON_KEY="..."
 - Integration with calendar (schedule meetings)
 
 **Integration V2:**
+
 - AI-powered project recommendations
 - Context-aware navigation suggestions
 - Personalized content based on visitor profile

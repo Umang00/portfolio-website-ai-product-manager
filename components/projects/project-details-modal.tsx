@@ -17,12 +17,14 @@ interface ProjectDetailsModalProps {
   project: Project
   open: boolean
   onOpenChange: (open: boolean) => void
+  personaDetailedDescription?: string
 }
 
 export function ProjectDetailsModal({
   project,
   open,
   onOpenChange,
+  personaDetailedDescription,
 }: ProjectDetailsModalProps) {
   const [isChatOpen, setIsChatOpen] = useState(false)
 
@@ -60,13 +62,13 @@ export function ProjectDetailsModal({
             )}
 
             {/* Solution/Approach Section */}
-            {(project.detailedDescription || project.briefDescription) && (
+            {(personaDetailedDescription || project.detailedDescription || project.briefDescription) && (
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-foreground">
                   Solution
                 </h3>
                 <div className="space-y-4">
-                  {(project.detailedDescription || project.briefDescription).split('\n\n').map((paragraph, index) => (
+                  {(personaDetailedDescription || project.detailedDescription || project.briefDescription).split('\n\n').map((paragraph, index) => (
                     <p key={index} className="text-foreground leading-relaxed">
                       {highlightMetrics(paragraph.trim())}
                     </p>

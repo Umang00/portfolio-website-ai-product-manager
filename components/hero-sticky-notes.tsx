@@ -3,65 +3,59 @@
 import { motion } from "framer-motion"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { cn } from "@/lib/utils"
+import { stickyNotesContent, getPersona } from "@/lib/content-data"
 
-// PM Learnings/Quotes for sticky notes
-// Layout from labeled reference image 1: wider vertical spacing between notes
-const leftSideNotes = [
+// Layout configuration for sticky notes (positions, colors, rotations)
+// Note text comes from content-data.ts based on persona
+const leftNoteConfig = [
   {
     id: 1,
-    text: "Ship fast, learn faster. Perfection is the enemy of progress.",
     color: "yellow",
     rotation: -6,
-    yOffset: -150, // TOP note - increased spacing
+    yOffset: -150,
     xOffset: -60,
     tapePosition: "top-left",
   },
   {
     id: 2,
-    text: "90% of PMs fail to deliver because they skip user research.",
     color: "pink",
     rotation: 2,
-    yOffset: 0, // MIDDLE note - centered
+    yOffset: 0,
     xOffset: -180,
     tapePosition: "sides",
   },
   {
     id: 3,
-    text: "Data tells you what, users tell you why.",
     color: "blue",
     rotation: -3,
-    yOffset: 150, // BOTTOM note - increased spacing
+    yOffset: 150,
     xOffset: -360,
     tapePosition: "top-center",
   },
 ]
 
-// Right side notes - aligned horizontally with left side (1 with 4, 2 with 5, 3 with 6)
-const rightSideNotes = [
+const rightNoteConfig = [
   {
     id: 4,
-    text: "If users need a tutorial, you built it wrong.",
     color: "green",
     rotation: 4,
-    yOffset: -150, // TOP note - aligned with note 1
+    yOffset: -150,
     xOffset: 60,
     tapePosition: "top-right",
   },
   {
     id: 5,
-    text: "The best PMs are statisticians with empathy.",
     color: "orange",
     rotation: -2,
-    yOffset: 0, // MIDDLE note - aligned with note 2
+    yOffset: 0,
     xOffset: 180,
     tapePosition: "top-center",
   },
   {
     id: 6,
-    text: "Hallucinations aren't bugs they're unhandled moments.",
     color: "purple",
     rotation: 3,
-    yOffset: 150, // BOTTOM note - aligned with note 3
+    yOffset: 150,
     xOffset: 360,
     tapePosition: "top-bottom",
   },
@@ -102,13 +96,23 @@ const colorStyles = {
 
 type TapePosition = "top-left" | "top-right" | "top-center" | "top-bottom" | "sides"
 
+interface NoteConfig {
+  id: number
+  color: string
+  rotation: number
+  yOffset: number
+  xOffset: number
+  tapePosition: string
+}
+
 interface StickyNoteProps {
-  note: typeof leftSideNotes[0] | typeof rightSideNotes[0]
+  note: NoteConfig
+  text: string
   index: number
   side: "left" | "right"
 }
 
-function StickyNote({ note, index, side }: StickyNoteProps) {
+function StickyNote({ note, text, index, side }: StickyNoteProps) {
   const prefersReducedMotion = useReducedMotion()
   const colors = colorStyles[note.color as keyof typeof colorStyles]
 
@@ -192,7 +196,7 @@ function StickyNote({ note, index, side }: StickyNoteProps) {
           clipPath: tornEdgePath,
         }}
       >
-        <p className="text-sm font-medium leading-tight">{note.text}</p>
+        <p className="text-sm font-medium leading-tight">{text}</p>
       </div>
     )
   }
@@ -344,7 +348,7 @@ function StickyNote({ note, index, side }: StickyNoteProps) {
       )}
 
       {/* Content */}
-      <p className="text-sm md:text-base font-medium leading-tight relative z-10">{note.text}</p>
+      <p className="text-sm md:text-base font-medium leading-tight relative z-10">{text}</p>
     </motion.div>
   )
 }
@@ -355,6 +359,8 @@ interface HeroStickyNotesProps {
 
 export function HeroStickyNotes({ className }: HeroStickyNotesProps) {
   const prefersReducedMotion = useReducedMotion()
+  const persona = getPersona()
+  const content = stickyNotesContent[persona]
 
   // Hide on mobile, show on desktop
   // overflow-visible allows tape to extend beyond note boundaries
@@ -362,15 +368,15 @@ export function HeroStickyNotes({ className }: HeroStickyNotesProps) {
     <>
       {/* Left side notes - positioned relative to profile image container */}
       <div className={cn("hidden lg:block absolute inset-0 overflow-visible", className)}>
-        {leftSideNotes.map((note, index) => (
-          <StickyNote key={note.id} note={note} index={index} side="left" />
+        {leftNoteConfig.map((note, index) => (
+          <StickyNote key={note.id} note={note} text={content.left[index]} index={index} side="left" />
         ))}
       </div>
 
       {/* Right side notes - positioned relative to profile image container */}
       <div className={cn("hidden lg:block absolute inset-0 overflow-visible", className)}>
-        {rightSideNotes.map((note, index) => (
-          <StickyNote key={note.id} note={note} index={index + 3} side="right" />
+        {rightNoteConfig.map((note, index) => (
+          <StickyNote key={note.id} note={note} text={content.right[index]} index={index + 3} side="right" />
         ))}
       </div>
     </>

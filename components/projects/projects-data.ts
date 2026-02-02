@@ -20,7 +20,7 @@ export const projectsData: Project[] = [
       "82% completion rate with 4.2/5 user satisfaction",
     ],
     technologies: [
-      "GPT-o3-mini",
+      "GPT-4o",
       "ElevenLabs",
       "Twilio",
       "Redshift SQL",
@@ -152,7 +152,7 @@ export const projectsData: Project[] = [
     technologies: [
       "Retool",
       "Redshift SQL",
-      "GPT-o3-mini",
+      "GPT-4o-mini",
       "Apify",
     ],
     status: "Active",

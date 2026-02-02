@@ -15,10 +15,13 @@ import { Parallax } from "@/components/animations/parallax"
 import { motion } from "framer-motion"
 import { useSound } from "@/hooks/use-sound"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
+import { heroContent, getPersona } from "@/lib/content-data"
 
 const greetings = ["Hey there!", "Welcome!", "Hello!", "Hi!"]
 
 export function Hero() {
+  const persona = getPersona()
+  const content = heroContent[persona]
   const [currentGreeting, setCurrentGreeting] = useState(0)
   const [query, setQuery] = useState("")
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -157,11 +160,11 @@ export function Hero() {
         <ScrollReveal variant="fadeInUp" delay={0.4} duration={0.7}>
         <div className="space-y-6">
           <h1 className="text-4xl md:text-6xl font-bold text-balance min-h-[120px] md:min-h-[180px]">
-            I'm Umang — building products that{" "}
+            {content.headline}{" "}
             <span className="text-primary">
               {isMounted ? (
                 <Typewriter
-                  words={["ship", "scale", "monetize", "drive retention", "users love"]}
+                  words={content.typewriterWords}
                   loop={0}
                   cursor
                   cursorStyle="_"
@@ -170,12 +173,12 @@ export function Hero() {
                   delaySpeed={2000}
                 />
               ) : (
-                "ship"
+                content.typewriterWords[0]
               )}
             </span>
           </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-balance mt-4 mb-8">
-  AI Product Manager blending product thinking, engineering rigor, and user psychology to ship high-impact products
+  {content.tagline}
 </p>
         </div>
         </ScrollReveal>

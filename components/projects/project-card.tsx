@@ -10,17 +10,20 @@ import { CloudinaryImage } from "./cloudinary-image"
 import { cn } from "@/lib/utils"
 import { highlightMetrics } from "@/lib/utils/highlight-metrics"
 import type { Project } from "./types"
+import type { ProjectPersonaContent } from "@/lib/content-data"
 
 interface ProjectCardProps {
   project: Project
-  priority?: boolean // For image priority loading
-  showTechnologies?: boolean // Optional prop to show/hide technologies
+  priority?: boolean
+  showTechnologies?: boolean
+  personaContent?: ProjectPersonaContent
 }
 
 export function ProjectCard({
   project,
   priority = false,
-  showTechnologies = false, // Default to false (hidden)
+  showTechnologies = false,
+  personaContent,
 }: ProjectCardProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -29,6 +32,10 @@ export function ProjectCard({
   // Determine which action buttons to show
   const hasDemo = project.hasDemo ?? (!!project.demoUrl && project.demoUrl.trim() !== "")
   const hasYoutube = project.hasYoutube ?? (!!project.youtubeUrl && project.youtubeUrl.trim() !== "")
+  // Use persona-specific content when available, fall back to project defaults
+  const displayTitle = personaContent?.title || project.title
+  const displayBriefDescription = personaContent?.brief || project.briefDescription
+  const displayDetailedDescription = personaContent?.detailed || project.detailedDescription
   
   // Check if we should show placeholder (no image or image failed to load)
   const showPlaceholder = !project.image || imageError
@@ -98,7 +105,7 @@ export function ProjectCard({
         {/* Card Content */}
         <div className="p-6 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+          <h3 className="text-xl font-semibold mb-2">{displayTitle}</h3>
 
           {/* Technology Buttons - Below title, optional */}
           {showTechnologies &&
@@ -124,7 +131,7 @@ export function ProjectCard({
 
           {/* Brief Description */}
           <p className="text-muted-foreground mb-6 flex-1">
-            {highlightMetrics(project.briefDescription)}
+            {highlightMetrics(displayBriefDescription)}
           </p>
 
           {/* Action Buttons - Responsive: icon-only on mobile, icon+text on larger screens */}
@@ -219,6 +226,7 @@ export function ProjectCard({
             }, 100)
           }
         }}
+        personaDetailedDescription={displayDetailedDescription}
       />
     </>
   )

@@ -13,6 +13,7 @@ import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { useSound } from "@/hooks/use-sound"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { EmailButton, WhatsAppButton, CalendarButton } from "@/components/ui/social-buttons"
+import { contactContent, getPersona } from "@/lib/content-data"
 
 // Dynamically import Supabase to avoid build issues when not configured
 const getSupabaseClient = async () => {
@@ -91,6 +92,8 @@ function showErrorToast(description: string) {
 
 // ---------- Component ----------
 export function ContactSection() {
+  const persona = getPersona()
+  const content = contactContent[persona]
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -185,9 +188,9 @@ export function ContactSection() {
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
           <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Let's Connect</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.header}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Ready to discuss your next product idea or explore collaboration opportunities? I'd love to hear from you.
+            {content.subheader}
           </p>
         </div>
         </ScrollReveal>
@@ -245,7 +248,7 @@ export function ContactSection() {
                   <CalendarButton onClick={() => setIsCalendlyOpen(true)} />
                 <div className="text-left">
                   <h3 className="font-semibold">Book a Call</h3>
-                  <p className="text-muted-foreground">Schedule a 30-minute product strategy session</p>
+                  <p className="text-muted-foreground">{contactContent[getPersona()].calendlyCta}</p>
                 </div>
                 </button>
               </AnimatedCard>

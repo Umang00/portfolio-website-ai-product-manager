@@ -10,6 +10,7 @@
 ## ✨ Features
 
 ### Portfolio Website
+
 - 🎨 **Modern UI/UX** - Beautiful, responsive design with smooth animations
 - 📱 **Fully Responsive** - Optimized for mobile, tablet, and desktop
 - 🌓 **Dark/Light Mode** - System preference detection with manual override
@@ -27,18 +28,26 @@
   - Contact form with Calendly integration
 
 ### AI Companion (RAG System)
+
 - 🤖 **Intelligent Q&A** - Ask questions about my background, projects, and experience
 - 💬 **Conversational** - Maintains conversation history across multiple turns
 - 🎤 **Voice Input** - Speech-to-text support via Gladia API
-- 🔊 **Text-to-Speech** - Optional TTS via Google Cloud (optional)
 - 📚 **RAG Architecture** - Retrieval-Augmented Generation with vector search
-- 🔍 **Smart Search** - Multi-signal re-ranking for relevant results
-- 📄 **Document Processing** - Automatic PDF parsing and chunking
 - 🔄 **Auto-Refresh** - Daily cron job to rebuild knowledge base
+
+### 🎭 Polymorphic Architecture (3-in-1)
+
+- **Single Codebase, Multiple Personas**: The site morphs based on `NEXT_PUBLIC_PERSONA`.
+- **Supported Personas**:
+  - `pm`: Product Manager focus (Strategy, Metrics)
+  - `builder`: Engineer focus (Code, Architecture)
+  - `consultant`: Solutions Architect focus (ROI, Automation)
+- **Dynamic Content**: Hero copy, project descriptions, and skills change automatically.
 
 ## 🚀 Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4
@@ -48,6 +57,7 @@
 - **Icons**: Lucide React
 
 ### Backend & AI
+
 - **Vector Database**: MongoDB Atlas (Vector Search)
 - **Embeddings**: OpenAI `text-embedding-3-small`
 - **LLM**: OpenRouter (Llama 3.3 8B Instruct)
@@ -56,6 +66,7 @@
 - **TTS**: Google Cloud Text-to-Speech (optional)
 
 ### Infrastructure
+
 - **Hosting**: Vercel
 - **Email**: Resend
 - **Database**: Supabase (PostgreSQL)
@@ -71,6 +82,7 @@
 - OpenRouter API key
 
 ### Optional
+
 - Supabase account (for contact form storage)
 - Resend account (for email delivery)
 - Cloudinary account (for image optimization)
@@ -80,12 +92,14 @@
 ## 🛠️ Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/portfolio-website-ai-product-manager.git
    cd portfolio-website-ai-product-manager
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # or
@@ -95,8 +109,9 @@
    ```
 
 3. **Set up environment variables**
-   
+
    Create a `.env.local` file in the root directory:
+
    ```env
    # MongoDB
    MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/"
@@ -134,21 +149,25 @@
    GLADIA_API_KEY="your-gladia-key"
    GOOGLE_APPLICATION_CREDENTIALS_JSON='{"type":"service_account",...}'
    TTS_VOICE_NAME="en-US-Chirp3-HD-Achird"
+
+   # Persona (Polymorphic Architecture)
+   # Options: "pm" | "builder" | "consultant"
+   NEXT_PUBLIC_PERSONA="pm"
    ```
 
 4. **Add your documents**
-   
+
    Place your PDF files in the `documents/` folder:
    - Resume/CV (e.g., `Umang_Thakkar_PM_Master_Resume.pdf`)
    - LinkedIn export (e.g., `LinkedIn.pdf`)
    - Journey documents (e.g., `journey_fy-2024-2025.pdf`)
 
 5. **Set up MongoDB Vector Index**
-   
+
    Follow the guide in `build docs/MONGODB_VECTOR_INDEX_SETUP.md` to create the vector search index.
 
 6. **Build the knowledge base**
-   
+
    ```bash
    # Start the development server
    npm run dev
@@ -182,6 +201,7 @@ The app will be available at `http://localhost:5000`
 ### AI Companion API
 
 #### Query Endpoint
+
 ```bash
 POST /api/ai/query
 Content-Type: application/json
@@ -193,6 +213,7 @@ Content-Type: application/json
 ```
 
 #### Rebuild Index (Admin)
+
 ```bash
 POST /api/ai/rebuild
 Content-Type: application/json
@@ -268,6 +289,9 @@ See the [Installation](#-installation) section for required environment variable
 
 - **[Architecture](build%20docs/Architecture.md)** - Complete system architecture
 - **[PRD](build%20docs/PRD.md)** - Product requirements document
+- **[Personal Branding Strategy](build%20docs/Personal_Branding_Strategy.md)** - 3-Persona Strategy (PM, Consultant, Builder)
+- **[Case Study Research](build%20docs/AI_Portfolio_Case_Study_Research.md)** - Research on effective AI case studies
+- **[Job Search Playbook](<build%20docs/AI_Job_Search_Complete_Playbook%20(Final).md>)** - AI-focused job search strategy
 - **[RAG System](build%20docs/RAG_SYSTEM_DOCUMENTATION.md)** - Detailed RAG implementation
 - **[MongoDB Setup](build%20docs/MONGODB_VECTOR_INDEX_SETUP.md)** - Vector index setup guide
 - **[Responsive Design](build%20docs/RESPONSIVE_DESIGN_REPORT.md)** - Responsive design analysis
@@ -300,6 +324,7 @@ The `vercel.json` file is already configured for cron jobs.
 ### Other Platforms
 
 The app can be deployed to any platform that supports Next.js:
+
 - Netlify
 - AWS Amplify
 - Railway

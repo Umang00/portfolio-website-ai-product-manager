@@ -3,6 +3,7 @@
 import { IconType } from "react-icons"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
+import { getPersona, type Persona } from "@/lib/content-data"
 import { 
   SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiPython, SiNodedotjs,
   SiOpenai, SiAnthropic, SiGooglegemini, SiHuggingface, SiLangchain,
@@ -15,28 +16,80 @@ import {
   SiStorybook, SiVite, SiFastapi as SiFastapiAlt, SiReplit, SiRetool
 } from "react-icons/si"
 
-const coreSkills = [
-  { header: "Product Management", items: ["MVP Building","Feature Prioritization","Roadmapping","PRD Writing","Cross-Functional Leadership","Experimentation Design","Product Visioning","Market Research","OKR Planning","Go-to-Market Planning","Business Case Development"]},
-  { header: "AI Development", items: ["LLM Fine-Tuning","LoRA Training","RAG Systems","Voice Agent Development","Prompt Engineering","Context Engineering","Function Calling","Tool Integration","Agentic Workflow Design","Multi-Agent Orchestration","MCP Server Development","Agent SDK Integration","Model Selection Strategy","Text-to-Image Generation","Image-to-Image Translation","Inpainting & Outpainting","Style Transfer","ControlNet Implementation","Model Training","API Integration"]},
-  { header: "Data & Analytics", items: ["SQL Analytics","Data Pipeline Design","Funnel Analysis","Cohort Analysis","Dashboard Building","Statistical Analysis","Performance Metrics","Vector Embeddings","Data Cleaning"]},
-  { header: "User & Growth", items: ["User Research","UX Strategy","Onboarding Optimization","Retention Strategy","Engagement Design","A/B Testing","Conversion Optimization"]},
-  { header: "Content & Strategy", items: ["Content Strategy","Storytelling","Trend Integration","Campaign Design","Growth Experiments"]},
-  { header: "Product Operations", items: ["Roadmap Execution","Feedback Loops","Documentation","Knowledge Management","Experiment Tracking","Stakeholder Management"]},
-]
+// Persona-specific core skills
+const coreSkillsByPersona: Record<Persona, Array<{header: string; items: string[]}>> = {
+  pm: [
+    { header: "Product Strategy", items: ["Product Visioning", "Roadmapping", "Feature Prioritization", "PRD Writing", "Market Research", "Competitive Analysis", "Go-to-Market Planning", "Business Case Development", "OKR Planning", "MVP Scoping"]},
+    { header: "User & Growth", items: ["User Research", "UX Strategy", "A/B Testing", "Onboarding Optimization", "Retention Strategy", "Engagement Design", "Conversion Optimization", "Funnel Analysis", "Cohort Analysis"]},
+    { header: "Stakeholder Leadership", items: ["Cross-Functional Leadership", "Executive Communication", "Stakeholder Management", "Team Alignment", "Sprint Planning", "Roadmap Execution", "Feedback Loops", "Decision Frameworks"]},
+    { header: "Data & Insights", items: ["SQL Analytics", "Dashboard Building", "Performance Metrics", "Statistical Analysis", "Experiment Design", "Hypothesis Testing", "Data-Driven Decisions"]},
+    { header: "AI Product Development", items: ["AI Product Strategy", "LLM Application Design", "RAG System Design", "Prompt Engineering", "Model Selection Strategy", "AI UX Patterns", "Responsible AI"]},
+  ],
+  builder: [
+    { header: "AI Engineering", items: ["LLM Fine-Tuning", "LoRA Training", "RAG Systems", "Voice Agent Development", "Context Engineering", "Function Calling", "Tool Integration", "Agentic Workflow Design", "Multi-Agent Orchestration", "MCP Server Development", "Agent SDK Integration"]},
+    { header: "Generative AI", items: ["Prompt Engineering", "Text-to-Image Generation", "Image-to-Image Translation", "Inpainting & Outpainting", "Style Transfer", "ControlNet Implementation", "Model Training", "Diffusion Models"]},
+    { header: "Backend & Systems", items: ["API Design", "Database Architecture", "Data Pipeline Design", "Caching Strategies", "WebSocket Implementation", "Queue Systems", "Microservices", "Serverless Architecture"]},
+    { header: "Frontend & UI", items: ["React", "Next.js", "TypeScript", "Component Architecture", "State Management", "Animation Systems", "Responsive Design", "Performance Optimization"]},
+    { header: "DevOps & Infra", items: ["Docker", "CI/CD Pipelines", "Cloud Deployment", "Monitoring", "Git Workflows", "Infrastructure as Code", "Serverless Functions"]},
+    { header: "Data & Analytics", items: ["SQL Analytics", "Vector Embeddings", "Data Cleaning", "ETL Pipelines", "Real-time Analytics"]},
+  ],
+  consultant: [
+    { header: "Business Analysis", items: ["ROI Analysis", "Process Mapping", "Cost-Benefit Analysis", "Stakeholder Interviews", "Requirements Gathering", "Gap Analysis", "Feasibility Studies", "Business Case Development"]},
+    { header: "Automation Strategy", items: ["Workflow Automation", "Tool Selection", "Integration Planning", "Build vs Buy Analysis", "SaaS Replacement Strategy", "No-Code Solutions", "Custom Development Scoping", "API Integration"]},
+    { header: "AI Implementation", items: ["AI Opportunity Assessment", "Use Case Prioritization", "Vendor Evaluation", "Proof of Concept Design", "Change Management", "AI Adoption Strategy", "Risk Assessment", "LLM Application Design"]},
+    { header: "Project Delivery", items: ["Rapid Prototyping", "Agile Delivery", "Client Communication", "Documentation", "Knowledge Transfer", "Training & Enablement", "Post-Launch Support", "MVP Development"]},
+    { header: "Analytics & Insights", items: ["Dashboard Building", "KPI Design", "Performance Reporting", "Data Visualization", "Executive Reporting", "Benchmarking", "SQL Analytics"]},
+    { header: "Technical Skills", items: ["API Design", "Database Design", "Python Scripting", "Prompt Engineering", "RAG Systems", "Voice AI Integration"]},
+  ],
+}
 
-const techStack = [
-  { header: "AI & ML Platforms", items: ["OpenAI","Anthropic","Groq","Grok","Gemini","OpenRouter","Hugging Face","ElevenLabs","Whisper","Runway ML","HeyGen"]},
-  { header: "Agentic AI & Orchestration", items: ["OpenAI Agents SDK","Google ADK","Claude Agent SDK","MCP Servers","A2A Protocol","Agno","CrewAI","AutoGen","LangGraph","Multi-Agent Systems"]},
-  { header: "AI Development Frameworks", items: ["LangChain","LlamaIndex","DSPy","ComfyUI","FlashAttention","Gradio","Baseten"]},
-  { header: "Generative AI & Diffusion", items: ["Stable Diffusion","SDXL","Flux","Midjourney","ControlNet","AnimateDiff","DreamBooth","LoRA Training","Wan","Veo","NanoBanana","Seedream","InstantID","IP-Adapter"]},
-  { header: "Frontend", items: ["React","Next.js","TypeScript","JavaScript","Tailwind","ShadCN","Framer Motion"]},
-  { header: "Backend & APIs", items: ["Python","Node.js","FastAPI","Streamlit","Supabase","PostgreSQL","Prisma","Resend","Postman"]},
-  { header: "Infra & DevOps", items: ["Vercel","AWS","Docker","GitHub Actions","Git","Serverless Deployment"]},
-  { header: "Analytics & Operations", items: ["Mixpanel","PostHog","Amplitude","Google Analytics","Retool","Tableau","Notion","Linear","Coda","Airtable"]},
-  { header: "Design & Prototyping", items: ["Figma","V0","Cursor","Claude Code","Bolt.new","Lovable","Replit","VoiceFlow"]},
-  { header: "AI Coding Assistants", items: ["Antigravity","Google AI Studio","Gemini Code Assist","GitHub Copilot","Windsurf","Codeium"]},
-  { header: "Automation & Workflows", items: ["Make.com","n8n","Zapier","Retool Workflows"]},
-]
+// Persona-specific tech stacks
+const techStackByPersona: Record<Persona, Array<{header: string; items: string[]}>> = {
+  pm: [
+    { header: "AI Platforms", items: ["OpenAI", "Anthropic", "Gemini", "ElevenLabs", "Whisper", "Runway ML"]},
+    { header: "Product Analytics", items: ["Mixpanel", "PostHog", "Amplitude", "Google Analytics", "Hotjar", "FullStory"]},
+    { header: "Product Operations", items: ["Notion", "Linear", "Jira", "Confluence", "Coda", "Airtable", "Figma"]},
+    { header: "Prototyping & Testing", items: ["Figma", "V0", "Bolt.new", "Lovable", "Replit", "VoiceFlow", "UserTesting"]},
+    { header: "Data & SQL", items: ["Retool", "Tableau", "Redshift", "PostgreSQL", "Supabase", "BigQuery"]},
+    { header: "AI Coding Assistants", items: ["Cursor", "Claude Code", "Antigravity", "GitHub Copilot", "Windsurf", "V0"]},
+  ],
+  builder: [
+    { header: "AI & ML Platforms", items: ["OpenAI", "Anthropic", "Groq", "Grok", "Gemini", "OpenRouter", "Hugging Face", "ElevenLabs", "Whisper"]},
+    { header: "Agentic AI & Orchestration", items: ["OpenAI Agents SDK", "Google ADK", "Claude Agent SDK", "MCP Servers", "A2A Protocol", "Agno", "CrewAI", "AutoGen", "LangGraph"]},
+    { header: "AI Development Frameworks", items: ["LangChain", "LlamaIndex", "DSPy", "ComfyUI", "FlashAttention", "Gradio", "Baseten"]},
+    { header: "Generative AI & Diffusion", items: ["Stable Diffusion", "SDXL", "Flux", "Midjourney", "ControlNet", "AnimateDiff", "DreamBooth", "LoRA Training", "Wan", "Veo"]},
+    { header: "Frontend", items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind", "ShadCN", "Framer Motion"]},
+    { header: "Backend & APIs", items: ["Python", "Node.js", "FastAPI", "Supabase", "PostgreSQL", "Prisma", "Redis", "GraphQL"]},
+    { header: "Infra & DevOps", items: ["Vercel", "AWS", "Docker", "GitHub Actions", "Git", "Serverless Deployment"]},
+    { header: "AI Coding Assistants", items: ["Cursor", "Claude Code", "Antigravity", "Google AI Studio", "Gemini Code Assist", "GitHub Copilot", "Windsurf"]},
+  ],
+  consultant: [
+    { header: "AI Platforms", items: ["OpenAI", "Anthropic", "Gemini", "ElevenLabs", "OpenRouter", "Groq"]},
+    { header: "Internal Tools & Dashboards", items: ["Retool", "Notion", "Coda", "Airtable", "Tableau", "Google Sheets"]},
+    { header: "Automation & Workflows", items: ["Make.com", "n8n", "Zapier", "Retool Workflows", "Power Automate"]},
+    { header: "Rapid Prototyping", items: ["V0", "Bolt.new", "Lovable", "Replit", "Streamlit", "Gradio"]},
+    { header: "Development", items: ["Python", "Next.js", "FastAPI", "Supabase", "PostgreSQL"]},
+    { header: "Deployment", items: ["Vercel", "AWS", "Supabase", "Railway", "Render"]},
+    { header: "AI Coding Assistants", items: ["Cursor", "Claude Code", "Antigravity", "GitHub Copilot", "Windsurf", "V0"]},
+  ],
+}
+
+// Persona-specific section subheadings
+const sectionContent: Record<Persona, { skillsSubheading: string; techSubheading: string }> = {
+  pm: {
+    skillsSubheading: "Product leadership capabilities I bring to every team",
+    techSubheading: "Tools and platforms I use to ship AI products",
+  },
+  builder: {
+    skillsSubheading: "Technical capabilities I bring to engineering challenges",
+    techSubheading: "Technologies I use to build production-grade AI systems",
+  },
+  consultant: {
+    skillsSubheading: "Expertise I bring to transform your operations",
+    techSubheading: "Tools I use to deliver automation and AI solutions",
+  },
+}
+
 
 const techLogos: Array<{ name: string; Icon: IconType; color?: string }> = [
   { name: "React", Icon: SiReact, color: "#61DAFB" },
@@ -163,6 +216,11 @@ function MarqueeLogos() {
 }
 
 export function SkillsAndStack() {
+  const persona = getPersona()
+  const coreSkills = coreSkillsByPersona[persona]
+  const techStack = techStackByPersona[persona]
+  const content = sectionContent[persona]
+  
   return (
     <section id="tools" className="py-20 px-4">
       <div className="max-w-6xl mx-auto space-y-24">
@@ -171,7 +229,7 @@ export function SkillsAndStack() {
           <ScrollReveal variant="fadeInUp" delay={0.2}>
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Core Skills</h2>
-            <p className="text-lg text-muted-foreground">Capabilities I bring to product building</p>
+            <p className="text-lg text-muted-foreground">{content.skillsSubheading}</p>
           </div>
           </ScrollReveal>
 
@@ -187,7 +245,7 @@ export function SkillsAndStack() {
           <ScrollReveal variant="fadeInUp" delay={0.2}>
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
-            <p className="text-lg text-muted-foreground">Technologies and tools I use to ship products</p>
+            <p className="text-lg text-muted-foreground">{content.techSubheading}</p>
           </div>
           </ScrollReveal>
 

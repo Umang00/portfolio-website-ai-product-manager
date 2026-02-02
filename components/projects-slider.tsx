@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import type { CarouselApi } from "@/components/ui/carousel"
 import {
   Carousel,
@@ -16,10 +16,26 @@ import { useIsMobile } from "@/hooks/use-media-query"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { cn } from "@/lib/utils"
 import { projectsData } from "./projects/projects-data"
+import { projectPriority, projectPersonaDescriptions, getPersona } from "@/lib/content-data"
 
 export function ProjectsSlider() {
-  // Filter featured projects or use all projects
-  const projects = projectsData.filter((p) => p.isFeatured !== false)
+  const persona = getPersona()
+  
+  // Get ordered projects based on persona priority
+  const projects = useMemo(() => {
+    const priorityOrder = projectPriority[persona]
+    const allProjects = projectsData.filter((p) => p.isFeatured !== false)
+    
+    // Sort projects based on priority order
+    return [...allProjects].sort((a, b) => {
+      const indexA = priorityOrder.indexOf(a.id)
+      const indexB = priorityOrder.indexOf(b.id)
+      // If not in priority list, put at end
+      const orderA = indexA === -1 ? 999 : indexA
+      const orderB = indexB === -1 ? 999 : indexB
+      return orderA - orderB
+    })
+  }, [persona])
 
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -216,7 +232,8 @@ export function ProjectsSlider() {
                   <div className="pt-6 pb-2 pl-4 pr-4 md:pt-8 md:pb-3 md:pl-5 md:pr-6">
                   <ProjectCard
                     project={project}
-                    priority={index < 2} // Priority load first 2
+                    priority={index < 2}
+                    personaContent={projectPersonaDescriptions[project.id]?.[persona]}
                   />
                   </div>
                 </CarouselItem>

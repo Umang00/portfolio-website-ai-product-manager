@@ -6,39 +6,17 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { cn } from "@/lib/utils"
-
-const testimonials = [
-  {
-    avatar: "/ashutosh-gupta.png",
-    name: "Ashutosh Gupta",
-    title: "Head of Strategy at Hunch",
-    quote:
-      "What makes Umang stand out is his builder mindset and his ability to blend AI expertise with creativity and data-driven thinking. He fine-tuned internal chat models that significantly improved engagement and built an internal analytics dashboard that gave us real-time insights. He brings together creativity, analytical thinking, AI skills, and product vision in a way that's rare to find.",
-    linkedin: "https://www.linkedin.com/in/ashutosh-gupta-0321b2145/",
-  },
-  {
-    avatar: "/shiv-pande.png",
-    name: "Shiv Ram Pande",
-    title: "Founding Team & CBO at BitSave",
-    quote:
-      "Umang rose to the challenge with dedication and endless ideas. He was a creative architect who shaped product direction through data-driven insights. His influence extended beyond his own work, shaping the content team through guidance and mentorship. His constructive criticism, always delivered with genuine desire for everyone's success, became a beacon.",
-    linkedin: "https://www.linkedin.com/in/shivrampande/",
-  },
-  {
-    avatar: "/dipayan-chatterjee.png",
-    name: "Dipayan Chatterjee",
-    title: "Full-stack Marketer",
-    quote:
-      "Umang embodies resilience, adaptability and grit. No matter how complex a problem may be, you can expect it to be assessed, quantified and worn down to a solution with simple determination.",
-    linkedin: "https://www.linkedin.com/in/dipayanchatterjee/",
-  },
-]
+import { testimonialsContent, getPersona } from "@/lib/content-data"
 
 export function WallOfLove() {
+  const persona = getPersona()
+  const testimonials = testimonialsContent[persona]
+  
   const [currentSet, setCurrentSet] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [mobileActiveIndex, setMobileActiveIndex] = useState(0)
   const mobileScrollRef = useRef<HTMLDivElement>(null)
+
 
   // Calculate number of sets - ensure we always have at least 1 set
   const totalSets = Math.max(1, Math.ceil(testimonials.length / 2))

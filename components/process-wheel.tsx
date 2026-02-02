@@ -1,9 +1,10 @@
 "use client"
 
 import { useMemo } from "react"
-import { Search, Target, Lightbulb, Rocket, RefreshCw } from "lucide-react"
+import { Search, Target, Lightbulb, Rocket, RefreshCw, Scan, PenTool, Hammer, Send, TrendingUp, ClipboardList, ListOrdered, Wrench, Upload, Expand } from "lucide-react"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal, ScrollRevealList, ScrollRevealItem } from "@/components/animations/scroll-reveal"
+import { processContent, getPersona } from "@/lib/content-data"
 
 type Step = {
   title: string
@@ -11,13 +12,25 @@ type Step = {
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
 }
 
-const STEPS: Step[] = [
-  { title: "Discover",  desc: "Ground every decision in user truth through conversations, data analysis, and jobs-to-be-done mapping.", Icon: Search },
-  { title: "Define",    desc: "Translate ambiguity into clarity with crisp problem statements, success metrics, and guardrails.",        Icon: Target },
-  { title: "Prototype", desc: "Test the riskiest assumptions early with MVPs and experiments before committing to scale.",              Icon: Lightbulb },
-  { title: "Ship",      desc: "Deliver value iteratively using vertical slices and feature flags to learn fast and reduce risk.",       Icon: Rocket },
-  { title: "Iterate",   desc: "Turn metrics and user feedback into insights that drive continuous improvement and impact.",             Icon: RefreshCw },
-]
+// Icon mapping for persona-specific process steps
+const stepIconMap: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  // PM persona
+  "Discover": Search,
+  "Define": Target,
+  "Prototype": Lightbulb,
+  "Ship": Rocket,
+  "Iterate": RefreshCw,
+  // Builder persona
+  "Scope": Scan,
+  "Design": PenTool,
+  "Build": Hammer,
+  "Deploy": Send,
+  "Optimize": TrendingUp,
+  // Consultant persona
+  "Audit": ClipboardList,
+  "Prioritize": ListOrdered,
+  "Expand": Expand,
+}
 
 /** Layout constants */
 const RADIUS = 170                 // inner circle radius (340px diameter)
@@ -33,22 +46,32 @@ const SPAN_DEG  = 220
 const toRad = (deg: number) => (deg * Math.PI) / 180
 
 export function ProcessWheel() {
+  const persona = getPersona()
+  const content = processContent[persona]
+  
+  // Build steps array from persona content with icons
+  const STEPS: Step[] = content.steps.map((step) => ({
+    title: step.title,
+    desc: step.description,
+    Icon: stepIconMap[step.title] || Search,
+  }))
+  
   const polar = useMemo(() => {
     const n = STEPS.length
     return Array.from({ length: n }).map((_, i) => {
       const angleDeg = START_DEG + (i * SPAN_DEG) / (n - 1)
       return { angleDeg, angle: toRad(angleDeg) }
     })
-  }, [])
+  }, [STEPS.length])
 
   return (
     <section id="process" className="px-4 pt-24 pb-52 md:pt-28 md:pb-60">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal variant="fadeInUp" delay={0.2}>
         <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Process</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A proven framework for shipping products that users love
+            {content.subtitle}
           </p>
         </div>
         </ScrollReveal>

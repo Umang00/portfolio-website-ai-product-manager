@@ -6,87 +6,58 @@ import { ChevronDown, ChevronUp } from "lucide-react"
 import { AnimatedCard } from "@/components/animations/animated-card"
 import { ScrollReveal } from "@/components/animations/scroll-reveal"
 import { highlightMetrics } from "@/lib/utils/highlight-metrics"
+import { journeyContent, getPersona } from "@/lib/content-data"
 
 type TimelineItem = {
   title: string
   company: string
   date: string
-  achievements: string[]
+  roleId: keyof typeof journeyContent.pm
 }
 
 const timelineItems: TimelineItem[] = [
   {
     title: "AI Builder",
     company: "100x Engineers Cohort",
-    date: "Jun 2025 – Present",
-    achievements: [
-      "Building end-to-end AI products as a one-person product team through Lightning AI Solutions",
-      "Shipped 14+ AI products: Voice UXR Agent, Git Roast, Breakup Recovery Squad, Fashion Street AI, Newsletter Generator, Lecture Lens, and more",
-      "Deep expertise in Agentic AI: OpenAI Agents SDK, Google ADK, Claude Agent SDK, and multi-agent orchestration frameworks (Agno, CrewAI, AutoGen)",
-      "Built and deployed production MCP servers enabling AI tool integration across Claude Desktop, ChatGPT, and Cursor",
-      "Specializing in agent architecture decisions, model selection strategy, and context engineering for complex AI workflows",
-    ],
+    date: "July 2025 – Present",
+    roleId: "100x-engineers",
   },
   {
     title: "Associate Product Manager",
     company: "Hunch (Dating & Social App)",
     date: "Oct 2024 – Jun 2025",
-    achievements: [
-      "Increased user engagement by 200% through MBTI-based personality matching system",
-      "Created web onboarding revenue stream generating $1.5K monthly, contributing 30% boost to $5K monthly revenue",
-      "Built Retool analytics dashboard, saving $1K+ monthly and 15+ hours weekly of manual analysis",
-      "Improved session time by 100% with fine-tuned chat models and AI conversation starters",
-      "Deployed voice-based UXR agent, scaling research from 2 → 50+ daily calls, reducing costs by 70%",
-      "Enhanced View-to-Wave conversion by 50% through optimized shortvibes",
-      "Automated A/B testing workflows, reducing dependency on tech team by 80%",
-      "Built custom GPT for app store review sentiment analysis",
-    ],
+    roleId: "hunch-apm",
   },
   {
     title: "Content Strategist",
     company: "Hunch (Polling App)",
     date: "Oct 2023 – Sep 2024",
-    achievements: [
-      "Orchestrated content strategy during app transition from polling to dating",
-      "Managed team of 6, improving output by 60%",
-      "Designed and launched Poll Promotion Interface, cutting manual work by 85%",
-      "Reduced Day-0 uninstall rate by 35% via optimized onboarding polls",
-      "Ran content experiments for female categories, achieving 80% increase in publications and 100% increase in share",
-      "Enhanced personalized feeds with category-based targeting",
-    ],
+    roleId: "hunch-content",
   },
   {
     title: "Content Writer",
     company: "PlotX (Crypto Gaming Platform)",
     date: "Jun 2022 – Oct 2022",
-    achievements: [
-      "Improved organic traffic by 50%, driving 3K+ monthly signups",
-      "Authored 30+ SEO-rich blogs, boosting engagement time by 100% and reducing bounce rate by 25%",
-      "Conducted 100+ research interviews, validating polling concepts for Hunch's pivot",
-    ],
+    roleId: "plotx",
   },
   {
     title: "Content Writer",
     company: "iNurture Education Solutions (EdTech)",
     date: "Feb 2022 – Jun 2022",
-    achievements: [
-      "Improved course completion by 20% and student satisfaction by 15%",
-      "Developed academic content impacting 5K+ learners across AI, Finance, Law, and Cybersecurity",
-    ],
+    roleId: "inurture",
   },
   {
     title: "Content Writer",
     company: "Freelance",
     date: "Nov 2021 – May 2022",
-    achievements: [
-      "Reached 5M+ readers by ghostwriting 300+ articles for 20+ global clients (Blockchain Council, CoinFantasy, Guardian Link, Economic Times, Niva Bupa Life Insurance)",
-      "Increased engagement by 30% for client brands in finance, investment, and crypto",
-      "Secured long-term partnerships with 80% of clients",
-    ],
+    roleId: "freelance",
   },
 ]
 
 export function Timeline() {
+  const persona = getPersona()
+  const personaJourney = journeyContent[persona]
+  
   const [isExpanded, setIsExpanded] = useState(false)
   const visibleItems = isExpanded ? timelineItems : timelineItems.slice(0, 2)
 
@@ -129,7 +100,7 @@ export function Timeline() {
                   </div>
 
                   <ul className="space-y-2.5">
-                    {item.achievements.map((achievement, i) => (
+                    {personaJourney[item.roleId].map((achievement, i) => (
                       <li key={i} className="text-muted-foreground leading-relaxed flex items-start gap-3">
                         <span className="text-primary mt-1 flex-shrink-0 text-lg leading-none">•</span>
                         <span className="flex-1">{highlightMetrics(achievement)}</span>
