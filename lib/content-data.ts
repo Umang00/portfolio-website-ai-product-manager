@@ -25,12 +25,12 @@ export const heroContent = {
   builder: {
     headline: "I'm Umang, shipping AI that",
     typewriterWords: ["works in production", "scales globally", "runs in <500ms", "users trust"],
-    tagline: "Full-Stack GenAI Engineer. 14+ products shipped. From RAG pipelines to multi-agent swarms, I build what others prototype.",
+    tagline: "Full-Stack AI Engineer with 14+ shipped products, from RAG pipelines to multi-agent swarms, building production systems, not prototypes.",
   },
   consultant: {
     headline: "I'm Umang, automating workflows that",
-    typewriterWords: ["save 20+ hours/month", "cut costs by 70%", "replace manual work", "just work"],
-    tagline: "AI Solutions Architect. I build automation systems that give you your weekends back. Code when needed, no-code when possible.",
+    typewriterWords: ["eliminate busywork", "scale infinitely", "never sleep", "just work"],
+    tagline: "AI Solutions Architect who builds automation systems that give you your weekends back using code when needed, no-code when faster.",
   },
 }
 
@@ -70,9 +70,9 @@ export const stickyNotesContent = {
       "Automate the boring. Focus on the billable.",
     ],
     right: [
-      "Speed wins. The first solution to market captures 70% of value.",
-      "Good enough today beats perfect next quarter.",
-      "Build for the 99%. Edge cases can wait.",
+      "ROI isn't optional. Measure everything.",
+      "The best automation is the one that doesn't need you.",
+      "Ship fast, iterate faster.",
     ],
   },
 }
@@ -124,16 +124,16 @@ export const kpiContent = {
     quickStats: [
       { label: "Clients Served", value: "20+" },
       { label: "Hours Saved/Month", value: "500+" },
-      { label: "SaaS Costs Cut", value: "$12K/yr" },
+      { label: "SaaS Costs Cut", value: "$15K/yr" },
       { label: "Automations Running", value: "50+" },
     ],
     impactKpis: [
       { value: "70%", label: "Cost Reduction Achieved" },
       { value: "20+", label: "Hours Saved Weekly" },
-      { value: "$1K+", label: "Monthly SaaS Savings" },
+      { value: "$1.2K+", label: "Monthly SaaS Savings" },
       { value: "4 weeks", label: "Time to Value" },
       { value: "85%", label: "Manual Work Eliminated" },
-      { value: "3", label: "SaaS Tools Replaced" },
+      { value: "5+", label: "SaaS Tools Replaced" },
     ],
   },
 }
@@ -213,7 +213,7 @@ export const processContent = {
       },
       {
         title: "Deploy",
-        description: "AI handles 80%, you approve the 20%. Human-in-the-loop for safety.",
+        description: "AI handles 95%, you approve edge cases. Human-in-the-loop only where it matters.",
       },
       {
         title: "Expand",
@@ -340,12 +340,12 @@ Performance: Sub-100ms response times, handles 100K+ daily active users, gracefu
     },
     consultant: {
       title: "MBTI Personality Matching System",
-      brief: "Automated personality-based matching engine that replaced manual 'vibe checks' with AI-powered scoring. Reduced matchmaking time by 80% while improving match quality and user satisfaction.",
+      brief: "Automated personality-based matching engine with transparent compatibility scoring. Users get 0-100% match scores with plain-English explanations, driving 200% session time increase and 86% retention improvement.",
       detailed: `Built a personality-based matching engine that scores compatibility automatically. Users take a short quiz, get their personality type, and see matches ranked by compatibility percentage with explanations.
 
-The system eliminated manual profile review entirely. Matches are consistent, explainable, and scale infinitely.
+The key differentiator: transparency. Users don't just see 'You're compatible'—they see exactly why based on psychological frameworks. This builds trust and increases engagement.
 
-Business impact: 80% reduction in manual matchmaking work, 200% increase in session time, 86% improvement in 7-day retention. The team could focus on growth instead of operations.`,
+Business impact: 200% increase in session time, 86% improvement in 7-day retention, 152% increase in messages per match. The feature became the product's core differentiator.`,
     },
   },
 
@@ -370,12 +370,12 @@ Accuracy: 95%+ on test dataset. Handles edge cases like 'natural flavors' that m
     },
     consultant: {
       title: "AI Food Analyzer",
-      brief: "Automated ingredient analysis system for dietary compliance checking. Reduces manual compliance review from hours to seconds with AI-powered verification for allergies, religious rules, and dietary preferences.",
-      detailed: `Built an AI system that automates ingredient compliance checking. Upload a photo of ingredients, select dietary profiles (allergies, religious rules, vegan), and get an instant verdict with detailed explanations.
+      brief: "Personal dietary safety app for travelers and health-conscious consumers. Scans ingredient labels in any language and gives instant verdicts for allergies, religious restrictions, or vegan preferences—works globally.",
+      detailed: `Built an AI system for personal dietary safety checks. Snap a photo of any ingredient label—in any language, any country—and get an instant verdict with explanations.
 
-Use cases: Restaurant menu compliance, food brand quality assurance, catering companies serving diverse clients, personal dietary safety checks.
+Use cases: Travelers who can't read local languages, grocery shoppers checking packaged foods, families managing multiple dietary restrictions, religious practitioners verifying compliance (Jain, Vaishnav, halal).
 
-ROI: What takes hours of manual label reading takes seconds with AI. Zero human error risk. Scales to any number of products without additional labor cost.`,
+ROI: What takes minutes of manual label reading takes seconds with AI. Zero human error risk. 100% free as a community contribution. Works anywhere—no regional database dependency.`,
     },
   },
 
@@ -412,12 +412,12 @@ Business model potential: Employee wellness benefit for HR departments, mental h
   "marketing-analytics-dashboard": {
     pm: {
       title: "Marketing Analytics Dashboard",
-      brief: "Unified analytics dashboard consolidating data from Instagram, Twitter, and TikTok with AI-powered sentiment analysis. Replaced 3 expensive SaaS tools while saving $1,000+ monthly and 15+ hours of manual work weekly.",
+      brief: "Unified analytics dashboard consolidating data from Instagram, Twitter, and TikTok with AI-powered sentiment analysis. Replaced multiple video analytics tools while saving $1,000+ monthly and 15+ hours of manual work weekly.",
       detailed: `Built a centralized Retool dashboard that pulls data from all three platforms via APIs, runs AI-powered sentiment analysis on comments, and identifies viral content patterns automatically.
 
-Key features: Real-time metrics across platforms, automated comment analysis, and trend detection. The team no longer waits 2 days for compiled reports—insights are available in real-time.
+Key features: Real-time metrics across platforms, automated comment analysis, and trend detection for video performance. The team no longer waits 2 days for compiled reports—insights are available in real-time.
 
-Results: $1,000+ monthly savings (replaced Sprout Social, Buffer, and manual processes), 15+ hours weekly time savings, 25% improvement in content engagement rate.`,
+Results: $1,000+ monthly savings (replaced video analytics and tracking tools like Shortimise), 15+ hours weekly time savings, 25% improvement in content engagement rate.`,
     },
     builder: {
       title: "Marketing Analytics Dashboard",
@@ -430,10 +430,10 @@ Technical considerations: Graceful API failure handling, historical data backfil
     },
     consultant: {
       title: "Marketing Analytics Dashboard",
-      brief: "Replaced $1,000/month worth of SaaS subscriptions (Sprout Social, Buffer, etc.) with a custom internal dashboard. Annual savings: $12,000+ plus 15+ hours/week of manual work eliminated.",
-      detailed: `Built an internal dashboard replacing three paid SaaS tools. The upfront build cost was less than 3 months of SaaS subscriptions. Ongoing cost: ~$50/month for Retool.
+      brief: "Replaced $1,000/month of video analytics subscriptions with a custom internal dashboard. Annual savings: $12,000+ plus 15+ hours/week of manual tracking eliminated.",
+      detailed: `Built an internal dashboard replacing video analytics and social tracking tools. The upfront build cost was less than 3 months of tool subscriptions. Ongoing cost: ~$50/month for Retool.
 
-The system provides unified insights that no single SaaS tool offered. The client owns the system with no vendor lock-in and can extend functionality as needed.
+The system syncs video performance, trend analysis, and cross-platform tracking—something no single tool offered. The client owns the system with no vendor lock-in and can extend functionality as needed.
 
 ROI: Annual savings of $12,000+, plus 15+ hours weekly in manual data compilation eliminated. Real-time insights instead of 2-day report lag.`,
     },
@@ -520,10 +520,10 @@ Backend: Node.js service for campaign logic, Redshift SQL for analytics. Handles
     },
     consultant: {
       title: "Poll Promotion Engine",
-      brief: "Self-service campaign management system eliminating spreadsheet chaos. Marketing launches campaigns in 5 minutes without SQL or engineering help. 3x increase in campaigns per month with zero dependencies.",
-      detailed: `Built a self-service campaign management system for the marketing team. No more spreadsheet manipulation, SQL queries, or waiting for engineering help.
+      brief: "Self-service campaign management system eliminating spreadsheet chaos. Content team launches campaigns in 5 minutes without SQL or engineering help. 3x increase in campaigns per month with zero dependencies.",
+      detailed: `Built a self-service campaign management system for the content team. No more spreadsheet manipulation, SQL queries, or waiting for engineering help.
 
-The team went from launching a few campaigns per month (limited by manual capacity) to 3x that number. Engineers freed up for product work instead of marketing requests.
+The team went from launching a few campaigns per month (limited by manual capacity) to 3x that number. Engineers freed up for product work instead of content requests.
 
 Maintenance: Low—easy to modify as needs change. ROI realized within the first month through time savings alone.`,
     },
@@ -582,12 +582,12 @@ Roadmap: Connect to store inventory system for hyper-personalized product recomm
     },
     consultant: {
       title: "Fashion Street AI Stylist",
-      brief: "AI-powered style consultations as lead generation for retail. Zero manual work per consultation, delivered via Telegram with no app download friction. Pennies per report, high ROI from store visits.",
+      brief: "AI-powered style consultations as lead generation for retail. Zero manual work per consultation, delivered via Telegram. Costs ₹2-5 per report, high ROI from store visits.",
       detailed: `Built an AI stylist providing free personalized style reports as lead generation. Users get value (know which colors suit them), and the store gets qualified leads interested in buying clothes matching their style.
 
 Delivery: Via Telegram, which customers already use. No friction, no app downloads, no signups.
 
-ROI: Each report costs pennies to generate. If even 10% of users visit the store, the system pays for itself many times over. Zero manual work per consultation.`,
+ROI: Each report costs ₹2-5 to generate (AI API costs). If even 10% of users visit the store, the system pays for itself many times over. Zero manual work per consultation.`,
     },
   },
 
