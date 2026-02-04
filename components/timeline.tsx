@@ -15,9 +15,23 @@ type TimelineItem = {
   roleId: keyof typeof journeyContent.pm
 }
 
-const timelineItems: TimelineItem[] = [
+// Persona-specific titles for 100x Engineers role
+const get100xTitle = (persona: string): string => {
+  switch (persona) {
+    case "pm":
+      return "AI Product Builder"
+    case "consultant":
+      return "AI Automation Consultant"
+    case "builder":
+      return "AI Engineer"
+    default:
+      return "AI Builder"
+  }
+}
+
+const getTimelineItems = (persona: string): TimelineItem[] => [
   {
-    title: "AI Builder",
+    title: get100xTitle(persona),
     company: "100x Engineers Cohort",
     date: "July 2025 – Present",
     roleId: "100x-engineers",
@@ -25,13 +39,13 @@ const timelineItems: TimelineItem[] = [
   {
     title: "Associate Product Manager",
     company: "Hunch (Dating & Social App)",
-    date: "Oct 2024 – Jun 2025",
+    date: "Oct 2023 – Jun 2025",
     roleId: "hunch-apm",
   },
   {
     title: "Content Strategist",
     company: "Hunch (Polling App)",
-    date: "Oct 2023 – Sep 2024",
+    date: "Nov 2022 – Sep 2023",
     roleId: "hunch-content",
   },
   {
@@ -57,6 +71,7 @@ const timelineItems: TimelineItem[] = [
 export function Timeline() {
   const persona = getPersona()
   const personaJourney = journeyContent[persona]
+  const timelineItems = getTimelineItems(persona)
   
   const [isExpanded, setIsExpanded] = useState(false)
   const visibleItems = isExpanded ? timelineItems : timelineItems.slice(0, 2)
