@@ -104,8 +104,8 @@ export const kpiContent = {
     header: "Engineering Benchmarks",
     subheader: "Performance metrics from production systems",
     quickStats: [
+      { label: "Years Experience", value: "4+" },
       { label: "AI Products Shipped", value: "14+" },
-      { label: "Production Deployments", value: "20+" },
       { label: "MCP Servers Built", value: "3+" },
       { label: "Hackathon Wins", value: "2" },
     ],
@@ -122,9 +122,9 @@ export const kpiContent = {
     header: "ROI Dashboard",
     subheader: "Measurable results delivered to clients",
     quickStats: [
+      { label: "Years Experience", value: "4+" },
       { label: "Clients Served", value: "20+" },
       { label: "Hours Saved/Month", value: "500+" },
-      { label: "Research Savings", value: "$500K+/yr" },
       { label: "Automations Running", value: "50+" },
     ],
     impactKpis: [
