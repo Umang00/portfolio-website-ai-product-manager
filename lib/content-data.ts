@@ -95,7 +95,7 @@ export const kpiContent = {
       { value: "200%", label: "User Engagement Increased" },
       { value: "30%", label: "Monthly Revenue Boosted" },
       { value: "100%", label: "Session Time Improved" },
-      { value: "70%", label: "Cost Reduction Achieved" },
+      { value: "90%", label: "Cost Reduction Achieved" },
       { value: "50%", label: "Organic Traffic Growth" },
       { value: "80%", label: "Manual Work Eliminated" },
     ],
@@ -124,13 +124,13 @@ export const kpiContent = {
     quickStats: [
       { label: "Clients Served", value: "20+" },
       { label: "Hours Saved/Month", value: "500+" },
-      { label: "SaaS Costs Cut", value: "$15K/yr" },
+      { label: "Research Savings", value: "$500K+/yr" },
       { label: "Automations Running", value: "50+" },
     ],
     impactKpis: [
-      { value: "70%", label: "Cost Reduction Achieved" },
+      { value: "90%", label: "Cost Reduction Achieved" },
       { value: "20+", label: "Hours Saved Weekly" },
-      { value: "$1.2K+", label: "Monthly SaaS Savings" },
+      { value: "$500K+", label: "Annual Savings" },
       { value: "4 weeks", label: "Time to Value" },
       { value: "85%", label: "Manual Work Eliminated" },
       { value: "5+", label: "SaaS Tools Replaced" },
@@ -292,12 +292,12 @@ export const projectPersonaDescriptions: Record<string, Record<Persona, ProjectP
   "voice-uxr-agent": {
     pm: {
       title: "Voice-Based UXR Agent",
-      brief: "AI-powered voice agent that conducts, transcribes, and analyzes user research interviews at scale. Automated Hunch's interview process from 2-3 manual interviews/day to 50+ automated interviews daily while reducing costs by 70%.",
+      brief: "AI-powered voice agent that conducts, transcribes, and analyzes user research interviews at scale. Automated Hunch's interview process from 2-3 manual interviews/day to 50+ automated interviews daily while reducing costs by 90%.",
       detailed: `Built an AI voice agent system that conducts interviews over phone calls, asks intelligent follow-up questions based on user responses, performs real-time sentiment analysis, and generates actionable summaries within 5 minutes.
 
 The product challenge was balancing automation with conversation quality. We ran A/B tests comparing AI vs human interviewers and validated that users rated the AI experience 4.2/5—comparable to human interviewers.
 
-Results: 2,400% capacity increase (2 → 50+ interviews/day), 70% cost reduction per interview ($50 → $15), and insights delivered in 5 minutes instead of 3 days.`,
+Results: 2,400% capacity increase (2 → 50+ interviews/day), 90% cost reduction per interview ($50 → $5), $500K+ annual research capacity savings at full utilization, and insights delivered in 5 minutes instead of 3 days.`,
     },
     builder: {
       title: "Voice-Based UXR Agent",
@@ -310,12 +310,12 @@ Stack: Python, Twilio, ElevenLabs Conversational AI, GPT-4o, Redshift SQL.`,
     },
     consultant: {
       title: "Voice-Based UXR Agent",
-      brief: "AI phone agent that conducts customer interviews, transcribes conversations, and generates actionable summaries automatically. Saved 20+ hours/week of manual interview work while scaling capacity from 2 to 50+ daily.",
+      brief: "AI phone agent that conducts customer interviews, transcribes conversations, and generates actionable summaries automatically. Unlocked $500K+ annual research capacity savings while scaling capacity from 2 to 50+ daily interviews.",
       detailed: `Built an AI phone agent that calls customers at scheduled times, asks structured questions, handles follow-up questions naturally based on responses, and generates insight summaries in 5 minutes instead of 3 days.
 
 The system runs 24/7 without human intervention. Users receive a call, have a natural conversation, and the client gets analyzed insights automatically.
 
-ROI: 70% cost reduction per interview. Capacity scaled from 2 to 50+ daily. The PM team now focuses on strategy instead of scheduling and conducting calls.`,
+ROI: 90% cost reduction per interview ($50 → $5). Capacity scaled from 2 to 50+ daily. At full capacity: 50 interviews/day × $45 savings × 250 days = $562K annual research capacity savings.`,
     },
   },
 
@@ -364,7 +364,7 @@ Key decision: Accuracy over speed. We use a tiered AI system that prioritizes co
       brief: "React Native mobile app with Gemini 3 Pro vision pipeline for ingredient label parsing. Achieves 95%+ accuracy on multi-language labels without barcode dependency. Backend on Neon serverless Postgres.",
       detailed: `Built an end-to-end vision pipeline that extracts text from ingredient photos (handles multiple languages, poor lighting, curved labels). The AI then analyzes each ingredient against user dietary profiles using sophisticated prompt engineering.
 
-Stack: React Native + Expo 54 for cross-platform mobile, FastAPI backend on Neon (serverless Postgres), Gemini 2.5 Flash for vision and reasoning, NativeWind v4 for styling.
+Stack: React Native + Expo 54 for cross-platform mobile, FastAPI backend on Neon (serverless Postgres), Gemini 3 Pro for vision and reasoning, NativeWind v4 for styling.
 
 Accuracy: 95%+ on test dataset. Handles edge cases like 'natural flavors' that might contain hidden animal products. Works in India, US, Japan, Europe with no regional database.`,
     },
@@ -430,12 +430,12 @@ Technical considerations: Graceful API failure handling, historical data backfil
     },
     consultant: {
       title: "Marketing Analytics Dashboard",
-      brief: "Replaced $1,000/month of video analytics subscriptions with a custom internal dashboard. Annual savings: $12,000+ plus 15+ hours/week of manual tracking eliminated.",
+      brief: "Replaced $1,000/month of video analytics subscriptions with a custom internal dashboard. Annual savings: $15k+ plus 15+ hours/week of manual tracking eliminated.",
       detailed: `Built an internal dashboard replacing video analytics and social tracking tools. The upfront build cost was less than 3 months of tool subscriptions. Ongoing cost: ~$50/month for Retool.
 
 The system syncs video performance, trend analysis, and cross-platform tracking—something no single tool offered. The client owns the system with no vendor lock-in and can extend functionality as needed.
 
-ROI: Annual savings of $12,000+, plus 15+ hours weekly in manual data compilation eliminated. Real-time insights instead of 2-day report lag.`,
+ROI: Annual savings of $15k+, plus 15+ hours weekly in manual data compilation eliminated. Real-time insights instead of 2-day report lag.`,
     },
   },
 
@@ -794,7 +794,7 @@ export const journeyContent = {
       "Learned to balance code vs no-code solutions based on client needs and maintenance requirements",
     ],
     "hunch-apm": [
-      "Deployed voice-based UXR agent, scaling research from 2 to 50+ daily calls, reducing costs by 70%",
+      "Deployed voice-based UXR agent, scaling research from 2 to 50+ daily calls, reducing costs by 90%",
       "Built Retool analytics dashboard replacing 3 SaaS tools, saving $1K+ monthly",
       "Automated A/B testing workflows, reducing dependency on tech team by 80%",
       "Designed Poll Promotion Interface, cutting manual campaign work by 85%",

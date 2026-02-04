@@ -12,10 +12,10 @@ export const projectsData: Project[] = [
     problem:
       "Hunch's user research process was bottlenecked by manual interviews, limiting capacity to 2-3 interviews per day. Each interview required significant time investment and took 3 days to generate insights, making it impossible to scale user research effectively.",
     detailedDescription:
-      "Built an AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. The system automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily while reducing per-interview cost by 70%.\n\nThe voice agent conducts natural conversations, asks follow-up questions, performs sentiment analysis, and generates actionable insights, all without human intervention.",
+      "Built an AI-powered voice agent system that conducts, transcribes, and analyzes user research interviews at scale. The system automated Hunch's user interview process, scaling capacity from 2-3 manual interviews per day to 50+ automated interviews daily while reducing per-interview cost by 90%.\n\nThe voice agent conducts natural conversations, asks follow-up questions, performs sentiment analysis, and generates actionable insights, all without human intervention.",
     outcomeBullets: [
       "2,400% capacity increase (2 interviews/day → 50+ interviews/day)",
-      "70% cost reduction per interview ($50 → $15)",
+      "90% cost reduction per interview ($50 → $5)",
       "99% faster insights (3 days → 5 minutes)",
       "82% completion rate with 4.2/5 user satisfaction",
     ],
@@ -382,7 +382,7 @@ export const projectsData: Project[] = [
     problem:
       "Students struggle to quickly find specific information within extensive lecture materials and scattered resources (GitHub repos, YouTube videos, blog posts). Manual searching through long lecture recordings wastes study time, and there's no way to ask follow-up context-aware questions about course content. This leads to inefficient learning and missed opportunities for deeper understanding.",
     detailedDescription:
-      "Lecture Lens is an AI-powered cohort assistant built with Next.js 14 (App Router), React 18, and Tailwind CSS. The system processes VTT lecture transcripts with semantic chunking, auto-scrapes resources from GitHub, YouTube, and blogs, and performs unified vector search across all content using Supabase (PostgreSQL 15 + pgvector). It leverages OpenRouter (Gemini + OpenAI embeddings) and LlamaIndex for AI/ML capabilities.\n\nThe chat interface provides context-aware conversations with history, multi-cohort authentication with Row Level Security (RLS), hybrid ranking with title matching, and comprehensive timestamped summaries. Built end-to-end RAG pipeline in 24 hours for hackathon submission.",
+      "Lecture Lens is an AI-powered cohort assistant built with Next.js 14 (App Router), React 18, and Tailwind CSS. The system processes VTT lecture transcripts with semantic chunking, auto-scrapes resources from GitHub, YouTube, and blogs, and performs unified vector search across all content using Supabase (PostgreSQL 15 + pgvector). It leverages OpenRouter (Gemini + OpenAI embeddings) for AI/ML capabilities with a custom-built RAG pipeline.\n\nThe chat interface provides context-aware conversations with history, multi-cohort authentication with Row Level Security (RLS), hybrid ranking with BM25 + semantic search, and comprehensive timestamped summaries. Built end-to-end RAG pipeline in 24 hours for hackathon submission.",
     outcomeBullets: [
       "Won 1st Runner-Up at hackathon (built in 24 hours)",
       "Complete RAG pipeline with timestamped citations",
@@ -395,8 +395,8 @@ export const projectsData: Project[] = [
     technologies: [
       "Next.js 14",
       "TypeScript",
-      "Supabase",
-      "LlamaIndex",
+      "Supabase pgvector",
+      "BM25",
       "Gemini 2.5 Flash",
       "OpenAI Embeddings",
       "Vercel Serverless Functions",

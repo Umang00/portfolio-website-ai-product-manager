@@ -12,7 +12,7 @@ AI-powered mobile app that scans packaged food ingredients and provides personal
 ### Technical Architecture
 - **Frontend**: React Native with Expo, Gluestack UI, NativeWind (TailwindCSS)
 - **Backend**: Python FastAPI with Google Cloud Run deployment
-- **AI**: Google Gemini 2.5 Flash for ingredient analysis
+- **AI**: Google Gemini 3 Pro for ingredient analysis
 - **Database**: PostgreSQL with Prisma ORM
 - **Storage**: Backblaze B2 for image storage
 - **Auth**: Custom JWT authentication with Google Sign-In

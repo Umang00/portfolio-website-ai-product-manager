@@ -48,7 +48,7 @@ function parseKpiValue(value: string): { numericValue: number; prefix: string; s
     const numMatch = value.match(/\d+/)
     return { numericValue: numMatch ? parseInt(numMatch[0]) : 0, prefix: "$", suffix: value.replace(/\$\d+/, ""), isSpecial: false }
   }
-  // Standard: "200%", "70%", "4+"
+  // Standard: "200%", "90%", "4+"
   const numMatch = value.match(/\d+/)
   const numericValue = numMatch ? parseInt(numMatch[0]) : 0
   const prefix = value.match(/^[^0-9]+/)?.[0] || ""

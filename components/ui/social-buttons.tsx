@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { Github, Linkedin, FileText, Mail, MessageCircle, Calendar } from "lucide-react"
 import { motion } from "framer-motion"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
@@ -125,6 +126,8 @@ export function GitHubButton({ className = "", enableSound = true }: CommonProps
 export function ResumeButton({ className = "", enableSound = true }: CommonProps) {
   const shouldReduceMotion = useReducedMotion()
   const { play } = useSound()
+  const [mounted, setMounted] = React.useState(false)
+  const [resumePath, setResumePath] = React.useState("/resumes/resume-pm.pdf")
   
   // Persona-specific resume paths
   const resumePaths: Record<string, string> = {
@@ -133,22 +136,40 @@ export function ResumeButton({ className = "", enableSound = true }: CommonProps
     consultant: "/resumes/resume-consultant.pdf",
   }
   
-  const getPersona = (): string => {
-    if (typeof window === 'undefined') return 'pm'
+  React.useEffect(() => {
+    setMounted(true)
+    // Determine persona on client side only
     const params = new URLSearchParams(window.location.search)
     const urlPersona = params.get('persona')
+    let persona = 'pm'
     if (urlPersona && ['pm', 'builder', 'consultant'].includes(urlPersona)) {
-      return urlPersona
+      persona = urlPersona
+    } else if (process.env.NEXT_PUBLIC_PERSONA) {
+      persona = process.env.NEXT_PUBLIC_PERSONA
     }
-    return process.env.NEXT_PUBLIC_PERSONA || 'pm'
-  }
-  
-  const resumePath = resumePaths[getPersona()] || resumePaths.pm
+    setResumePath(resumePaths[persona] || resumePaths.pm)
+  }, [])
 
   const handleClick = () => {
     if (enableSound && !shouldReduceMotion) {
       play("click")
     }
+  }
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <div
+        className={[
+          "group inline-flex h-12 items-center gap-2 rounded-xl border border-border px-5",
+          "bg-card text-foreground",
+          className,
+        ].join(" ")}
+      >
+        <FileText className="h-5 w-5" />
+        <span className="text-base font-medium">Resume</span>
+      </div>
+    )
   }
 
   if (shouldReduceMotion) {

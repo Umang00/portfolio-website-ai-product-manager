@@ -32,7 +32,7 @@ _Updates: Removed Fashion Street (Too niche). Added Newsletter Gen (Pure Automat
 
 | Case Study               | Why this Project?                                                           | Key Resume Metric to Highlight                                        |
 | :----------------------- | :-------------------------------------------------------------------------- | :-------------------------------------------------------------------- |
-| **Voice UXR Agent**      | **Headcount Cost Reduction**. The ultimate consultant sell.                 | "Scaled research capacity 25x... reduced costs by 70% per interview." |
+| **Voice UXR Agent**      | **Headcount Cost Reduction**. The ultimate consultant sell.                 | "Scaled research capacity 25x... reduced costs by 90% per interview." |
 | **Newsletter Generator** | **Process Automation**. Businesses waste hours on content - you solve that. | "Reduced drafting time from 3 hours to <5 mins... 95% ready drafts."  |
 | **Marketing Dashboard**  | **Tool Consolidation**. Tangible ROI for CFOs.                              | "Saved $1,000+ monthly in SaaS costs... replaced 3 separate tools."   |
 
@@ -65,13 +65,13 @@ We created a `content-data.ts` that determines the "Language Variations" for eve
 - **Environment Variable:** `NEXT_PUBLIC_PERSONA` ("pm" | "builder" | "consultant")
 - **The Logic:**
   `typescript
-    // content-data.ts
-    export const heroContent = {
-       pm: "Product Manager who Builds",
-       builder: "Full-Stack AI Engineer",
-       consultant: "AI Solutions Architect"
-    }
-    `
+  // content-data.ts
+  export const heroContent = {
+     pm: "Product Manager who Builds",
+     builder: "Full-Stack AI Engineer",
+     consultant: "AI Solutions Architect"
+  }
+  `
   This allows us to deploy 3 unique websites from a **single codebase**.
 
 ---
