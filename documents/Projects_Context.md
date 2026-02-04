@@ -433,6 +433,77 @@ AI-powered fashion recommendation system running in a family retail store that g
 
 ---
 
+## 13. Astro AI - Vedic Astrology Platform
+
+### Overview
+
+AI-powered Vedic astrology platform delivering personalized astrological insights through WhatsApp. Combines Swiss Ephemeris calculations with GPT-5 for 24/7 accessible, affordable astrology consultations.
+
+### Technical Architecture
+
+- **Backend**: Python with FastAPI
+- **AI**: GPT-5 for natural language conversations
+- **Astronomy**: Swiss Ephemeris for NASA-grade calculations
+- **Database**: PostgreSQL with Redis caching
+- **Platform**: WhatsApp Business API
+
+### Key Features
+
+- AI-powered birth chart generation with astronomical accuracy
+- Natural conversational interface on WhatsApp
+- Multilingual support (English, Hindi, Gujarati)
+- 24/7 availability with 5-10 second responses
+- No app download required
+
+### Metrics
+
+- **95% cost reduction** vs traditional astrologers ($2.99/month vs $50-200/session)
+- **Instant availability** (24/7 vs appointment-based)
+- Multilingual support at launch
+- 5-10 second response times
+
+### Links
+
+- In Progress (WhatsApp beta)
+
+---
+
+## 14. Foggy Rainwater Style Text Generator
+
+### Overview
+
+Custom-trained LoRA model that generates realistic foggy window-style handwritten text and doodles. Created from scratch with no existing dataset, producing natural condensation-on-glass text effects for creative applications.
+
+### Technical Architecture
+
+- **Base Model**: Flux
+- **Training**: Custom LoRA training pipeline
+- **UI**: ComfyUI for generation
+- **Captioning**: BLIP-2 for automated image captioning
+- **Dataset**: 250 curated images (200 real + 50 synthetic)
+
+### Key Features
+
+- First-of-its-kind LoRA for foggy window text effects
+- Supports emojis, symbols, doodles, multiline text, formulas
+- Quality > quantity discovery (30-60 images outperformed 150)
+- Open-sourced on CivitAI and Hugging Face
+
+### Metrics
+
+- **250-image curated dataset** (200 real + 50 Photoshop synthetic)
+- First public LoRA for this niche style
+- Proved quality > quantity in LoRA training
+- Open-sourced for community use
+
+### Links
+
+- **YouTube**: https://youtu.be/VIGsmIW2Gu0
+- **CivitAI**: Open-sourced model
+- **Hugging Face**: Open-sourced model
+
+---
+
 ## Summary
 
 | Project                | Key Metric                 | Tech Stack                    | Status                                                      |
@@ -449,11 +520,14 @@ AI-powered fashion recommendation system running in a family retail store that g
 | Newsletter Generator   | 2-3 hrs → 5 min            | Next.js, Supabase, OpenRouter | [Live](https://newsletter-self-zeta.vercel.app/)            |
 | Lecture Lens           | 1st Runner-Up Hackathon    | Next.js, pgvector, BM25       | Active                                                      |
 | Fashion Street AI      | ₹2-5/qualified lead        | Python, FastAPI, Gemini       | Active                                                      |
+| Astro AI               | 95% cost reduction         | Python, GPT-5, WhatsApp API   | In Progress                                                 |
+| Foggy Rainwater LoRA   | First-of-its-kind model    | Flux, ComfyUI, BLIP-2         | [Open Source](https://youtu.be/VIGsmIW2Gu0)                 |
 
-All projects demonstrate expertise in:
+All 14 projects demonstrate expertise in:
 
 - **Agentic AI**: Multi-agent orchestration (Agno, OpenAI Agents SDK, Google ADK)
 - **Production Systems**: Deployed at scale, not prototypes
 - **ROI Focus**: Measurable business impact ($500K+, $15K+, 200% increases)
 - **Rapid MVP**: Ship fast (15 days, 24 hours hackathon, 48 hours viral)
 - **Full-Stack**: End-to-end product building (frontend, backend, AI pipelines)
+- **ML/AI Training**: Custom LoRA training, fine-tuning, RAG pipelines
